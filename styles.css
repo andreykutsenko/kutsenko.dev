@@ -1,0 +1,186 @@
+/* kutsenko.dev — terminal style */
+
+:root {
+  --bg: #0a0e12;
+  --fg: #c9d1d9;
+  --fg-bright: #ffffff;
+  --muted: #6e7681;
+  --accent: #64ffda;
+  --link: #64ffda;
+  --border: #21262d;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  /* Your terminal font */
+  font: 14px/1.8 "CaskaydiaCove NF", "Cascadia Code", "Cascadia Mono", "Consolas", monospace;
+  padding: 40px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.header {
+  margin-bottom: 60px;
+}
+
+.prompt {
+  color: var(--fg-bright);
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: var(--accent);
+  margin-left: 4px;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+h1, h2 {
+  color: var(--fg-bright);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+p {
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+p.details {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+ul li .terminal,
+ul li #form {
+  margin-top: 12px;
+}
+
+#contact p {
+  line-height: 2;
+}
+
+#contact a {
+  margin: 0 4px;
+}
+
+strong {
+  color: var(--fg-bright);
+  font-weight: 600;
+}
+
+.terminal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin: 16px 0;
+  font-family: inherit;
+  color: var(--fg);
+}
+
+#form {
+  margin-top: 12px;
+}
+
+#input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 8px 12px;
+  font: inherit;
+  outline: none;
+}
+
+#input:focus {
+  border-color: var(--accent);
+}
+
+.footer {
+  margin-top: 80px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+#giscus {
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 30px 16px;
+    font-size: 13px;
+  }
+  
+  .header {
+    margin-bottom: 40px;
+  }
+  
+  .content {
+    gap: 40px;
+  }
+}
