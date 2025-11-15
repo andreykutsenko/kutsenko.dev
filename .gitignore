@@ -1,0 +1,16 @@
+# Node / package managers
+node_modules/
+
+# Cloudflare Wrangler local state
+.wrangler/
+.wrangler-state/
+
+# Environment files
+.env
+.env.*
+.gitpmoji.env
+
+# Cursor / tooling artifacts
+.cursorindexingignore
+.specstory/
+
