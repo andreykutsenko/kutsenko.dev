@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kutsenko.dev — Dashboard</title>
+  <meta name="description" content="Live feed of Hacker News, GitHub repos, and visuals.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+  <header class="header">
+    <div class="prompt">$ /home<span class="cursor"></span></div>
+    <p class="intro" id="status">Fetching data...</p>
+    <p class="intro" id="updated-at"></p>
+  </header>
+
+  <main class="dashboard">
+    <section>
+      <h2>Hacker News</h2>
+      <ul id="hn-list" class="card-list"></ul>
+    </section>
+
+    <section>
+      <h2>GitHub Repos</h2>
+      <ul id="gh-list" class="card-list"></ul>
+    </section>
+
+    <section>
+      <h2>Image Feed</h2>
+      <div id="img-grid" class="image-grid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><a href="/">← back to root</a></p>
+  </footer>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const updatedAtEl = document.getElementById('updated-at');
+    const hnList = document.getElementById('hn-list');
+    const ghList = document.getElementById('gh-list');
+    const imgGrid = document.getElementById('img-grid');
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.style.color = isError ? '#ff7b72' : 'var(--muted)';
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function renderList(container, items, renderer, emptyMessage) {
+      container.innerHTML = '';
+      if (!items || !items.length) {
+        const empty = document.createElement(container.tagName === 'UL' ? 'li' : 'div');
+        empty.className = 'card muted';
+        empty.textContent = emptyMessage;
+        container.appendChild(empty);
+        return;
+      }
+      items.forEach((item) => container.appendChild(renderer(item)));
+    }
+
+    function createHnCard(item) {
+      const li = document.createElement('li');
+      li.className = 'card';
+
+      const title = document.createElement('a');
+      title.className = 'card-title';
+      title.href = item.url;
+      title.target = '_blank';
+      title.rel = 'noopener';
+      title.textContent = item.title;
+
+      const meta = document.createElement('p');
+      meta.className = 'card-meta';
+      meta.textContent = `${item.points ?? 0} points • ${item.comments ?? 0} comments • ${item.author ?? 'unknown'}`;
+
+      const time = document.createElement('p');
+      time.className = 'card-meta';
+      time.textContent = formatDate(item.createdAt);
+
+      li.append(title, meta, time);
+      return li;
+    }
+
+    function createGhCard(item) {
+      const li = document.createElement('li');
+      li.className = 'card';
+
+      const title = document.createElement('a');
+      title.className = 'card-title';
+      title.href = item.url;
+      title.target = '_blank';
+      title.rel = 'noopener';
+      title.textContent = item.name;
+
+      const desc = document.createElement('p');
+      desc.className = 'card-body';
+      desc.textContent = item.description || 'No description provided.';
+
+      const meta = document.createElement('p');
+      meta.className = 'card-meta';
+      meta.textContent = `★ ${item.stars?.toLocaleString?.() ?? item.stars ?? 0} • ${item.language || 'n/a'} • updated ${formatDate(item.updatedAt)}`;
+
+      li.append(title, desc, meta);
+      return li;
+    }
+
+    function createImageCard(item) {
+      const figure = document.createElement('figure');
+      figure.className = 'image-card';
+
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.alt = item.caption || 'Dashboard image';
+      img.loading = 'lazy';
+
+      const caption = document.createElement('figcaption');
+      caption.textContent = item.caption || '';
+
+      figure.append(img, caption);
+      return figure;
+    }
+
+    async function loadHomepageData() {
+      try {
+        const response = await fetch('/api/homepage', { headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        const payload = await response.json();
+
+        if (!payload || (!payload.hackerNews && !payload.github && !payload.images)) {
+          setStatus('No data yet. Worker cache may still be warming up.');
+          renderList(hnList, [], createHnCard, 'HN feed unavailable.');
+          renderList(ghList, [], createGhCard, 'GitHub feed unavailable.');
+          renderList(imgGrid, [], createImageCard, 'Image feed unavailable.');
+          return;
+        }
+
+        setStatus('Feed refreshed.', false);
+        updatedAtEl.textContent = payload.updatedAt ? `Updated ${formatDate(payload.updatedAt)}` : '';
+
+        renderList(hnList, payload.hackerNews, createHnCard, 'HN feed unavailable.');
+        renderList(ghList, payload.github, createGhCard, 'GitHub feed unavailable.');
+        renderList(imgGrid, payload.images, createImageCard, 'Image feed unavailable.');
+      } catch (error) {
+        console.error(error);
+        setStatus('Failed to load data.', true);
+        renderList(hnList, [], createHnCard, 'HN feed unavailable.');
+        renderList(ghList, [], createGhCard, 'GitHub feed unavailable.');
+        renderList(imgGrid, [], createImageCard, 'Image feed unavailable.');
+      }
+    }
+
+    loadHomepageData();
+  </script>
+</body>
+</html>
+

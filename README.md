@@ -17,14 +17,10 @@ python3 -m http.server 8080
 
 Then open http://localhost:8080
 
-## 📦 Deploy
+## 🧭 Homepage Dashboard
 
-Ready for Cloudflare Pages, Vercel, or GitHub Pages — no build step required.
-
-Just push and deploy:
-- `index.html` — main page
-- `styles.css` — terminal theme
-- `script.js` — minimal JS (console log)
+- `homepage.html` — three-column dashboard (Hacker News, GitHub, image feed).
+- `/api/homepage` — Cloudflare Worker endpoint that refreshes hourly via KV cache (`backend/homepage-worker/`).
 
 ## 📝 Structure
 
@@ -45,6 +41,11 @@ Edit CSS variables in `styles.css`:
   --accent: #64ffda;  /* links & cursor */
 }
 ```
+
+## Deployment
+
+- Static site: deployed from `main` via Cloudflare Pages (no build step).
+- Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`.
 
 ---
 
