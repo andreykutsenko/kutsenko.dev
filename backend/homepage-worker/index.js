@@ -66,11 +66,12 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/api/homepage") {
+      const forceRefresh = url.searchParams.has("refresh");
       let cached = await env.HOMEPAGE_CACHE.get("homepage_json", {
         type: "json",
       });
 
-      if (!cached) {
+      if (forceRefresh || !cached) {
         try {
           cached = await updateCache(env);
         } catch (error) {
