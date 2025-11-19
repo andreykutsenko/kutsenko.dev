@@ -36,12 +36,24 @@
     <p><a href="/">← back to root</a></p>
   </footer>
 
+  <div id="lightbox" class="lightbox" hidden>
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <figure class="lightbox-dialog">
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close image">&times;</button>
+      <img id="lightbox-img" alt="">
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+  </div>
+
   <script>
     const statusEl = document.getElementById('status');
     const updatedAtEl = document.getElementById('updated-at');
     const hnList = document.getElementById('hn-list');
     const ghList = document.getElementById('gh-list');
     const imgGrid = document.getElementById('img-grid');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
 
     function setStatus(message, isError = false) {
       statusEl.textContent = message;
@@ -114,11 +126,11 @@
     }
 
     function createImageCard(item) {
-      const card = document.createElement('a');
+      const card = document.createElement('button');
       card.className = 'image-card';
-      card.href = item.url;
-      card.target = '_blank';
-      card.rel = 'noopener';
+      card.type = 'button';
+      card.dataset.url = item.url;
+      card.dataset.caption = item.caption || '';
 
       const img = document.createElement('img');
       img.src = item.url;
@@ -132,6 +144,49 @@
       card.append(img, caption);
       return card;
     }
+
+    function enhanceImageUrl(url) {
+      if (!url) return '';
+      const hasParams = url.includes('?');
+      if (url.includes('w=')) {
+        return url.replace(/w=\d+/i, 'w=1400');
+      }
+      return `${url}${hasParams ? '&' : '?'}w=1400`;
+    }
+
+    function openLightbox(url, caption) {
+      lightboxImg.src = enhanceImageUrl(url);
+      lightboxImg.alt = caption || 'Dashboard image';
+      lightboxCaption.textContent = caption || '';
+      lightbox.removeAttribute('hidden');
+      requestAnimationFrame(() => lightbox.classList.add('is-open'));
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      setTimeout(() => {
+        lightboxImg.src = '';
+        lightbox.setAttribute('hidden', '');
+      }, 150);
+    }
+
+    imgGrid.addEventListener('click', (event) => {
+      const card = event.target.closest('.image-card');
+      if (!card) return;
+      openLightbox(card.dataset.url, card.dataset.caption);
+    });
+
+    lightbox.addEventListener('click', (event) => {
+      if (event.target.dataset.lightboxClose !== undefined) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !lightbox.hasAttribute('hidden')) {
+        closeLightbox();
+      }
+    });
 
     async function loadHomepageData() {
       try {
