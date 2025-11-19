@@ -93,8 +93,8 @@ export default {
     return new Response("Not Found", { status: 404 });
   },
 
-  async scheduled(event, env) {
-    event.waitUntil(updateCache(env));
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(updateCache(env));
   },
 };
 
