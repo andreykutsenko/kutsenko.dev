@@ -233,12 +233,10 @@ strong {
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.image-card:focus-visible {
-  border-color: var(--accent);
-}
-
+.image-card:focus-visible,
 .image-card:hover {
   border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
   transform: translateY(-2px);
 }
 
