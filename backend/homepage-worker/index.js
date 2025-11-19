@@ -1,6 +1,6 @@
 const HN_URL = "https://hn.algolia.com/api/v1/search?tags=front_page";
 const GH_URL =
-  "https://api.github.com/search/repositories?q=created:>2025-01-01&sort=stars&order=desc&per_page=10";
+  "https://api.github.com/search/repositories?q=created:%3E2025-01-01&sort=stars&order=desc&per_page=10";
 
 const IMAGE_GALLERY = [
   {
