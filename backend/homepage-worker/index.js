@@ -1,6 +1,6 @@
 const HN_URL = "https://hn.algolia.com/api/v1/search?tags=front_page";
-const GH_URL =
-  "https://api.github.com/search/repositories?q=created:%3E2025-01-01&sort=stars&order=desc&per_page=10";
+const GH_BASE = "https://api.github.com/search/repositories";
+const GH_QUERY = "created:>2025-01-01";
 
 const IMAGE_GALLERY = [
   {
@@ -18,9 +18,17 @@ const IMAGE_GALLERY = [
 ];
 
 async function fetchJson(url, options = {}) {
-  const res = await fetch(url, options);
+  const res = await fetch(typeof url === "string" ? url : url.toString(), options);
   if (!res.ok) {
-    throw new Error(`Request failed: ${url} (${res.status})`);
+    let snippet = "";
+    try {
+      snippet = await res.text();
+    } catch {
+      snippet = "<no body>";
+    }
+    throw new Error(
+      `Request failed: ${url} (${res.status}) ${snippet.slice(0, 200)}`
+    );
   }
   return res.json();
 }
@@ -94,15 +102,23 @@ export async function updateCache(env) {
     const headers = {
       "User-Agent": "kutsenko-homepage-worker",
       Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
     };
 
     if (env.GITHUB_TOKEN) {
       headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
     }
 
+    const ghUrl = `${GH_BASE}?${new URLSearchParams({
+      q: GH_QUERY,
+      sort: "stars",
+      order: "desc",
+      per_page: "10",
+    }).toString()}`;
+
     const [hnData, ghData] = await Promise.all([
       fetchJson(HN_URL),
-      fetchJson(GH_URL, { headers }),
+      fetchJson(ghUrl, { headers }),
     ]);
 
     const payload = {
