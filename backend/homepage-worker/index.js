@@ -58,10 +58,25 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/api/homepage") {
-      const cached = await env.HOMEPAGE_CACHE.get("homepage_json", {
+      let cached = await env.HOMEPAGE_CACHE.get("homepage_json", {
         type: "json",
       });
-      return new Response(JSON.stringify(cached || {}), {
+
+      if (!cached) {
+        try {
+          cached = await updateCache(env);
+        } catch (error) {
+          console.error("Failed to refresh cache on-demand:", error);
+          cached = {
+            updatedAt: new Date().toISOString(),
+            hackerNews: [],
+            github: [],
+            images: IMAGE_GALLERY,
+          };
+        }
+      }
+
+      return new Response(JSON.stringify(cached), {
         headers: { "content-type": "application/json" },
       });
     }
