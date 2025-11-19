@@ -6,6 +6,5 @@ kv_namespaces = [
   { binding = "HOMEPAGE_CACHE", id = "004be986ba2e4f96ac65290ccb57c196" }
 ]
 
-[[triggers.crons]]
+[[triggers]]
 crons = ["0 * * * *"]
-
