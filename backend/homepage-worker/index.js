@@ -1,6 +1,6 @@
 const HN_URL = "https://hn.algolia.com/api/v1/search?tags=front_page";
 const GH_BASE = "https://api.github.com/search/repositories";
-const GH_QUERY = "created:>2025-01-01";
+const GH_QUERY = "created:>=2025-01-01";
 
 const IMAGE_GALLERY = [
   {
@@ -26,6 +26,9 @@ async function fetchJson(url, options = {}) {
     } catch {
       snippet = "<no body>";
     }
+    const headerEntries = Object.fromEntries(res.headers.entries());
+    console.error("GitHub error body:", snippet);
+    console.error("GitHub error headers:", headerEntries);
     throw new Error(
       `Request failed: ${url} (${res.status}) ${snippet.slice(0, 200)}`
     );

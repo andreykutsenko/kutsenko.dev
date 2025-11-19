@@ -114,19 +114,23 @@
     }
 
     function createImageCard(item) {
-      const figure = document.createElement('figure');
-      figure.className = 'image-card';
+      const card = document.createElement('a');
+      card.className = 'image-card';
+      card.href = item.url;
+      card.target = '_blank';
+      card.rel = 'noopener';
 
       const img = document.createElement('img');
       img.src = item.url;
       img.alt = item.caption || 'Dashboard image';
       img.loading = 'lazy';
 
-      const caption = document.createElement('figcaption');
+      const caption = document.createElement('span');
+      caption.className = 'image-caption';
       caption.textContent = item.caption || '';
 
-      figure.append(img, caption);
-      return figure;
+      card.append(img, caption);
+      return card;
     }
 
     async function loadHomepageData() {
