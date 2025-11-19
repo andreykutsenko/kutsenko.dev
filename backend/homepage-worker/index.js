@@ -107,7 +107,7 @@ export async function updateCache(env) {
     };
 
     if (env.GITHUB_TOKEN) {
-      headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
+      headers.Authorization = `token ${env.GITHUB_TOKEN}`;
     }
 
     const ghUrl = `${GH_BASE}?${new URLSearchParams({
