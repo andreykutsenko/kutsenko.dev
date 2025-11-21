@@ -1,6 +1,7 @@
 # Homepage Worker
 
-Cloudflare Worker that refreshes `/api/homepage` content hourly and serves cached data to the static site.
+Cloudflare Worker that refreshes `/api/homepage` content hourly and serves cached data (Hacker News, GitHub, r/LocalLLaMA, LessWrong).  
+It also exposes `/api/translate` for translating dashboard content.
 
 ## Setup
 
@@ -13,6 +14,12 @@ Store your GitHub token so the worker can query the GitHub Search API:
 
 ```bash
 npx wrangler secret put GITHUB_TOKEN
+```
+
+Optional: override the translation backend (defaults to `https://libretranslate.de/translate`):
+
+```bash
+npx wrangler secret put TRANSLATE_API_URL
 ```
 
 ### KV namespace
@@ -29,5 +36,5 @@ npx wrangler kv:namespace create HOMEPAGE_CACHE
 npx wrangler deploy
 ```
 
-Then, in the Cloudflare dashboard, connect the Worker to the `/api/homepage` route of `kutsenko.dev`.
+Then, in the Cloudflare dashboard, connect the Worker to the `/api/homepage*` and `/api/translate*` routes of `kutsenko.dev`.
 

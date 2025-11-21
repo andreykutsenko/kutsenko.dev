@@ -1,13 +1,13 @@
 # kutsenko.dev
 
-Minimalist personal site with terminal aesthetic.
+Live dashboard with automation status, LLM news, and dual-theme UI.
 
 ## 🎨 Design
 
-- **Style:** Terminal-inspired (dark background + cyan accents)
-- **Font:** CaskaydiaCove NF, Cascadia Code, Consolas
-- **Color scheme:** `#0a0e12` background, `#64ffda` accent
-- **Features:** Blinking cursor, clean typography, mobile-responsive
+- **Modes:** Dark terminal + “Mist” light theme (toggle persists in `localStorage`)
+- **Typography:** CaskaydiaCove NF / Cascadia Code stack
+- **Accent:** `#64ffda` on dark, `#2f7aff` on light
+- **Features:** Responsive grid, EN/RU toggle, cards with live data
 
 ## 🚀 Run Locally
 
@@ -19,33 +19,34 @@ Then open http://localhost:8080
 
 ## 🧭 Homepage Dashboard
 
-- `homepage.html` — three-column dashboard (Hacker News, GitHub, image feed).
-- `/api/homepage` — Cloudflare Worker endpoint that refreshes hourly via KV cache (`backend/homepage-worker/`).
+- `index.html` — dashboard with Hacker News, GitHub radar, Best LLM News, LessWrong Reader, and status block.
+- `about.html` — background, current work, and contact section.
+- `/api/homepage` — Cloudflare Worker endpoint that hydrates all feeds (HN, GitHub, r/LocalLLaMA, LessWrong) and caches them in KV.
+- `/api/translate` — Worker proxy to translate dynamic text (default LibreTranslate; configurable via env).
 
 ## 📝 Structure
 
 ```
-Work       → SimpleProcess.io description
-Contact    → email, LinkedIn, Telegram
-Footer     → Personal branding
+index.html   → dashboard grid + toggles
+about.html   → work / stack / contact
+styles.css   → shared theme tokens + layout
+script.js    → theme/lang toggles, data fetching, translation
+backend/     → Cloudflare Worker (scheduler + APIs)
 ```
 
 ## ⚙️ Customize
 
-Edit CSS variables in `styles.css`:
-
-```css
-:root {
-  --bg: #0a0e12;      /* background */
-  --fg: #c9d1d9;      /* text */
-  --accent: #64ffda;  /* links & cursor */
-}
-```
+- Update CSS tokens inside `styles.css` (see `:root` + `[data-theme="light"]`).
+- Extend translations by editing the `i18n` object in `script.js`.
+- Data sources are fetched hourly via the Worker — adjust queries inside `backend/homepage-worker/index.js`.
 
 ## Deployment
 
 - Static site: deployed from `main` via Cloudflare Pages (no build step).
-- Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`.
+- Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`. Configure:
+  - `HOMEPAGE_CACHE` — KV namespace id.
+  - `GITHUB_TOKEN` — classic PAT for GitHub Search API.
+  - `TRANSLATE_API_URL` (optional) — override LibreTranslate endpoint.
 
 ---
 
