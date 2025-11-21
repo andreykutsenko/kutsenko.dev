@@ -1,6 +1,6 @@
 const HN_URL = "https://hn.algolia.com/api/v1/search?tags=front_page";
 const GH_BASE = "https://api.github.com/search/repositories";
-const GH_QUERY = "created:>=2025-01-01";
+const GH_QUERY = "stars:>20000";
 const REDDIT_LLM_URL =
   "https://www.reddit.com/r/LocalLLaMA/top.json?t=week&limit=12";
 const LESSWRONG_RSS_URL = "https://www.lesswrong.com/feed.xml?view=rss";
@@ -37,19 +37,6 @@ function mapHackerNewsResponse(data) {
     author: item.author || "unknown",
     comments: item.num_comments || 0,
     createdAt: item.created_at || null,
-  }));
-}
-
-function mapGithubResponse(data) {
-  const items = Array.isArray(data?.items) ? data.items : [];
-  return items.map((repo) => ({
-    id: repo.id,
-    name: repo.full_name || repo.name,
-    url: repo.html_url,
-    description: repo.description,
-    stars: repo.stargazers_count,
-    language: repo.language,
-    updatedAt: repo.updated_at,
   }));
 }
 
@@ -121,23 +108,6 @@ export async function updateCache(env) {
         () => null
       )) || null;
 
-    const headers = {
-      "User-Agent": "kutsenko-homepage-worker",
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    };
-
-    if (env.GITHUB_TOKEN) {
-      headers.Authorization = `token ${env.GITHUB_TOKEN}`;
-    }
-
-    const ghUrl = `${GH_BASE}?${new URLSearchParams({
-      q: GH_QUERY,
-      sort: "stars",
-      order: "desc",
-      per_page: "10",
-    }).toString()}`;
-
     const hackerNews = await fetchJson(HN_URL)
       .then(mapHackerNewsResponse)
       .catch((error) => {
@@ -145,8 +115,7 @@ export async function updateCache(env) {
         return previous?.hackerNews ?? [];
       });
 
-    const github = await fetchJson(ghUrl, { headers })
-      .then(mapGithubResponse)
+    const github = await fetchGithubSearch(env)
       .catch((error) => {
         console.error("Failed to fetch GitHub repos:", error);
         return previous?.github ?? [];
@@ -176,6 +145,50 @@ export async function updateCache(env) {
     console.error("Failed to update homepage cache:", error);
     throw error;
   }
+}
+
+async function fetchGithubSearch(env, limit = 10) {
+  const url = `${GH_BASE}?${new URLSearchParams({
+    q: GH_QUERY,
+    sort: "stars",
+    order: "desc",
+    per_page: String(limit),
+  }).toString()}`;
+
+  const headers = {
+    "User-Agent": "kutsenko-homepage-worker",
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `token ${env.GITHUB_TOKEN}`;
+  }
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    let detail = "";
+    try {
+      detail = await res.text();
+    } catch (err) {
+      detail = `<no body>: ${err}`;
+    }
+    throw new Error(
+      `GitHub search failed (${res.status}) ${detail.slice(0, 160)}`
+    );
+  }
+
+  const data = await res.json();
+  const items = Array.isArray(data?.items) ? data.items : [];
+  return items.map((repo) => ({
+    id: repo.id,
+    name: repo.full_name || repo.name,
+    url: repo.html_url,
+    description: repo.description,
+    stars: repo.stargazers_count,
+    language: repo.language,
+    updatedAt: repo.updated_at || new Date().toISOString(),
+  }));
 }
 
 async function fetchLlmNews() {

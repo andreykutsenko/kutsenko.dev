@@ -5,14 +5,31 @@ const i18n = {
     "nav.about": "About",
     "nav.contact": "Contact",
     "toggle.theme": "Theme",
+    "about.subtitle": "Automation engineer · LLM ops · Builder of SimpleProcess.",
     "section.hn.tagline": "Top discussions from the front page",
     "section.github.tagline": "Fresh repos trending on GitHub",
     "section.llm.tagline": "Highlights from r/LocalLLaMA",
     "section.lw.tagline": "Most upvoted rationality essays",
     "panel.links.heading": "More",
     "footer.about": "About",
-    "about.work.heading": "Work",
+    "about.summary.heading": "Summary",
+    "about.summary.body":
+      "Experienced software engineer with fintech/banking roots (InfoIMAGE, BPS-Sberbank) and a track record of shipping automations across QA, data parsing, and multi-platform systems.",
+    "about.summary.item1":
+      "Builds automation-first products (SimpleProcess.io) and applies AI/LLM agents to real workflows.",
+    "about.summary.item2":
+      "Strong background in data processing, system optimization, QA automation, and Unix/Python tooling.",
+    "about.summary.item3":
+      "Led engineering and operations teams in banking, improving KPIs and reducing operational risk.",
+    "about.focus.heading": "Current focus",
+    "about.focus.body1":
+      "Running SimpleProcess.io — practical automations for outbound ops, enrichment, and AI/LLM-driven agents that tie into CRMs and ops stacks.",
+    "about.focus.body2":
+      "Building a Telegram Outreach microservice (pet project) based on Telethon: multi-account messaging, response tracking, contact parsing, phone validation, CRM enrichment, and warm-up routines orchestrated with n8n + LLM agents.",
     "about.stack.heading": "Stack & Interests",
+    "about.stack.item1": "Agents / evals / monitoring for LLM-powered systems",
+    "about.stack.item2": "Python, TypeScript, Rust tooling, Postgres/ClickHouse",
+    "about.stack.item3": "Cloudflare Workers, n8n, CRM/ops integrations",
     "about.contact.heading": "Contact",
   },
   ru: {
@@ -21,14 +38,31 @@ const i18n = {
     "nav.about": "Обо мне",
     "nav.contact": "Контакт",
     "toggle.theme": "Тема",
+    "about.subtitle": "Инженер по автоматизации · LLM ops · Создатель SimpleProcess.",
     "section.hn.tagline": "Главные обсуждения с Hacker News",
     "section.github.tagline": "Свежие тренды с GitHub",
     "section.llm.tagline": "Лучшее из r/LocalLLaMA",
     "section.lw.tagline": "Самые оценённые эссе на LessWrong",
     "panel.links.heading": "Ещё",
     "footer.about": "Обо мне",
-    "about.work.heading": "Работа",
+    "about.summary.heading": "Кратко",
+    "about.summary.body":
+      "Инженер-программист с корнями в финтехе/банкинге (InfoIMAGE, БПС-Сбербанк) и опытом внедрения автоматизации в QA, парсинге данных и мультиплатформенных системах.",
+    "about.summary.item1":
+      "Запускаю продукты с упором на автоматизацию (SimpleProcess.io) и применяю AI/LLM-агентов в реальных процессах.",
+    "about.summary.item2":
+      "Сильен в обработке данных, оптимизации систем, QA-автоматизации и Unix/Python инструментах.",
+    "about.summary.item3":
+      "Руководил инженерными и операционными командами в банке, повышая KPI и снижая риски.",
+    "about.focus.heading": "Текущий фокус",
+    "about.focus.body1":
+      "Веду SimpleProcess.io — прикладные автоматизации для outbound-операций, энричмента и LLM-агентов, интегрированных с CRM и операционными системами.",
+    "about.focus.body2":
+      "Собираю Telegram Outreach микросервис (pet-проект) на Telethon: мультиаккаунт, отслеживание ответов, парсинг контактов, проверка телефонов, энричмент CRM и прогрев аккаунтов с оркестрацией через n8n и LLM-агентов.",
     "about.stack.heading": "Инструменты и интересы",
+    "about.stack.item1": "Агенты / оценки / мониторинг LLM-систем",
+    "about.stack.item2": "Python, TypeScript, Rust-инструменты, Postgres/ClickHouse",
+    "about.stack.item3": "Cloudflare Workers, n8n, интеграции с CRM/оперейшнс",
     "about.contact.heading": "Связаться",
   },
 };
@@ -111,7 +145,11 @@ function applyI18n() {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
     if (dict[key]) {
-      node.textContent = dict[key];
+      if (node.dataset.i18nHtml === "true") {
+        node.innerHTML = dict[key];
+      } else {
+        node.textContent = dict[key];
+      }
     }
   });
 }

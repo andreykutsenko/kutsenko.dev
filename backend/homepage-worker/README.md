@@ -8,15 +8,9 @@ It also exposes `/api/translate` for translating dashboard content.
 1. Install dependencies used by Wrangler (already bundled with the repo).  
 2. Authenticate with Cloudflare via `npx wrangler login`.
 
-### Required secrets
+### Optional secrets
 
-Store your GitHub token so the worker can query the GitHub Search API:
-
-```bash
-npx wrangler secret put GITHUB_TOKEN
-```
-
-Optional: override the translation backend (defaults to Google Translate; set this if you host your own service):
+Override the translation backend (defaults to Google Translate; set this if you host your own service):
 
 ```bash
 npx wrangler secret put TRANSLATE_API_URL

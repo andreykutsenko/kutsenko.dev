@@ -45,7 +45,6 @@ backend/     → Cloudflare Worker (scheduler + APIs)
 - Static site: deployed from `main` via Cloudflare Pages (no build step).
 - Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`. Configure:
   - `HOMEPAGE_CACHE` — KV namespace id.
-  - `GITHUB_TOKEN` — classic PAT for GitHub Search API.
   - `TRANSLATE_API_URL` (optional) — override the default Google Translate endpoint (e.g., your own LibreTranslate).
 
 ---
