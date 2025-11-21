@@ -186,12 +186,32 @@ async function renderDashboard() {
   updateMeta("llm-updated", updatedAt);
   updateMeta("lw-updated", updatedAt);
 
-  await Promise.all([
-    renderSection("hn", state.data?.hackerNews ?? [], ["title"]),
-    renderSection("github", state.data?.github ?? [], ["name", "description"]),
-    renderSection("llm", state.data?.llmNews ?? [], ["title"]),
-    renderSection("lesswrong", state.data?.lessWrong ?? [], ["title", "summary"]),
-  ]);
+  const sections = [
+    { key: "hn", items: state.data?.hackerNews ?? [], fields: ["title"] },
+    {
+      key: "github",
+      items: state.data?.github ?? [],
+      fields: ["name", "description"],
+    },
+    { key: "llm", items: state.data?.llmNews ?? [], fields: ["title"] },
+    {
+      key: "lesswrong",
+      items: state.data?.lessWrong ?? [],
+      fields: ["title", "summary"],
+    },
+  ];
+
+  for (const entry of sections) {
+    try {
+      await renderSection(entry.key, entry.items, entry.fields);
+    } catch (error) {
+      console.error(`Failed to render ${entry.key} section`, error);
+      const container = document.getElementById(`${entry.key}-list`);
+      if (container) {
+        container.innerHTML = `<li class="card"><p class="card-title">Unable to load section.</p><p class="card-meta">${error.message}</p></li>`;
+      }
+    }
+  }
 }
 
 function updateMeta(id, text) {
