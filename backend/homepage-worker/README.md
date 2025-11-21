@@ -16,7 +16,7 @@ Store your GitHub token so the worker can query the GitHub Search API:
 npx wrangler secret put GITHUB_TOKEN
 ```
 
-Optional: override the translation backend (defaults to `https://translate.argosopentech.com/translate`):
+Optional: override the translation backend (defaults to Google Translate; set this if you host your own service):
 
 ```bash
 npx wrangler secret put TRANSLATE_API_URL

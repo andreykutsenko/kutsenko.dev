@@ -252,28 +252,6 @@ a:hover {
   font-size: 12px;
 }
 
-.status-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.status-list .label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-}
-
-.status-list .value {
-  display: block;
-  font-size: 14px;
-  color: var(--fg-strong);
-}
-
 .link-list {
   list-style: none;
   margin: 0;

@@ -2,9 +2,9 @@ const HN_URL = "https://hn.algolia.com/api/v1/search?tags=front_page";
 const GH_BASE = "https://api.github.com/search/repositories";
 const GH_QUERY = "created:>=2025-01-01";
 const REDDIT_LLM_URL =
-  "https://old.reddit.com/r/LocalLLaMA/top/.json?t=week&limit=12";
+  "https://www.reddit.com/r/LocalLLaMA/top.json?t=week&limit=12";
 const LESSWRONG_RSS_URL = "https://www.lesswrong.com/feed.xml?view=rss";
-const DEFAULT_TRANSLATE_URL = "https://translate.argosopentech.com/translate";
+const REDDIT_USER_AGENT = "kutsenko-homepage/1.0 (+https://kutsenko.dev)";
 
 async function fetchJson(url, options = {}) {
   const res = await fetch(typeof url === "string" ? url : url.toString(), options);
@@ -116,6 +116,11 @@ export default {
 
 export async function updateCache(env) {
   try {
+    const previous =
+      (await env.HOMEPAGE_CACHE.get("homepage_json", { type: "json" }).catch(
+        () => null
+      )) || null;
+
     const headers = {
       "User-Agent": "kutsenko-homepage-worker",
       Accept: "application/vnd.github+json",
@@ -133,19 +138,36 @@ export async function updateCache(env) {
       per_page: "10",
     }).toString()}`;
 
-    const [hnData, ghData, llmNews, lessWrongPosts] = await Promise.all([
-      fetchJson(HN_URL),
-      fetchJson(ghUrl, { headers }),
-      fetchLlmNews(),
-      fetchLessWrongPosts(),
-    ]);
+    const hackerNews = await fetchJson(HN_URL)
+      .then(mapHackerNewsResponse)
+      .catch((error) => {
+        console.error("Failed to fetch Hacker News:", error);
+        return previous?.hackerNews ?? [];
+      });
+
+    const github = await fetchJson(ghUrl, { headers })
+      .then(mapGithubResponse)
+      .catch((error) => {
+        console.error("Failed to fetch GitHub repos:", error);
+        return previous?.github ?? [];
+      });
+
+    let llmNews = await fetchLlmNews();
+    if (!llmNews.length && previous?.llmNews?.length) {
+      llmNews = previous.llmNews;
+    }
+
+    let lessWrong = await fetchLessWrongPosts();
+    if (!lessWrong.length && previous?.lessWrong?.length) {
+      lessWrong = previous.lessWrong;
+    }
 
     const payload = {
       updatedAt: new Date().toISOString(),
-      hackerNews: mapHackerNewsResponse(hnData),
-      github: mapGithubResponse(ghData),
+      hackerNews,
+      github,
       llmNews,
-      lessWrong: lessWrongPosts,
+      lessWrong,
     };
 
     await env.HOMEPAGE_CACHE.put("homepage_json", JSON.stringify(payload));
@@ -160,7 +182,7 @@ async function fetchLlmNews() {
   try {
     const res = await fetch(REDDIT_LLM_URL, {
       headers: {
-        "User-Agent": "kutsenko-homepage-worker",
+        "User-Agent": REDDIT_USER_AGENT,
         Accept: "application/json",
       },
     });
@@ -238,7 +260,22 @@ async function fetchLessWrongPosts(limit = 6) {
 }
 
 async function translateBatch(texts, target, env) {
-  const translateUrl = env.TRANSLATE_API_URL || DEFAULT_TRANSLATE_URL;
+  if (!texts.some(Boolean) || target === "en") {
+    return texts;
+  }
+
+  if (env.TRANSLATE_API_URL) {
+    return translateViaCustom(texts, target, env.TRANSLATE_API_URL);
+  }
+
+  return Promise.all(
+    texts.map((text) =>
+      text ? translateWithGoogle(text, target).catch(() => text) : ""
+    )
+  );
+}
+
+async function translateViaCustom(texts, target, url) {
   const results = [];
   for (const text of texts) {
     if (!text) {
@@ -252,7 +289,7 @@ async function translateBatch(texts, target, env) {
       format: "text",
     });
     try {
-      const res = await fetch(translateUrl, {
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -270,6 +307,30 @@ async function translateBatch(texts, target, env) {
     }
   }
   return results;
+}
+
+async function translateWithGoogle(text, target) {
+  const endpoint =
+    "https://translate.googleapis.com/translate_a/single?" +
+    new URLSearchParams({
+      client: "gtx",
+      sl: "auto",
+      tl: target,
+      dt: "t",
+      q: text,
+    }).toString();
+
+  const res = await fetch(endpoint, {
+    headers: {
+      "User-Agent": "kutsenko-homepage-worker",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Google translate failed (${res.status})`);
+  }
+  const data = await res.json();
+  const chunks = Array.isArray(data?.[0]) ? data[0] : [];
+  return chunks.map((chunk) => chunk?.[0] || "").join("") || text;
 }
 
 function extractTag(xmlBlock, tag) {
