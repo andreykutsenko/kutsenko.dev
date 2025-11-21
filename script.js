@@ -1,6 +1,6 @@
 const i18n = {
   en: {
-    "hero.tagline": "Automation engineer blending agents, ops, and LLM infra.",
+    "hero.tagline": "Software engineer building automation tools and AI agents.",
     "nav.home": "Home",
     "nav.about": "About",
     "nav.contact": "Contact",
@@ -22,7 +22,7 @@ const i18n = {
     "about.contact.heading": "Contact",
   },
   ru: {
-    "hero.tagline": "Инженер по автоматизации: агенты, оперейшнс и LLM-инфраструктура.",
+    "hero.tagline": "Инженер-программист, создающий автоматизацию и AI-агентов.",
     "nav.home": "Главная",
     "nav.about": "Обо мне",
     "nav.contact": "Контакт",
@@ -183,7 +183,10 @@ async function renderSection(section, items, translateFields = []) {
     return;
   }
 
-  const localized = await localizeItems(section, items, translateFields);
+  const limitMap = { hn: 8, github: 8, llm: 8, lesswrong: 6 };
+  const trimmed = items.slice(0, limitMap[section] || 6);
+
+  const localized = await localizeItems(section, trimmed, translateFields);
   localized.forEach((item) => {
     const card = buildCard(section, item);
     container.appendChild(card);
@@ -264,6 +267,7 @@ function buildCard(section, item) {
     title.textContent = item.title;
     const summary = document.createElement("p");
     summary.className = "card-body";
+    summary.classList.add("is-clamped");
     summary.textContent = item.summary || "";
     const meta = document.createElement("p");
     meta.className = "card-meta";

@@ -4,7 +4,7 @@ const GH_QUERY = "created:>=2025-01-01";
 const REDDIT_LLM_URL =
   "https://old.reddit.com/r/LocalLLaMA/top/.json?t=week&limit=12";
 const LESSWRONG_RSS_URL = "https://www.lesswrong.com/feed.xml?view=rss";
-const DEFAULT_TRANSLATE_URL = "https://libretranslate.de/translate";
+const DEFAULT_TRANSLATE_URL = "https://translate.argosopentech.com/translate";
 
 async function fetchJson(url, options = {}) {
   const res = await fetch(typeof url === "string" ? url : url.toString(), options);

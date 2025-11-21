@@ -22,7 +22,7 @@ Then open http://localhost:8080
 - `index.html` — dashboard with Hacker News, GitHub radar, Best LLM News, LessWrong Reader, and status block.
 - `about.html` — background, current work, and contact section.
 - `/api/homepage` — Cloudflare Worker endpoint that hydrates all feeds (HN, GitHub, r/LocalLLaMA, LessWrong) and caches them in KV.
-- `/api/translate` — Worker proxy to translate dynamic text (default LibreTranslate; configurable via env).
+- `/api/translate` — Worker proxy to translate dynamic text (default https://translate.argosopentech.com/translate; configurable via env).
 
 ## 📝 Structure
 
@@ -46,7 +46,7 @@ backend/     → Cloudflare Worker (scheduler + APIs)
 - Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`. Configure:
   - `HOMEPAGE_CACHE` — KV namespace id.
   - `GITHUB_TOKEN` — classic PAT for GitHub Search API.
-  - `TRANSLATE_API_URL` (optional) — override LibreTranslate endpoint.
+  - `TRANSLATE_API_URL` (optional) — override the default Argos Open Translate endpoint.
 
 ---
 

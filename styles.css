@@ -198,6 +198,19 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+}
+
+.stack::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stack::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
 }
 
 .card {
@@ -223,6 +236,14 @@ a:hover {
   margin: 0 0 8px;
   color: var(--fg);
   font-size: 13px;
+}
+
+.card-body.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  overflow: hidden;
 }
 
 .card-meta {
