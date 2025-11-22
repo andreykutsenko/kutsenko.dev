@@ -187,15 +187,17 @@ async function renderDashboard() {
   updateMeta("lw-updated", updatedAt);
 
   const sections = [
-    { key: "hn", items: state.data?.hackerNews ?? [], fields: ["title"] },
+    { key: "hn", domId: "hn", items: state.data?.hackerNews ?? [], fields: ["title"] },
     {
       key: "github",
+      domId: "gh",
       items: state.data?.github ?? [],
       fields: ["name", "description"],
     },
-    { key: "llm", items: state.data?.llmNews ?? [], fields: ["title"] },
+    { key: "llm", domId: "llm", items: state.data?.llmNews ?? [], fields: ["title"] },
     {
       key: "lesswrong",
+      domId: "lesswrong",
       items: state.data?.lessWrong ?? [],
       fields: ["title", "summary"],
     },
@@ -203,10 +205,12 @@ async function renderDashboard() {
 
   for (const entry of sections) {
     try {
-      await renderSection(entry.key, entry.items, entry.fields);
+      await renderSection(entry.key, entry.items, entry.fields, entry.domId);
     } catch (error) {
       console.error(`Failed to render ${entry.key} section`, error);
-      const container = document.getElementById(`${entry.key}-list`);
+      const container = document.getElementById(
+        `${entry.domId || entry.key}-list`
+      );
       if (container) {
         container.innerHTML = `<li class="card"><p class="card-title">Unable to load section.</p><p class="card-meta">${error.message}</p></li>`;
       }
@@ -219,8 +223,8 @@ function updateMeta(id, text) {
   if (node) node.textContent = text ? `Updated ${text}` : "";
 }
 
-async function renderSection(section, items, translateFields = []) {
-  const container = document.getElementById(`${section}-list`);
+async function renderSection(section, items, translateFields = [], domId) {
+  const container = document.getElementById(`${domId || section}-list`);
   if (!container) return;
   container.innerHTML = "";
 
