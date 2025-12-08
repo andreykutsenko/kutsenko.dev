@@ -1,0 +1,85 @@
+/* Header — Refined Terminal Style */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px var(--spacing-xl);
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(10, 13, 16, 0.6);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+html.light .header {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-menu-btn {
+  display: none;
+  padding: 8px;
+  color: var(--fg-muted);
+  border-radius: 8px;
+  transition: all 0.2s var(--ease-out);
+}
+
+.header-menu-btn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.build-id {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  font-weight: 500;
+}
+
+.header-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px var(--spacing-md);
+  }
+  
+  .header-menu-btn {
+    display: flex;
+  }
+  
+  .build-id {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-controls {
+    gap: 6px;
+  }
+  
+  .chip span:last-child {
+    display: none;
+  }
+}
