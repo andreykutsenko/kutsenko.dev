@@ -3,7 +3,6 @@ import { User, Server, Terminal as TerminalIcon } from 'lucide-react';
 
 interface AboutProps {
   lang: Lang;
-  t: (key: string) => string;
 }
 
 interface TerminalPanelProps {
