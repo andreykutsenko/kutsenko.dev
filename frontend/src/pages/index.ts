@@ -1,5 +1,2 @@
-export { HomePage } from './HomePage';
-export { DashboardPage } from './DashboardPage';
-export { AgentsPage } from './AgentsPage';
-
-
+export { Dashboard } from './Dashboard';
+export { About } from './About';
