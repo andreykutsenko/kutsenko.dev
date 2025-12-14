@@ -73,7 +73,7 @@ function App() {
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-0">
            <Routes>
              <Route path="/" element={<div className="p-4 md:p-8 max-w-7xl mx-auto"><Dashboard lang={lang} t={t} /></div>} />
-             <Route path="/about" element={<div className="p-4 md:p-8 max-w-5xl mx-auto"><About lang={lang} t={t} /></div>} />
+             <Route path="/about" element={<div className="p-4 md:p-8 max-w-5xl mx-auto"><About lang={lang} /></div>} />
            </Routes>
         </div>
 

@@ -55,7 +55,7 @@ const Output: React.FC<OutputProps> = ({ children, isLink }) => (
     </div>
 );
 
-export const About: React.FC<AboutProps> = ({ t }) => {
+export const About: React.FC<AboutProps> = () => {
   return (
     <div className="pb-12 font-mono">
       <div className="mb-8 pl-1">
