@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="kutsenko.dev — Automation Engineer & LLM Ops" />
+    <title>kutsenko.dev</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              // Dark Mode (Terminal-inspired)
+              'accent': '#56d364', // Brighter Green
+              'accent-dark': 'rgba(86, 211, 100, 0.1)',
+              'bg-dark': '#0D1117', // GitHub Dark Dimmed
+              'panel-dark': '#161B22', // Slightly lighter panel background
+              'border-dark': '#30363d',
+              'fg-dark': '#c9d1d9', // Main text color
+              'fg-dark-muted': '#8b949e', // Muted text color
+              'term-cyan': '#58a6ff',
+              'term-magenta': '#d2a8ff',
+              
+              // Light Mode (Paper/Clean)
+              'bg-light': '#f3f2ee',
+              'panel-light': '#ffffff', // Use pure white for panels for more contrast
+              'fg-light': '#2b2926',
+              'border-light': '#e5e5e5',
+              'accent-light': '#0969da',
+            },
+            fontFamily: {
+              mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+            },
+            animation: {
+              'blink': 'blink 1s step-end infinite',
+            },
+            keyframes: {
+              blink: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0' },
+              }
+            },
+            backgroundImage: {
+              'grid-pattern': "radial-gradient(circle, rgba(100, 100, 100, 0.1) 1px, transparent 1px)",
+            },
+            backgroundSize: {
+              'grid-pattern': '20px 20px',
+            }
+          },
+        },
+      }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      body {
+        margin: 0;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .bg-grid {
+        background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+        background-size: 24px 24px;
+        opacity: 0.05;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #30363d;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #58a6ff;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body class="bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark-muted antialiased transition-colors duration-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -4,80 +4,169 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>kutsenko.dev — About</title>
-  <meta name="description" content="About Andrey Kutsenko, current work, and contact info.">
+  <meta name="description" content="Background, focus, and contact information for Andrey Kutsenko.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark" class="about-page">
-  <header class="masthead">
-    <div class="identity">
-      <p class="prompt">$ about<span class="cursor"></span></p>
-      <p class="subline" data-i18n="about.subtitle">Automation engineer · LLM ops · Builder of SimpleProcess.</p>
-    </div>
-    <nav class="nav">
-      <a href="/" data-i18n="nav.home">Home</a>
-      <a href="/about.html" class="is-active" data-i18n="nav.about">About</a>
-      <a href="mailto:kutsenko@gmail.com" data-i18n="nav.contact">Contact</a>
-    </nav>
-    <div class="controls">
-      <button class="theme-toggle" type="button" data-action="toggle-theme">
-        <span class="theme-icon" aria-hidden="true">☾</span>
-        <span data-i18n="toggle.theme">Theme</span>
-      </button>
-      <div class="lang-toggle" role="group" aria-label="Language">
-        <button type="button" data-lang="en" class="is-active">EN</button>
-        <button type="button" data-lang="ru">RU</button>
+<body data-theme="dark" data-page="about">
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div class="sidebar-icon">
+          <span class="icon" data-lucide="terminal"></span>
+        </div>
+        <div class="sidebar-meta">
+          <p class="sidebar-title">kutsenko.dev</p>
+          <p class="sidebar-subline">$ about</p>
+        </div>
       </div>
-    </div>
-  </header>
 
-  <main class="about-content">
-    <section>
-      <h2 data-i18n="about.summary.heading">Summary</h2>
-      <p data-i18n="about.summary.body">
-        Experienced software engineer with fintech/banking roots (InfoIMAGE, BPS-Sberbank) and a track record of shipping automations across QA, data parsing, and multi-platform systems.
-      </p>
-      <ul>
-        <li data-i18n="about.summary.item1">Builds automation-first products (SimpleProcess.io) and applies AI/LLM agents to real workflows.</li>
-        <li data-i18n="about.summary.item2">Strong background in data processing, system optimization, QA automation, and Unix/Python tooling.</li>
-        <li data-i18n="about.summary.item3">Led engineering and operations teams in banking, improving KPIs and reducing operational risk.</li>
-      </ul>
-    </section>
+      <nav class="sidebar-nav">
+        <p class="nav-label">Active agents</p>
+        <a class="nav-link" href="/">
+          <span class="icon" data-lucide="activity"></span>
+          <span class="nav-text" data-i18n="nav.home">Home / Dashboard</span>
+        </a>
+        <a class="nav-link is-active" href="/about.html">
+          <span class="icon" data-lucide="user"></span>
+          <span class="nav-text" data-i18n="nav.about">About / Profile</span>
+          <span class="nav-indicator"></span>
+        </a>
+        <a class="nav-link" href="mailto:kutsenko@gmail.com">
+          <span class="icon" data-lucide="mail"></span>
+          <span class="nav-text" data-i18n="nav.contact">Contact Uplink</span>
+        </a>
+      </nav>
 
-    <section>
-      <h2 data-i18n="about.focus.heading">Current focus</h2>
-      <p data-i18n="about.focus.body1">
-        Running SimpleProcess.io — practical automations for outbound ops, enrichment, and AI/LLM-driven agents that tie into CRMs and ops stacks.
-      </p>
-      <p data-i18n="about.focus.body2">
-        Building a Telegram Outreach microservice (pet project) based on Telethon: multi-account messaging, response tracking, contact parsing, phone validation, CRM enrichment, and warm-up routines orchestrated with n8n + LLM agents.
-      </p>
-    </section>
+      <div class="sidebar-footer">
+        <div class="stat-card">
+          <div class="stat-row">
+            <span>CPU Load</span>
+            <strong>12%</strong>
+          </div>
+          <div class="stat-bar">
+            <span style="width: 12%"></span>
+          </div>
+          <div class="stat-row">
+            <span>Memory</span>
+            <strong>48%</strong>
+          </div>
+          <div class="stat-bar stat-bar--alt">
+            <span style="width: 48%"></span>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-    <section>
-      <h2 data-i18n="about.stack.heading">Stack & Interests</h2>
-      <ul>
-        <li data-i18n="about.stack.item1">Agents / evals / monitoring for LLM-powered systems</li>
-        <li data-i18n="about.stack.item2">Python, TypeScript, Rust tooling, Postgres/ClickHouse</li>
-        <li data-i18n="about.stack.item3">Cloudflare Workers, n8n, CRM/ops integrations</li>
-      </ul>
-    </section>
+    <main class="main-panel">
+      <header class="top-bar">
+        <div class="status-line">
+          <span class="status-pill">
+            <span class="status-dot"></span>
+            <span data-i18n="status.online">SYSTEM ONLINE</span>
+          </span>
+          <span class="build-id">SYS.VER.2025.11.21A</span>
+        </div>
+        <div class="top-controls">
+          <button class="chip" type="button" data-action="toggle-lang">
+            <span class="icon" data-lucide="globe"></span>
+            <span class="chip-text" data-lang-label>EN</span>
+          </button>
+          <button class="chip" type="button" data-action="toggle-theme">
+            <span class="icon" data-theme-icon data-lucide="moon"></span>
+            <span class="chip-text" data-theme-label>Dark</span>
+          </button>
+        </div>
+      </header>
 
-    <section>
-      <h2 data-i18n="about.contact.heading">Contact</h2>
-      <p>
-        <a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a> ·
-        <a href="https://linkedin.com/in/andreykutsenko" target="_blank" rel="noopener">LinkedIn</a> ·
-        <a href="https://t.me/kutsenko_dev" target="_blank" rel="noopener">Telegram</a>
-      </p>
-    </section>
-  </main>
+      <div class="scroll-region about-view">
+        <section class="hero-card">
+          <div>
+            <p class="eyebrow">$ about<span class="cursor"></span></p>
+            <h1 data-i18n="nav.about">About / Profile</h1>
+          </div>
+          <p class="hero-copy" data-i18n="about.subtitle">
+            Automation engineer · LLM ops · Builder of SimpleProcess.
+          </p>
+        </section>
 
-  <footer class="footer">
-    <p>© <span id="year"></span> Andrey Kutsenko</p>
-  </footer>
+        <div class="about-grid">
+          <section class="module">
+            <header class="module-head">
+              <span class="module-dot"></span>
+              <h2 data-i18n="about.summary.heading">Summary</h2>
+            </header>
+            <div class="module-body">
+              <p data-i18n="about.summary.body">
+                Experienced software engineer with fintech/banking roots (InfoIMAGE, BPS-Sberbank) and a track record of shipping automations across QA, data parsing, and multi-platform systems.
+              </p>
+              <ul class="module-list">
+                <li data-i18n="about.summary.item1"></li>
+                <li data-i18n="about.summary.item2"></li>
+                <li data-i18n="about.summary.item3"></li>
+              </ul>
+            </div>
+          </section>
 
-  <script src="script.js?v=20251121a"></script>
+          <section class="module">
+            <header class="module-head">
+              <span class="module-dot"></span>
+              <h2 data-i18n="about.focus.heading">Current focus</h2>
+            </header>
+            <div class="module-body">
+              <div class="focus-card" data-i18n="about.focus.body1"></div>
+              <div class="focus-card" data-i18n="about.focus.body2"></div>
+            </div>
+          </section>
+
+          <section class="module">
+            <header class="module-head">
+              <span class="module-dot"></span>
+              <h2 data-i18n="about.stack.heading">Stack & Interests</h2>
+            </header>
+            <div class="module-body stack-grid">
+              <div class="stack-chip" data-i18n="about.stack.item1"></div>
+              <div class="stack-chip" data-i18n="about.stack.item2"></div>
+              <div class="stack-chip" data-i18n="about.stack.item3"></div>
+            </div>
+          </section>
+
+          <section class="module">
+            <header class="module-head">
+              <span class="module-dot"></span>
+              <h2 data-i18n="about.contact.heading">Contact</h2>
+            </header>
+            <div class="module-body contact-grid">
+              <a class="contact-link" href="mailto:kutsenko@gmail.com">
+                <span class="icon" data-lucide="mail"></span>
+                <span>kutsenko@gmail.com</span>
+              </a>
+              <a class="contact-link" href="https://linkedin.com/in/andreykutsenko" target="_blank" rel="noopener">
+                <span class="icon" data-lucide="linkedin"></span>
+                <span>LinkedIn</span>
+              </a>
+              <a class="contact-link" href="https://t.me/kutsenko_dev" target="_blank" rel="noopener">
+                <span class="icon" data-lucide="send"></span>
+                <span>Telegram</span>
+              </a>
+            </div>
+          </section>
+        </div>
+
+        <footer class="footer">
+          <p>© <span id="year"></span> Andrey Kutsenko</p>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="script.js?v=20251126"></script>
 </body>
 </html>
 

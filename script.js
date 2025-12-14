@@ -1,9 +1,9 @@
 const i18n = {
   en: {
     "hero.tagline": "Software engineer building automation tools and AI agents.",
-    "nav.home": "Home",
-    "nav.about": "About",
-    "nav.contact": "Contact",
+    "nav.home": "Home / Dashboard",
+    "nav.about": "About / Profile",
+    "nav.contact": "Contact Uplink",
     "toggle.theme": "Theme",
     "about.subtitle": "Automation engineer · LLM ops · Builder of SimpleProcess.",
     "section.hn.tagline": "Top discussions from the front page",
@@ -31,12 +31,15 @@ const i18n = {
     "about.stack.item2": "Python, TypeScript, Rust tooling, Postgres/ClickHouse",
     "about.stack.item3": "Cloudflare Workers, n8n, CRM/ops integrations",
     "about.contact.heading": "Contact",
+    "status.loading": "INITIALIZING SYSTEM...",
+    "status.error": "CONNECTION FAILURE",
+    "status.online": "SYSTEM ONLINE",
   },
   ru: {
     "hero.tagline": "Инженер-программист, создающий автоматизацию и AI-агентов.",
-    "nav.home": "Главная",
-    "nav.about": "Обо мне",
-    "nav.contact": "Контакт",
+    "nav.home": "Главная / Дашборд",
+    "nav.about": "Обо мне / Профиль",
+    "nav.contact": "Связь",
     "toggle.theme": "Тема",
     "about.subtitle": "Инженер по автоматизации · LLM ops · Создатель SimpleProcess.",
     "section.hn.tagline": "Главные обсуждения с Hacker News",
@@ -51,7 +54,7 @@ const i18n = {
     "about.summary.item1":
       "Запускаю продукты с упором на автоматизацию (SimpleProcess.io) и применяю AI/LLM-агентов в реальных процессах.",
     "about.summary.item2":
-      "Сильен в обработке данных, оптимизации систем, QA-автоматизации и Unix/Python инструментах.",
+      "Силен в обработке данных, оптимизации систем, QA-автоматизации и Unix/Python инструментах.",
     "about.summary.item3":
       "Руководил инженерными и операционными командами в банке, повышая KPI и снижая риски.",
     "about.focus.heading": "Текущий фокус",
@@ -64,6 +67,9 @@ const i18n = {
     "about.stack.item2": "Python, TypeScript, Rust-инструменты, Postgres/ClickHouse",
     "about.stack.item3": "Cloudflare Workers, n8n, интеграции с CRM/оперейшнс",
     "about.contact.heading": "Связаться",
+    "status.loading": "ЗАГРУЗКА СИСТЕМЫ...",
+    "status.error": "ОШИБКА ПОДКЛЮЧЕНИЯ",
+    "status.online": "СИСТЕМА АКТИВНА",
   },
 };
 
@@ -79,11 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initLanguage();
   bindThemeToggle();
-  bindLanguageToggle();
+  bindLanguageControls();
   applyI18n();
+  refreshIcons();
 
-  const dashboard = document.querySelector("[data-dashboard]");
-  if (dashboard) {
+  if (document.querySelector("[data-dashboard]")) {
     loadDashboard();
   }
 });
@@ -102,7 +108,7 @@ function getPreferredTheme() {
 }
 
 function initTheme() {
-  document.body.dataset.theme = state.theme;
+  updateThemeUI();
 }
 
 function bindThemeToggle() {
@@ -110,16 +116,42 @@ function bindThemeToggle() {
   if (!toggle) return;
   toggle.addEventListener("click", () => {
     state.theme = state.theme === "dark" ? "light" : "dark";
-    document.body.dataset.theme = state.theme;
     localStorage.setItem("theme", state.theme);
+    updateThemeUI();
   });
+}
+
+function updateThemeUI() {
+  document.body.dataset.theme = state.theme;
+  const root = document.documentElement;
+  root.classList.toggle("dark", state.theme === "dark");
+  root.classList.toggle("light", state.theme === "light");
+
+  const label = document.querySelector("[data-theme-label]");
+  if (label) {
+    label.textContent = state.theme === "dark" ? "Dark" : "Light";
+  }
+
+  const icon = document.querySelector("[data-theme-icon]");
+  if (icon) {
+    icon.setAttribute("data-lucide", state.theme === "dark" ? "moon" : "sun");
+  }
+
+  refreshIcons();
 }
 
 function initLanguage() {
   setLanguage(state.lang);
 }
 
-function bindLanguageToggle() {
+function bindLanguageControls() {
+  const toggle = document.querySelector("[data-action='toggle-lang']");
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      setLanguage(state.lang === "en" ? "ru" : "en");
+    });
+  }
+
   document.querySelectorAll("[data-lang]").forEach((btn) => {
     btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
   });
@@ -129,11 +161,17 @@ function setLanguage(lang) {
   state.lang = lang || "en";
   localStorage.setItem("lang", state.lang);
   document.documentElement.lang = state.lang;
-  document
-    .querySelectorAll("[data-lang]")
-    .forEach((btn) =>
-      btn.classList.toggle("is-active", btn.dataset.lang === state.lang)
-    );
+  state.translationCache = {};
+
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.lang === state.lang);
+  });
+
+  const label = document.querySelector("[data-lang-label]");
+  if (label) {
+    label.textContent = state.lang.toUpperCase();
+  }
+
   applyI18n();
   if (state.data) {
     renderDashboard();
@@ -144,29 +182,27 @@ function applyI18n() {
   const dict = i18n[state.lang] || i18n.en;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
-    if (dict[key]) {
-      if (node.dataset.i18nHtml === "true") {
-        node.innerHTML = dict[key];
-      } else {
-        node.textContent = dict[key];
-      }
+    if (!key || !dict[key]) return;
+    if (node.dataset.i18nHtml === "true") {
+      node.innerHTML = dict[key];
+    } else {
+      node.textContent = dict[key];
     }
   });
 }
 
 async function loadDashboard() {
-  setStatus("Loading feed…");
+  setStatus(i18n[state.lang]?.["status.loading"] || "Loading…");
   try {
     const res = await fetch("/api/homepage");
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
-    const payload = await res.json();
-    state.data = payload;
+    state.data = await res.json();
     state.translationCache = {};
     renderDashboard();
     setStatus("");
   } catch (error) {
     console.error("Failed to load feed:", error);
-    setStatus("Failed to load data. Refresh or try again later.", true);
+    setStatus(i18n[state.lang]?.["status.error"] || "Failed to load data.", true);
   }
 }
 
@@ -174,45 +210,65 @@ function setStatus(message, isError = false) {
   const el = document.getElementById("feed-status");
   if (!el) return;
   el.textContent = message;
-  el.style.color = isError ? "#ff7b72" : "var(--muted)";
+  el.style.color = isError ? "#ff7b72" : "rgba(255,255,255,0.5)";
 }
 
 async function renderDashboard() {
-  const updatedAt = state.data?.updatedAt
-    ? formatDate(state.data.updatedAt)
-    : "";
-  updateMeta("hn-updated", updatedAt);
-  updateMeta("gh-updated", updatedAt);
-  updateMeta("llm-updated", updatedAt);
-  updateMeta("lw-updated", updatedAt);
+  const timestamp = state.data?.updatedAt ? formatDate(state.data.updatedAt) : "";
+  const syncNode = document.getElementById("last-updated");
+  if (syncNode) {
+    syncNode.textContent = timestamp ? `Last synced ${timestamp}` : "";
+  }
+
+  updateMeta("hn-updated", timestamp);
+  updateMeta("gh-updated", timestamp);
+  updateMeta("llm-updated", timestamp);
+  updateMeta("lw-updated", timestamp);
 
   const sections = [
-    { key: "hn", domId: "hn", items: state.data?.hackerNews ?? [], fields: ["title"] },
+    {
+      key: "hn",
+      target: "#feed-hn",
+      fields: ["title"],
+      items: state.data?.hackerNews ?? [],
+      limit: 5,
+      renderer: createHnCard,
+    },
     {
       key: "github",
-      domId: "gh",
-      items: state.data?.github ?? [],
+      target: "#feed-github",
       fields: ["name", "description"],
+      items: state.data?.github ?? [],
+      limit: 4,
+      renderer: createGithubCard,
     },
-    { key: "llm", domId: "llm", items: state.data?.llmNews ?? [], fields: ["title"] },
+    {
+      key: "llm",
+      target: "#feed-llm",
+      fields: ["title"],
+      items: state.data?.llmNews ?? [],
+      limit: 4,
+      renderer: createLlmCard,
+    },
     {
       key: "lesswrong",
-      domId: "lesswrong",
-      items: state.data?.lessWrong ?? [],
+      target: "#feed-lesswrong",
       fields: ["title", "summary"],
+      items: state.data?.lessWrong ?? [],
+      limit: 4,
+      renderer: createLesswrongCard,
     },
   ];
 
-  for (const entry of sections) {
+  for (const section of sections) {
     try {
-      await renderSection(entry.key, entry.items, entry.fields, entry.domId);
+      await renderFeedSection(section);
     } catch (error) {
-      console.error(`Failed to render ${entry.key} section`, error);
-      const container = document.getElementById(
-        `${entry.domId || entry.key}-list`
-      );
+      console.error(`Failed to render ${section.key}:`, error);
+      const container = document.querySelector(section.target);
       if (container) {
-        container.innerHTML = `<li class="card"><p class="card-title">Unable to load section.</p><p class="card-meta">${error.message}</p></li>`;
+        container.innerHTML = "";
+        container.appendChild(createErrorCard(error));
       }
     }
   }
@@ -220,50 +276,62 @@ async function renderDashboard() {
 
 function updateMeta(id, text) {
   const node = document.getElementById(id);
-  if (node) node.textContent = text ? `Updated ${text}` : "";
+  if (node) {
+    node.textContent = text || "";
+  }
 }
 
-async function renderSection(section, items, translateFields = [], domId) {
-  const container = document.getElementById(`${domId || section}-list`);
+async function renderFeedSection({ key, target, items, fields, limit, renderer }) {
+  const container = document.querySelector(target);
   if (!container) return;
   container.innerHTML = "";
 
   if (!items.length) {
-    container.innerHTML = `<li class="card"><p class="card-title">No data yet.</p><p class="card-meta">Worker cache is still warming up.</p></li>`;
+    container.appendChild(createEmptyCard());
     return;
   }
 
-  const limitMap = { hn: 8, github: 8, llm: 8, lesswrong: 6 };
-  const trimmed = items.slice(0, limitMap[section] || 6);
-
-  const localized = await localizeItems(section, trimmed, translateFields);
+  const trimmed = items.slice(0, limit);
+  const localized = await localizeItems(key, trimmed, fields);
   localized.forEach((item) => {
-    const card = buildCard(section, item);
-    container.appendChild(card);
+    container.appendChild(renderer(item));
   });
+}
+
+function createEmptyCard() {
+  const node = document.createElement("div");
+  node.className = "feed-card";
+  node.innerHTML = `<p class="feed-card__title">No data yet.</p><p class="feed-card__meta">Worker cache is still warming up.</p>`;
+  return node;
+}
+
+function createErrorCard(error) {
+  const node = document.createElement("div");
+  node.className = "feed-card";
+  node.innerHTML = `<p class="feed-card__title">Unable to load.</p><p class="feed-card__meta">${error.message || "Unexpected error"}</p>`;
+  return node;
 }
 
 async function localizeItems(section, items, fields) {
   if (state.lang === "en" || !fields.length) {
     return items;
   }
+
   const cacheKey = `${section}:${state.lang}`;
   if (state.translationCache[cacheKey]) {
     return state.translationCache[cacheKey];
   }
 
-  const translatedFields = {};
+  const translated = {};
   for (const field of fields) {
     const texts = items.map((item) => item[field] || "");
-    translatedFields[field] = await requestTranslations(texts);
+    translated[field] = await requestTranslations(texts);
   }
 
   const localized = items.map((item, idx) => {
     const clone = { ...item };
     fields.forEach((field) => {
-      if (translatedFields[field] && translatedFields[field][idx]) {
-        clone[field] = translatedFields[field][idx];
-      }
+      clone[field] = translated[field]?.[idx] ?? clone[field];
     });
     return clone;
   });
@@ -292,56 +360,91 @@ async function requestTranslations(texts) {
   }
 }
 
-function buildCard(section, item) {
-  const li = document.createElement("li");
-  li.className = "card";
-  const title = document.createElement("a");
-  title.className = "card-title";
-  title.href = item.url;
-  title.target = "_blank";
-  title.rel = "noopener";
+function createHnCard(item) {
+  const card = document.createElement("a");
+  card.className = "feed-card";
+  card.href = item.url || "#";
+  card.target = "_blank";
+  card.rel = "noopener";
 
-  if (section === "github") {
-    title.textContent = item.name;
-    const desc = document.createElement("p");
-    desc.className = "card-body";
-    desc.textContent = item.description || "No description provided.";
-    const meta = document.createElement("p");
-    meta.className = "card-meta";
-    meta.textContent = `★ ${formatNumber(item.stars)} • ${item.language || "n/a"} • ${formatDate(item.updatedAt)}`;
-    li.append(title, desc, meta);
-    return li;
-  }
+  const title = document.createElement("p");
+  title.className = "feed-card__title";
+  title.textContent = item.title || "Untitled thread";
 
-  if (section === "lesswrong") {
-    title.textContent = item.title;
-    const summary = document.createElement("p");
-    summary.className = "card-body";
-    summary.classList.add("is-clamped");
-    summary.textContent = item.summary || "";
-    const meta = document.createElement("p");
-    meta.className = "card-meta";
-    meta.textContent = item.publishedAt ? formatDate(item.publishedAt) : "";
-    li.append(title, summary, meta);
-    return li;
-  }
-
-  if (section === "llm") {
-    title.textContent = item.title;
-    const meta = document.createElement("p");
-    meta.className = "card-meta";
-    meta.textContent = `${formatNumber(item.score)} points • ${formatNumber(item.comments)} comments`;
-    li.append(title, meta);
-    return li;
-  }
-
-  // default: Hacker News
-  title.textContent = item.title;
   const meta = document.createElement("p");
-  meta.className = "card-meta";
-  meta.textContent = `${formatNumber(item.points)} points • ${formatNumber(item.comments)} comments • ${item.author ?? "unknown"}`;
-  li.append(title, meta);
-  return li;
+  meta.className = "feed-card__meta";
+  meta.textContent = `${formatNumber(item.points)} pts :: ${formatNumber(item.comments)} cmts :: ${item.author ?? "unknown"}`;
+
+  card.append(title, meta);
+  return card;
+}
+
+function createGithubCard(item) {
+  const card = document.createElement("a");
+  card.className = "feed-card github-card";
+  card.href = item.url || "#";
+  card.target = "_blank";
+  card.rel = "noopener";
+
+  const title = document.createElement("p");
+  title.className = "feed-card__title";
+  title.textContent = item.name || "Unnamed repo";
+
+  const body = document.createElement("p");
+  body.className = "feed-card__body";
+  body.textContent = item.description || "No description provided.";
+
+  const meta = document.createElement("p");
+  meta.className = "feed-card__meta";
+  meta.textContent = `★ ${formatNumber(item.stars)} • ${item.language || "n/a"} • ${formatDate(item.updatedAt)}`;
+
+  card.append(title, body, meta);
+  return card;
+}
+
+function createLlmCard(item) {
+  const card = document.createElement("a");
+  card.className = "feed-card";
+  card.href = item.url || "#";
+  card.target = "_blank";
+  card.rel = "noopener";
+
+  const title = document.createElement("p");
+  title.className = "feed-card__title";
+  title.textContent = item.title || "Untitled thread";
+
+  const meta = document.createElement("p");
+  meta.className = "feed-card__meta";
+  meta.textContent = `${formatNumber(item.score)} upvotes :: ${formatNumber(item.comments)} comments`;
+
+  card.append(title, meta);
+  return card;
+}
+
+function createLesswrongCard(item) {
+  const card = document.createElement("a");
+  card.className = "feed-card";
+  card.href = item.url || "#";
+  card.target = "_blank";
+  card.rel = "noopener";
+
+  const title = document.createElement("p");
+  title.className = "feed-card__title";
+  title.textContent = item.title || "Untitled essay";
+
+  if (item.summary) {
+    const body = document.createElement("p");
+    body.className = "feed-card__body";
+    body.textContent = item.summary;
+    card.appendChild(body);
+  }
+
+  const meta = document.createElement("p");
+  meta.className = "feed-card__meta";
+  meta.textContent = item.publishedAt ? formatDate(item.publishedAt) : "—";
+
+  card.appendChild(meta);
+  return card;
 }
 
 function formatNumber(value) {
@@ -352,8 +455,16 @@ function formatNumber(value) {
 function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
+}
+
+function refreshIcons() {
+  if (window.lucide?.createIcons) {
+    window.lucide.createIcons();
+  }
 }
