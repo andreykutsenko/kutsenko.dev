@@ -5,7 +5,7 @@ import { I18N } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
-import { Moon, Sun, Wifi } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 function App() {
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) || 'dark');
@@ -63,20 +63,9 @@ function App() {
         
         {/* Minimal Header */}
         <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-border-light dark:border-border-dark bg-bg-light/95 dark:bg-bg-dark/95 backdrop-blur-sm z-10 shrink-0">
-           <div className="flex items-center gap-3 text-[10px] md:text-xs font-mono text-fg-dark-muted">
-              {/* Status indicator */}
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-accent rounded-full"></div>
-                <span className="hidden sm:inline">OK</span>
-              </div>
-              
-              <span className="hidden sm:inline opacity-30">│</span>
-              
-              {/* Uptime */}
-              <div className="hidden sm:flex items-center gap-1.5">
-                <Wifi size={10} />
-                <span>{formatUptime(uptime)}</span>
-              </div>
+           <div className="flex items-center gap-2 text-[10px] md:text-xs font-mono text-fg-dark-muted">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span className="hidden sm:inline opacity-60">{formatUptime(uptime)}</span>
            </div>
 
            <div className="flex items-center gap-2 md:gap-3">

@@ -153,14 +153,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
 
   const displayData = translatedData || data;
 
-  // Format time
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false 
-    });
+  // Format relative time (e.g., "2 min ago")
+  const formatRelativeTime = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    
+    if (diffMin < 1) return 'just now';
+    if (diffMin === 1) return '1 min ago';
+    return `${diffMin} min ago`;
   };
 
   if (loading || !displayData) {
@@ -198,8 +199,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
         {lastUpdate && (
           <div className="flex items-center gap-1.5 text-fg-dark-muted/70">
             <Clock size={10} />
-            <span className="hidden sm:inline">{t('status.synced')}</span>
-            <span>{formatTime(lastUpdate)}</span>
+            <span>{formatRelativeTime(lastUpdate)}</span>
           </div>
         )}
       </div>
@@ -330,23 +330,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
         </div>
       </div>
 
-      {/* Footer status bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[9px] md:text-[10px] font-mono text-fg-dark-muted/60 border-t border-border-light dark:border-border-dark pt-4 mt-6">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-            {t('status.online')}
-          </span>
-          <span className="hidden sm:inline">│</span>
-          <span className="hidden sm:inline">PID: {Math.floor(Math.random() * 9000) + 1000}</span>
-          <span className="hidden md:inline">│</span>
-          <span className="hidden md:inline">MEM: 48MB</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Clock size={10} />
-          <span>{t('status.lastSync')}: {lastUpdate ? formatTime(lastUpdate) : '--:--:--'}</span>
-        </div>
-      </div>
     </div>
   );
 };
+

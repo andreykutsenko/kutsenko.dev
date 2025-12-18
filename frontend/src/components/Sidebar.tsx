@@ -50,11 +50,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ t }) => {
         </a>
       </nav>
 
-      {/* Footer / System Status */}
+      {/* Footer */}
       <div className="p-3 lg:p-4 border-t border-border-light dark:border-border-dark">
-         <div className="flex items-center justify-center lg:justify-start gap-2 text-[9px] text-fg-dark-muted/60 font-mono">
-            <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
-            <span className="hidden lg:block">sys.ok</span>
+         <div className="flex items-center justify-center lg:justify-start text-[9px] text-fg-dark-muted/40 font-mono">
+            <span className="hidden lg:block">v1.0</span>
          </div>
       </div>
     </aside>
