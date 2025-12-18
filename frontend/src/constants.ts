@@ -47,9 +47,11 @@ export const I18N: I18nDict = {
     "about.contact.heading": "Contact",
     
     // Status
-    "status.loading": "INITIALIZING SYSTEM...",
+    "status.loading": "FETCHING DATA...",
     "status.error": "CONNECTION FAILURE",
-    "status.online": "SYSTEM ONLINE",
+    "status.online": "SYS OK",
+    "status.synced": "synced",
+    "status.lastSync": "Last sync",
     "agent.status.active": "ACTIVE",
     "agent.status.idle": "IDLE",
   },
@@ -99,9 +101,11 @@ export const I18N: I18nDict = {
     "about.contact.heading": "Связаться",
     
     // Status
-    "status.loading": "ЗАГРУЗКА СИСТЕМЫ...",
+    "status.loading": "ЗАГРУЗКА ДАННЫХ...",
     "status.error": "ОШИБКА ПОДКЛЮЧЕНИЯ",
-    "status.online": "СИСТЕМА АКТИВНА",
+    "status.online": "СИСТЕМА ОК",
+    "status.synced": "синхр.",
+    "status.lastSync": "Обновлено",
     "agent.status.active": "АКТИВЕН",
     "agent.status.idle": "ОЖИДАНИЕ",
   },
