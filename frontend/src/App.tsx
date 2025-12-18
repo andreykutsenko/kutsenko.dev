@@ -5,7 +5,7 @@ import { I18N } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
-import { Moon, Sun, Terminal, Wifi } from 'lucide-react';
+import { Moon, Sun, Wifi } from 'lucide-react';
 
 function App() {
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) || 'dark');
@@ -55,58 +55,40 @@ function App() {
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 pointer-events-none bg-grid opacity-10 dark:opacity-5 z-0"></div>
 
-      {/* Scanlines effect (subtle) */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-[0.02] dark:opacity-[0.03]" style={{
-        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px)'
-      }}></div>
-
       {/* Left Sidebar */}
       <Sidebar theme={theme} lang={lang} t={t} />
 
       {/* Main Viewport */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden z-10">
         
-        {/* Terminal-style Header */}
+        {/* Minimal Header */}
         <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-border-light dark:border-border-dark bg-bg-light/95 dark:bg-bg-dark/95 backdrop-blur-sm z-10 shrink-0">
-           <div className="flex items-center gap-3 text-[10px] md:text-xs font-mono">
+           <div className="flex items-center gap-3 text-[10px] md:text-xs font-mono text-fg-dark-muted">
               {/* Status indicator */}
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="w-2 h-2 bg-accent rounded-full"></div>
-                  <div className="w-2 h-2 bg-accent rounded-full absolute inset-0 animate-ping opacity-75"></div>
-                </div>
-                <span className="text-accent font-bold hidden sm:inline">ONLINE</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-accent rounded-full"></div>
+                <span className="hidden sm:inline">OK</span>
               </div>
               
-              <span className="text-fg-dark-muted hidden md:inline">│</span>
-              
-              {/* Terminal prompt */}
-              <div className="hidden md:flex items-center gap-1 text-fg-dark-muted">
-                <Terminal size={12} />
-                <span className="text-accent-light dark:text-accent">$</span>
-                <span>kutsenko.dev</span>
-                <span className="animate-blink">█</span>
-              </div>
-              
-              <span className="text-fg-dark-muted hidden lg:inline">│</span>
+              <span className="hidden sm:inline opacity-30">│</span>
               
               {/* Uptime */}
-              <div className="hidden lg:flex items-center gap-1.5 text-fg-dark-muted">
+              <div className="hidden sm:flex items-center gap-1.5">
                 <Wifi size={10} />
-                <span>uptime: {formatUptime(uptime)}</span>
+                <span>{formatUptime(uptime)}</span>
               </div>
            </div>
 
-           <div className="flex items-center gap-2 md:gap-4">
+           <div className="flex items-center gap-2 md:gap-3">
              <button 
                 onClick={toggleLang}
-                className="text-[10px] md:text-xs font-bold hover:text-accent-light dark:hover:text-accent transition-colors uppercase px-2 py-1 rounded hover:bg-white/5"
+                className="text-[10px] md:text-xs font-mono hover:text-accent-light dark:hover:text-accent transition-colors uppercase px-2 py-1 rounded hover:bg-white/5"
               >
                 [{lang}]
               </button>
               <button 
                 onClick={toggleTheme}
-                className="text-[10px] md:text-xs font-bold hover:text-accent-light dark:hover:text-accent transition-colors p-1.5 rounded hover:bg-white/5"
+                className="hover:text-accent-light dark:hover:text-accent transition-colors p-1.5 rounded hover:bg-white/5"
                 aria-label="Toggle Theme"
               >
                 {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}

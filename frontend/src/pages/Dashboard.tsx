@@ -194,7 +194,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
           <span className="text-accent">❯</span>
           <span className="text-accent-light dark:text-term-cyan">~</span>
           <span>cat /var/feeds/* | head -n 20</span>
-          <span className="hidden sm:inline text-accent animate-blink">█</span>
         </div>
         {lastUpdate && (
           <div className="flex items-center gap-1.5 text-fg-dark-muted/70">

@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { Lang, Theme } from '../types';
-import { SquareTerminal, ExternalLink, Home, User, Mail } from 'lucide-react';
+import { SquareTerminal, Home, User, Mail } from 'lucide-react';
 
 interface SidebarProps {
   theme: Theme;
@@ -10,45 +10,51 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ t }) => {
   return (
-    <aside className="w-14 lg:w-60 border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-bg-dark flex flex-col justify-between z-20 shadow-xl shadow-black/5 dark:shadow-none">
+    <aside className="w-14 lg:w-56 border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-bg-dark flex flex-col justify-between z-20 shadow-xl shadow-black/5 dark:shadow-none">
       
-      {/* Identity Block */}
-      <div className="h-16 flex items-center px-4 lg:px-6 border-b border-border-light dark:border-border-dark">
-          <div className="hidden lg:flex items-center gap-2 font-bold text-sm tracking-tight text-fg-light dark:text-fg-dark">
-             <span className="text-accent-light dark:text-accent">$</span>
-             <span>root@kutsenko</span>
-             <span className="animate-blink bg-fg-light dark:bg-accent w-2 h-4 block ml-1"></span>
+      {/* Identity Block - Terminal prompt */}
+      <div className="h-14 flex items-center px-3 lg:px-4 border-b border-border-light dark:border-border-dark">
+          <div className="hidden lg:flex items-center gap-1.5 font-mono text-xs text-fg-light dark:text-fg-dark">
+             <span className="text-accent">$</span>
+             <span className="opacity-70">root@kutsenko</span>
+             <span className="animate-blink text-accent">█</span>
           </div>
           <div className="lg:hidden w-full flex justify-center text-fg-light dark:text-fg-dark">
-             <SquareTerminal size={22} />
+             <SquareTerminal size={20} />
           </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 flex flex-col gap-1 px-0 lg:px-0">
-        <div className="px-4 lg:px-6 mb-2 hidden lg:block text-[10px] uppercase font-bold text-fg-dark-muted opacity-50 tracking-wider">
-           Explorer
+      <nav className="flex-1 py-4 flex flex-col">
+        {/* Section header */}
+        <div className="px-3 lg:px-4 mb-2 hidden lg:block text-[9px] uppercase font-mono text-fg-dark-muted/50 tracking-wider">
+           drwxr-xr-x ./
         </div>
-        <NavItem to="/" label={t('nav.home')} icon={<Home size={18} />} />
-        <NavItem to="/about" label={t('nav.about')} icon={<User size={18} />} />
         
-        <div className="my-6 border-t border-border-light dark:border-border-dark mx-4 opacity-50"></div>
+        <NavItem to="/" label={t('nav.home')} icon={<Home size={16} />} shortLabel="~" />
+        <NavItem to="/about" label={t('nav.about')} icon={<User size={16} />} shortLabel="?" />
         
-        <div className="px-4 lg:px-6 mb-2 hidden lg:block text-[10px] uppercase font-bold text-fg-dark-muted opacity-50 tracking-wider">
-           External
+        <div className="my-4 border-t border-border-light dark:border-border-dark mx-3 lg:mx-4 opacity-30"></div>
+        
+        {/* External links header */}
+        <div className="px-3 lg:px-4 mb-2 hidden lg:block text-[9px] uppercase font-mono text-fg-dark-muted/50 tracking-wider">
+           lrwxr-xr-x @
         </div>
-        <a href="mailto:kutsenko@gmail.com" className="relative flex items-center justify-center lg:justify-between px-4 lg:px-6 py-2.5 text-xs text-fg-dark-muted hover:text-fg-light dark:hover:text-fg-dark transition-colors group border-l-2 border-transparent hover:border-accent-light dark:hover:border-accent hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-            <Mail size={18} className="lg:hidden" />
-            <span className="hidden lg:block font-medium">{t('nav.contact')}</span>
-            <ExternalLink size={14} className="hidden lg:block opacity-50 group-hover:opacity-100" />
+        
+        <a 
+          href="mailto:kutsenko@gmail.com" 
+          className="flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-2.5 text-xs text-fg-dark-muted hover:text-accent-light dark:hover:text-accent transition-colors group"
+        >
+          <Mail size={16} />
+          <span className="hidden lg:block font-mono">{t('nav.contact')}</span>
         </a>
       </nav>
 
       {/* Footer / System Status */}
-      <div className="p-4 lg:p-6 border-t border-border-light dark:border-border-dark">
-         <div className="flex items-center justify-center lg:justify-start gap-2 text-[10px] text-fg-dark-muted font-mono opacity-80">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-            <div className="hidden lg:block">ONLINE :: 12ms</div>
+      <div className="p-3 lg:p-4 border-t border-border-light dark:border-border-dark">
+         <div className="flex items-center justify-center lg:justify-start gap-2 text-[9px] text-fg-dark-muted/60 font-mono">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
+            <span className="hidden lg:block">sys.ok</span>
          </div>
       </div>
     </aside>
@@ -59,21 +65,29 @@ interface NavItemProps {
   to: string;
   label: string;
   icon: React.ReactNode;
+  shortLabel: string;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, label, icon }) => (
+const NavItem: React.FC<NavItemProps> = ({ to, label, icon, shortLabel }) => (
   <NavLink 
     to={to} 
     className={({ isActive }) => 
-      `relative flex items-center justify-center lg:justify-between px-4 lg:px-6 py-2.5 transition-all text-xs font-medium group border-l-2 ${
+      `flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-2.5 transition-all text-xs font-mono group ${
         isActive 
-          ? 'bg-slate-100 dark:bg-white/5 text-fg-light dark:text-fg-dark border-accent-light dark:border-accent' 
-          : 'border-transparent text-slate-500 dark:text-fg-dark-muted hover:text-fg-light dark:hover:text-fg-dark hover:bg-slate-50 dark:hover:bg-white/[0.02]'
+          ? 'text-accent-light dark:text-accent bg-accent/5' 
+          : 'text-fg-dark-muted hover:text-fg-light dark:hover:text-fg-dark hover:bg-white/5'
       }`
     }
   >
-    <span className="lg:hidden">{icon}</span>
-    <span className="hidden lg:block">{label}</span>
-    <span className="hidden lg:block opacity-30 font-mono text-[10px]">~</span>
+    {({ isActive }) => (
+      <>
+        <span className="lg:hidden">{icon}</span>
+        <span className="hidden lg:flex items-center gap-2">
+          <span className={isActive ? 'text-accent' : 'text-fg-dark-muted/50'}>{'>'}</span>
+          <span>{label}</span>
+        </span>
+        <span className="hidden lg:block ml-auto text-[10px] opacity-30">{shortLabel}</span>
+      </>
+    )}
   </NavLink>
 );
