@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchDashboardData } from '../services/api';
+import { fetchDashboardData, fetchTranslations } from '../services/api';
 import { DashboardData, Lang } from '../types';
 import { GitFork, Star, Terminal, Cpu, BookOpen, Activity, Globe, Clock } from 'lucide-react';
 
@@ -77,9 +77,10 @@ const formatRelativeTime = (date: Date) => {
   return `${Math.floor(diffHours / 24)}d ago`;
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [translatedData, setTranslatedData] = useState<DashboardData | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [, setTick] = useState(0); // Force re-render for relative time updates
 
@@ -100,9 +101,47 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Translate ALL sections when language changes
+  useEffect(() => {
+    if (!data) return;
+    if (lang === 'en') {
+      setTranslatedData(data);
+      return;
+    }
+    
+    const translateAllSections = async () => {
+      const newData = JSON.parse(JSON.stringify(data)) as DashboardData;
+      
+      // Collect all texts to translate
+      const allTexts: string[] = [
+        ...newData.hackerNews.map(i => i.title || ''),
+        ...newData.github.map(i => i.description || ''),
+        ...newData.llmNews.map(i => i.title || ''),
+        ...newData.lessWrong.map(i => i.title || ''),
+        ...newData.lessWrong.map(i => i.summary || ''),
+      ];
+      
+      // Translate in one batch
+      const translated = await fetchTranslations(allTexts, lang);
+      
+      // Distribute translations back
+      let idx = 0;
+      newData.hackerNews.forEach((item) => { item.title = translated[idx++]; });
+      newData.github.forEach((item) => { item.description = translated[idx++]; });
+      newData.llmNews.forEach((item) => { item.title = translated[idx++]; });
+      newData.lessWrong.forEach((item) => { item.title = translated[idx++]; });
+      newData.lessWrong.forEach((item) => { item.summary = translated[idx++]; });
+      
+      setTranslatedData(newData);
+    };
+    
+    translateAllSections();
+  }, [data, lang]);
+
+  const displayData = translatedData || data;
   const syncTime = lastUpdate ? formatRelativeTime(lastUpdate) : undefined;
 
-  if (loading || !data) {
+  if (loading || !displayData) {
     return (
       <div className="h-[70vh] flex flex-col items-center justify-center text-fg-dark-muted gap-6">
          <div className="w-16 h-1 border border-border-dark overflow-hidden rounded-full">
@@ -120,7 +159,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         <div className="h-[450px]">
             <IDETab title="hn_monitor" path="hacker_news.log" icon={<Terminal size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-4">
-                    {data.hackerNews.map((item, idx) => (
+                    {displayData.hackerNews.map((item, idx) => (
                         <div key={idx} className="group flex gap-4 hover:bg-white/[0.02] p-2 -mx-2 rounded transition-colors border-l border-transparent hover:border-accent/20">
                             <span className="text-fg-dark-muted opacity-30 text-[10px] pt-1">{(idx + 1).toString().padStart(2, '0')}</span>
                             <div className="flex-1 min-w-0">
@@ -143,7 +182,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         <div className="h-[450px]">
             <IDETab title="git_monitor" path="github_trending.sh" icon={<GitFork size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-3">
-                    {data.github.map((item, idx) => (
+                    {displayData.github.map((item, idx) => (
                         <div key={idx} className="p-3 border border-border-light dark:border-border-dark bg-slate-50 dark:bg-white/[0.01] hover:border-accent/30 rounded group">
                             <div className="flex justify-between items-center mb-1">
                                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-term-blue font-bold hover:underline truncate">
@@ -170,7 +209,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         <div className="h-[400px]">
             <IDETab title="neural_feed" path="llm_watch.stream" icon={<Cpu size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-3">
-                    {data.llmNews.map((item, idx) => (
+                    {displayData.llmNews.map((item, idx) => (
                         <div key={idx} className="flex items-start gap-3 group">
                             <span className="text-accent shrink-0 pt-0.5 opacity-50 select-none">❯</span>
                             <div className="flex-1">
@@ -193,7 +232,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         <div className="h-[400px]">
             <IDETab title="rational_db" path="essays.md" icon={<BookOpen size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-6">
-                    {data.lessWrong.map((item, idx) => (
+                    {displayData.lessWrong.map((item, idx) => (
                         <div key={idx} className="relative pl-5 group cursor-pointer">
                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent/10 group-hover:bg-accent transition-all"></div>
                             <a href={item.url} target="_blank" rel="noopener noreferrer">
