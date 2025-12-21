@@ -111,7 +111,8 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({ lang, t })
     fetchDashboardData().then(fetched => {
       setData(fetched);
       setLoading(false);
-      setLastUpdate(new Date());
+      // Use updatedAt from API (when cron ran), not page load time
+      setLastUpdate(fetched.updatedAt ? new Date(fetched.updatedAt) : new Date());
     });
   }, []);
 
@@ -162,15 +163,19 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({ lang, t })
 
   const displayData = translatedData || data;
 
-  // Format relative time (e.g., "2 min ago")
+  // Format relative time (e.g., "10 min ago", "1h ago")
   const formatRelativeTime = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMin / 60);
     
     if (diffMin < 1) return 'just now';
     if (diffMin === 1) return '1 min ago';
-    return `${diffMin} min ago`;
+    if (diffMin < 60) return `${diffMin} min ago`;
+    if (diffHours === 1) return '1h ago';
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${Math.floor(diffHours / 24)}d ago`;
   };
 
   if (loading || !displayData) {

@@ -61,18 +61,20 @@ const IDETab: React.FC<IDETabProps> = ({ title, path, children, icon, footerStat
   </div>
 );
 
-// Format relative time (e.g., "just now", "2m ago")
+// Format relative time (e.g., "just now", "10m ago", "1h ago")
 const formatRelativeTime = (date: Date) => {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMin / 60);
   
-  if (diffSec < 10) return 'just now';
-  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffSec < 60) return 'just now';
   if (diffMin === 1) return '1m ago';
   if (diffMin < 60) return `${diffMin}m ago`;
-  return `${Math.floor(diffMin / 60)}h ago`;
+  if (diffHours === 1) return '1h ago';
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${Math.floor(diffHours / 24)}d ago`;
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
@@ -85,7 +87,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
     fetchDashboardData().then(fetched => {
       setData(fetched);
       setLoading(false);
-      setLastUpdate(new Date());
+      // Use updatedAt from API (when cron ran), not page load time
+      setLastUpdate(fetched.updatedAt ? new Date(fetched.updatedAt) : new Date());
     });
   }, []);
 
