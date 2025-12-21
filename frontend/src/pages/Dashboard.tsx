@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchDashboardData } from '../services/api';
 import { DashboardData, Lang } from '../types';
-import { GitFork, Star, Terminal, Cpu, BookOpen, Activity, Globe } from 'lucide-react';
+import { GitFork, Star, Terminal, Cpu, BookOpen, Activity, Globe, Clock } from 'lucide-react';
 
 interface DashboardProps {
   lang: Lang;
@@ -14,9 +14,10 @@ interface IDETabProps {
   children: React.ReactNode;
   icon?: React.ReactNode;
   footerStatus?: string;
+  lastSync?: string;
 }
 
-const IDETab: React.FC<IDETabProps> = ({ title, path, children, icon, footerStatus }) => (
+const IDETab: React.FC<IDETabProps> = ({ title, path, children, icon, footerStatus, lastSync }) => (
   <div className="border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark flex flex-col h-full rounded shadow-xl transition-all hover:border-accent/40">
     {/* Tab Header */}
     <div className="flex bg-slate-100 dark:bg-[#0d1117] border-b border-border-light dark:border-border-dark">
@@ -44,27 +45,59 @@ const IDETab: React.FC<IDETabProps> = ({ title, path, children, icon, footerStat
       {children}
     </div>
 
-    {/* Footer */}
+    {/* Footer with sync status */}
     <div className="px-3 py-1 bg-slate-100 dark:bg-[#0d1117] border-t border-border-light dark:border-border-dark flex justify-between items-center text-[9px] font-mono text-fg-dark-muted">
        <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 text-accent"><Activity size={10} /> {footerStatus || 'IDLE'}</span>
           <span className="hidden sm:flex items-center gap-1"><Globe size={10} /> 127.0.0.1</span>
        </div>
-       <div className="opacity-40 uppercase tracking-tighter hidden sm:block">Monitoring :: v3.0</div>
+       {lastSync && (
+         <div className="flex items-center gap-1.5 opacity-60">
+           <Clock size={9} />
+           <span>{lastSync}</span>
+         </div>
+       )}
     </div>
   </div>
 );
 
+// Format relative time (e.g., "just now", "2m ago")
+const formatRelativeTime = (date: Date) => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffMs / 60000);
+  
+  if (diffSec < 10) return 'just now';
+  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffMin === 1) return '1m ago';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  return `${Math.floor(diffMin / 60)}h ago`;
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [, setTick] = useState(0); // Force re-render for relative time updates
 
   useEffect(() => {
     fetchDashboardData().then(fetched => {
       setData(fetched);
       setLoading(false);
+      setLastUpdate(new Date());
     });
   }, []);
+
+  // Update relative time display every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const syncTime = lastUpdate ? formatRelativeTime(lastUpdate) : undefined;
 
   if (loading || !data) {
     return (
@@ -82,7 +115,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         
         {/* Hacker News - Log Style */}
         <div className="h-[450px]">
-            <IDETab title="hn_monitor" path="hacker_news.log" icon={<Terminal size={12} />} footerStatus="POLLING">
+            <IDETab title="hn_monitor" path="hacker_news.log" icon={<Terminal size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-4">
                     {data.hackerNews.map((item, idx) => (
                         <div key={idx} className="group flex gap-4 hover:bg-white/[0.02] p-2 -mx-2 rounded transition-colors border-l border-transparent hover:border-accent/20">
@@ -105,7 +138,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
         
         {/* GitHub Trending */}
         <div className="h-[450px]">
-            <IDETab title="git_monitor" path="github_trending.sh" icon={<GitFork size={12} />} footerStatus="SYNCED">
+            <IDETab title="git_monitor" path="github_trending.sh" icon={<GitFork size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-3">
                     {data.github.map((item, idx) => (
                         <div key={idx} className="p-3 border border-border-light dark:border-border-dark bg-slate-50 dark:bg-white/[0.01] hover:border-accent/30 rounded group">
@@ -132,7 +165,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
 
         {/* LLM News */}
         <div className="h-[400px]">
-            <IDETab title="neural_feed" path="llm_watch.stream" icon={<Cpu size={12} />} footerStatus="LIVE">
+            <IDETab title="neural_feed" path="llm_watch.stream" icon={<Cpu size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-3">
                     {data.llmNews.map((item, idx) => (
                         <div key={idx} className="flex items-start gap-3 group">
@@ -155,7 +188,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
 
         {/* LessWrong */}
         <div className="h-[400px]">
-            <IDETab title="rational_db" path="essays.md" icon={<BookOpen size={12} />} footerStatus="BUFFER">
+            <IDETab title="rational_db" path="essays.md" icon={<BookOpen size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
                 <div className="space-y-6">
                     {data.lessWrong.map((item, idx) => (
                         <div key={idx} className="relative pl-5 group cursor-pointer">
@@ -177,4 +210,3 @@ export const Dashboard: React.FC<DashboardProps> = ({ t }) => {
       </div>
   );
 };
-

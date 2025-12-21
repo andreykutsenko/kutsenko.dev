@@ -105,6 +105,7 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({ lang, t })
   const [loading, setLoading] = useState(true);
   const [translatedData, setTranslatedData] = useState<DashboardData | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [, setTick] = useState(0); // Force re-render for relative time updates
 
   useEffect(() => {
     fetchDashboardData().then(fetched => {
@@ -112,6 +113,14 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({ lang, t })
       setLoading(false);
       setLastUpdate(new Date());
     });
+  }, []);
+
+  // Update relative time display every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // Translate ALL sections when language changes
