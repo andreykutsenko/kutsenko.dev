@@ -11,27 +11,27 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     return {
       updatedAt: new Date().toISOString(),
       hackerNews: [
-        { title: "The End of Programming", points: 1204, comments: 450, author: "jdoe", url: "#" },
-        { title: "Show HN: A new way to visualize tensors", points: 890, comments: 120, author: "dev_ai", url: "#" },
-        { title: "Postgres is all you need", points: 750, comments: 230, author: "db_fan", url: "#" },
-        { title: "Why we're leaving the cloud", points: 620, comments: 180, author: "cloud_exit", url: "#" },
-        { title: "Building a 1000x faster database", points: 540, comments: 95, author: "perf_eng", url: "#" },
+        { title: "The End of Programming", points: 1204, comments: 450, author: "jdoe", url: "https://news.ycombinator.com" },
+        { title: "Show HN: A new way to visualize tensors", points: 890, comments: 120, author: "dev_ai", url: "https://news.ycombinator.com" },
+        { title: "Postgres is all you need", points: 750, comments: 230, author: "db_fan", url: "https://news.ycombinator.com" },
+        { title: "Why I'm leaving Big Tech for a startup", points: 620, comments: 180, author: "anon_dev", url: "https://news.ycombinator.com" },
+        { title: "Understanding transformer architectures from scratch", points: 580, comments: 95, author: "ml_researcher", url: "https://news.ycombinator.com" },
       ],
       github: [
-        { name: "facebook/react", description: "The library for web and native user interfaces", stars: 213000, language: "JavaScript", url: "#", updatedAt: new Date().toISOString() },
-        { name: "pytorch/pytorch", description: "Tensors and Dynamic neural networks", stars: 80000, language: "Python", url: "#", updatedAt: new Date().toISOString() },
-        { name: "langchain-ai/langchain", description: "Building applications with LLMs through composability", stars: 75000, language: "Python", url: "#", updatedAt: new Date().toISOString() },
-        { name: "anthropics/claude-code", description: "Claude's coding capabilities", stars: 45000, language: "TypeScript", url: "#", updatedAt: new Date().toISOString() },
+        { name: "facebook/react", description: "The library for web and native user interfaces", stars: 213000, forks: 44800, language: "JavaScript", url: "https://github.com/facebook/react", updatedAt: new Date().toISOString() },
+        { name: "pytorch/pytorch", description: "Tensors and Dynamic neural networks in Python with strong GPU acceleration", stars: 80000, forks: 21500, language: "Python", url: "https://github.com/pytorch/pytorch", updatedAt: new Date().toISOString() },
+        { name: "langchain-ai/langchain", description: "Building applications with LLMs through composability", stars: 75000, forks: 11200, language: "Python", url: "https://github.com/langchain-ai/langchain", updatedAt: new Date().toISOString() },
       ],
       llmNews: [
-        { title: "Llama 3 405B released", score: 3200, comments: 500, url: "#" },
-        { title: "Fine-tuning Mistral on local hardware guide", score: 1500, comments: 120, url: "#" },
-        { title: "Running 70B models on consumer GPUs", score: 980, comments: 85, url: "#" },
+        { title: "Llama 3 405B released - benchmarks and first impressions", score: 3200, comments: 500, url: "https://reddit.com/r/LocalLLaMA" },
+        { title: "Fine-tuning Mistral on local hardware - complete guide", score: 1500, comments: 120, url: "https://reddit.com/r/LocalLLaMA" },
+        { title: "Quantization comparison: GGUF vs GPTQ vs AWQ", score: 980, comments: 85, url: "https://reddit.com/r/LocalLLaMA" },
+        { title: "Running 70B models on consumer GPUs - what's possible?", score: 870, comments: 145, url: "https://reddit.com/r/LocalLLaMA" },
       ],
       lessWrong: [
-        { title: "The Waluigi Effect: mega-post", summary: "A deep dive into LLM behavior simulation...", publishedAt: new Date().toISOString(), url: "#" },
-        { title: "Situational Awareness: The Decade Ahead", summary: "AI capabilities and safety considerations...", publishedAt: new Date().toISOString(), url: "#" },
-        { title: "RLHF and Constitutional AI", summary: "Understanding alignment techniques...", publishedAt: new Date().toISOString(), url: "#" },
+        { title: "The Waluigi Effect: mega-post", summary: "A deep dive into LLM behavior simulation and why models sometimes exhibit opposing behaviors...", publishedAt: new Date().toISOString(), url: "https://lesswrong.com" },
+        { title: "Sleeper Agents: Training Deceptive LLMs That Persist Through Safety Training", summary: "Research on how deceptive behaviors can persist even after extensive fine-tuning...", publishedAt: new Date().toISOString(), url: "https://lesswrong.com" },
+        { title: "The case for and against AI consciousness", summary: "Examining the philosophical and empirical arguments around machine sentience...", publishedAt: new Date().toISOString(), url: "https://lesswrong.com" },
       ]
     };
   }

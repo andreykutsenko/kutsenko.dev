@@ -3,29 +3,17 @@ import { I18nDict } from './types';
 export const I18N: I18nDict = {
   en: {
     "hero.tagline": "Software engineer building automation tools and AI agents.",
-    "nav.home": "Dashboard",
-    "nav.about": "About",
-    "nav.contact": "Contact",
+    "nav.home": "Home / Dashboard",
+    "nav.about": "About / Profile",
+    "nav.contact": "Contact Uplink",
     "toggle.theme": "Theme",
-    
-    // Section titles - clearer names
-    "section.hn.title": "Tech News",
-    "section.github.title": "GitHub Trending",
-    "section.llm.title": "AI / LLM",
-    "section.lw.title": "Essays",
-    
-    // Section subtitles
-    "section.hn.subtitle": "Hacker News",
-    "section.github.subtitle": "Open Source",
-    "section.llm.subtitle": "r/LocalLLaMA",
-    "section.lw.subtitle": "LessWrong",
-    
-    // More button
-    "btn.more": "$ more...",
-    "btn.less": "$ less",
-    
-    // About page
     "about.subtitle": "Automation engineer · LLM ops · Builder of SimpleProcess.",
+    "section.hn.tagline": "Top discussions from the front page",
+    "section.github.tagline": "Fresh repos trending on GitHub",
+    "section.llm.tagline": "Highlights from r/LocalLLaMA",
+    "section.lw.tagline": "Most upvoted rationality essays",
+    "panel.links.heading": "More",
+    "footer.about": "About",
     "about.summary.heading": "Summary",
     "about.summary.body":
       "Experienced software engineer with fintech/banking roots (InfoIMAGE, BPS-Sberbank) and a track record of shipping automations across QA, data parsing, and multi-platform systems.",
@@ -45,41 +33,25 @@ export const I18N: I18nDict = {
     "about.stack.item2": "Python, TypeScript, Rust tooling, Postgres/ClickHouse",
     "about.stack.item3": "Cloudflare Workers, n8n, CRM/ops integrations",
     "about.contact.heading": "Contact",
-    
-    // Status
-    "status.loading": "FETCHING DATA...",
+    "status.loading": "INITIALIZING SYSTEM...",
     "status.error": "CONNECTION FAILURE",
-    "status.online": "SYS OK",
-    "status.synced": "synced",
-    "status.lastSync": "Last sync",
+    "status.online": "SYSTEM ONLINE",
     "agent.status.active": "ACTIVE",
     "agent.status.idle": "IDLE",
   },
   ru: {
     "hero.tagline": "Инженер-программист, создающий автоматизацию и AI-агентов.",
-    "nav.home": "Главная",
-    "nav.about": "Обо мне",
+    "nav.home": "Главная / Дашборд",
+    "nav.about": "Обо мне / Профиль",
     "nav.contact": "Связь",
     "toggle.theme": "Тема",
-    
-    // Section titles - clearer names
-    "section.hn.title": "Новости",
-    "section.github.title": "GitHub",
-    "section.llm.title": "AI / LLM",
-    "section.lw.title": "Статьи",
-    
-    // Section subtitles
-    "section.hn.subtitle": "Hacker News",
-    "section.github.subtitle": "Open Source",
-    "section.llm.subtitle": "r/LocalLLaMA",
-    "section.lw.subtitle": "LessWrong",
-    
-    // More button
-    "btn.more": "$ ещё...",
-    "btn.less": "$ свернуть",
-    
-    // About page
     "about.subtitle": "Инженер по автоматизации · LLM ops · Создатель SimpleProcess.",
+    "section.hn.tagline": "Главные обсуждения с Hacker News",
+    "section.github.tagline": "Свежие тренды с GitHub",
+    "section.llm.tagline": "Лучшее из r/LocalLLaMA",
+    "section.lw.tagline": "Самые оценённые эссе на LessWrong",
+    "panel.links.heading": "Ещё",
+    "footer.about": "Обо мне",
     "about.summary.heading": "Кратко",
     "about.summary.body":
       "Инженер-программист с корнями в финтехе/банкинге (InfoIMAGE, БПС-Сбербанк) и опытом внедрения автоматизации в QA, парсинге данных и мультиплатформенных системах.",
@@ -99,13 +71,9 @@ export const I18N: I18nDict = {
     "about.stack.item2": "Python, TypeScript, Rust-инструменты, Postgres/ClickHouse",
     "about.stack.item3": "Cloudflare Workers, n8n, интеграции с CRM/оперейшнс",
     "about.contact.heading": "Связаться",
-    
-    // Status
-    "status.loading": "ЗАГРУЗКА ДАННЫХ...",
+    "status.loading": "ЗАГРУЗКА СИСТЕМЫ...",
     "status.error": "ОШИБКА ПОДКЛЮЧЕНИЯ",
-    "status.online": "СИСТЕМА ОК",
-    "status.synced": "синхр.",
-    "status.lastSync": "Обновлено",
+    "status.online": "СИСТЕМА АКТИВНА",
     "agent.status.active": "АКТИВЕН",
     "agent.status.idle": "ОЖИДАНИЕ",
   },

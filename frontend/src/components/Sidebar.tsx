@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { Lang, Theme } from '../types';
-import { SquareTerminal, Home, User, Mail } from 'lucide-react';
+import { FileJson, FileCode, FileText, ChevronRight, Terminal, Folder, Github } from 'lucide-react';
 
 interface SidebarProps {
   theme: Theme;
@@ -8,85 +8,87 @@ interface SidebarProps {
   t: (key: string) => string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ t }) => {
+export const Sidebar: React.FC<SidebarProps> = () => {
   return (
-    <aside className="w-14 lg:w-56 border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-bg-dark flex flex-col justify-between z-20 shadow-xl shadow-black/5 dark:shadow-none">
+    <aside className="w-14 lg:w-64 border-r border-border-light dark:border-border-dark bg-slate-50 dark:bg-[#0d1117] flex flex-col justify-between z-20 transition-all">
       
-      {/* Identity Block - Terminal prompt */}
-      <div className="h-14 flex items-center px-3 lg:px-4 border-b border-border-light dark:border-border-dark">
-          <div className="hidden lg:flex items-center gap-1.5 font-mono text-xs text-fg-light dark:text-fg-dark">
-             <span className="text-accent">$</span>
-             <span className="opacity-70">root@kutsenko</span>
-             <span className="animate-blink text-accent">█</span>
+      {/* Workspace Header */}
+      <div className="h-12 flex items-center px-4 border-b border-border-light dark:border-border-dark">
+          <div className="hidden lg:flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-fg-dark-muted opacity-80">
+             <span>Workspace: kutsenko.dev</span>
           </div>
-          <div className="lg:hidden w-full flex justify-center text-fg-light dark:text-fg-dark">
-             <SquareTerminal size={20} />
+          <div className="lg:hidden w-full flex justify-center text-accent">
+             <Terminal size={18} />
           </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 py-4 flex flex-col">
-        {/* Section header */}
-        <div className="px-3 lg:px-4 mb-2 hidden lg:block text-[9px] uppercase font-mono text-fg-dark-muted/50 tracking-wider">
-           drwxr-xr-x ./
+      {/* Explorer Tree */}
+      <nav className="flex-1 py-4 flex flex-col overflow-y-auto scrollbar-hide">
+        <div className="px-4 mb-2 hidden lg:flex items-center gap-1 text-[10px] font-bold text-fg-dark-muted uppercase opacity-40">
+           <ChevronRight size={12} className="rotate-90" />
+           <span>Explorer</span>
         </div>
         
-        <NavItem to="/" label={t('nav.home')} icon={<Home size={16} />} shortLabel="~" />
-        <NavItem to="/about" label={t('nav.about')} icon={<User size={16} />} shortLabel="?" />
-        
-        <div className="my-4 border-t border-border-light dark:border-border-dark mx-3 lg:mx-4 opacity-30"></div>
-        
-        {/* External links header */}
-        <div className="px-3 lg:px-4 mb-2 hidden lg:block text-[9px] uppercase font-mono text-fg-dark-muted/50 tracking-wider">
-           lrwxr-xr-x @
+        {/* Project Folder */}
+        <div className="hidden lg:flex items-center gap-2 px-6 py-1 text-[11px] font-bold text-fg-dark-muted/80">
+            <Folder size={14} className="text-term-blue" />
+            <span>src/web/pages</span>
         </div>
+
+        <div className="flex flex-col gap-0.5 mt-1">
+            <ExplorerItem to="/" icon={<FileCode size={14} className="text-term-purple" />} label="dashboard.tsx" />
+            <ExplorerItem to="/about" icon={<FileJson size={14} className="text-term-orange" />} label="profile.json" />
+        </div>
+
+        <div className="my-6 border-t border-border-light dark:border-border-dark mx-4 opacity-50"></div>
         
-        <a 
-          href="mailto:kutsenko@gmail.com" 
-          className="flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-2.5 text-xs text-fg-dark-muted hover:text-accent-light dark:hover:text-accent transition-colors group"
-        >
-          <Mail size={16} />
-          <span className="hidden lg:block font-mono">{t('nav.contact')}</span>
+        <div className="px-4 mb-2 hidden lg:block text-[10px] uppercase font-bold text-fg-dark-muted opacity-40 tracking-wider">
+           Uplinks
+        </div>
+        <a href="mailto:kutsenko@gmail.com" className="flex items-center gap-3 px-6 py-2 text-[12px] text-fg-dark-muted hover:text-accent hover:bg-accent/5 transition-all">
+            <FileText size={14} />
+            <span className="hidden lg:block">contact.log</span>
+        </a>
+        <a href="https://github.com/andreykutsenko" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-6 py-2 text-[12px] text-fg-dark-muted hover:text-accent hover:bg-accent/5 transition-all">
+            <Github size={14} />
+            <span className="hidden lg:block">github.com</span>
         </a>
       </nav>
 
-      {/* Footer */}
-      <div className="p-3 lg:p-4 border-t border-border-light dark:border-border-dark">
-         <div className="flex items-center justify-center lg:justify-start text-[9px] text-fg-dark-muted/40 font-mono">
-            <span className="hidden lg:block">v1.0</span>
+      {/* Footer System Status */}
+      <div className="p-3 border-t border-border-light dark:border-border-dark bg-slate-100 dark:bg-black/20">
+         <div className="flex items-center gap-3 text-[9px] text-fg-dark-muted font-mono">
+            <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
+                <span className="hidden lg:block">LSP: ACTIVE</span>
+            </div>
+            <div className="hidden lg:block border-l border-white/10 pl-3">
+                UTF-8
+            </div>
          </div>
       </div>
     </aside>
   );
 };
 
-interface NavItemProps {
+interface ExplorerItemProps {
   to: string;
-  label: string;
   icon: React.ReactNode;
-  shortLabel: string;
+  label: string;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, label, icon, shortLabel }) => (
+const ExplorerItem: React.FC<ExplorerItemProps> = ({ to, icon, label }) => (
   <NavLink 
     to={to} 
     className={({ isActive }) => 
-      `flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-2.5 transition-all text-xs font-mono group ${
+      `relative flex items-center gap-3 px-6 lg:pl-10 py-2 transition-all text-[12px] group ${
         isActive 
-          ? 'text-accent-light dark:text-accent bg-accent/5' 
-          : 'text-fg-dark-muted hover:text-fg-light dark:hover:text-fg-dark hover:bg-white/5'
+          ? 'bg-accent/10 text-fg-light dark:text-fg-dark border-r-2 border-accent' 
+          : 'text-fg-dark-muted hover:bg-white/5 hover:text-fg-dark'
       }`
     }
   >
-    {({ isActive }) => (
-      <>
-        <span className="lg:hidden">{icon}</span>
-        <span className="hidden lg:flex items-center gap-2">
-          <span className={isActive ? 'text-accent' : 'text-fg-dark-muted/50'}>{'>'}</span>
-          <span>{label}</span>
-        </span>
-        <span className="hidden lg:block ml-auto text-[10px] opacity-30">{shortLabel}</span>
-      </>
-    )}
+    <span className="shrink-0">{icon}</span>
+    <span className="hidden lg:block flex-1 truncate">{label}</span>
   </NavLink>
 );
