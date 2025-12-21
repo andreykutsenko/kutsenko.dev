@@ -1,5 +1,5 @@
 import { Lang } from '../types';
-import { Server, Terminal as TerminalIcon, GitBranch, Mail, Linkedin, Send, FileJson, History } from 'lucide-react';
+import { Server, Terminal as TerminalIcon, GitBranch, Mail, Linkedin, Send, FileJson, History, Phone, MapPin } from 'lucide-react';
 
 interface AboutProps {
   lang: Lang;
@@ -115,10 +115,10 @@ export const About: React.FC<AboutProps> = () => {
                     ANDREY KUTSENKO
                 </h1>
                 <div className="h-6 w-px bg-border-dark hidden md:block"></div>
-                <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-[10px] font-bold border border-accent/20 uppercase tracking-widest">Engineer-Native</span>
+                <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-[10px] font-bold border border-accent/20 uppercase tracking-widest">Software Engineer</span>
             </div>
             <p className="text-sm md:text-lg text-slate-500 dark:text-fg-dark-muted max-w-2xl font-mono italic">
-                Architecting <span className="text-term-orange underline decoration-accent/30 underline-offset-4">autonomous workflows</span> and intelligent systems.
+                Specializing in <span className="text-term-orange underline decoration-accent/30 underline-offset-4">banking systems</span>, data processing, and automation.
             </p>
       </div>
 
@@ -126,31 +126,35 @@ export const About: React.FC<AboutProps> = () => {
         
         {/* Profile Details Panel */}
         <div className="lg:col-span-7">
-            <IDEPanel title="whoami.json" path="identity.json" icon={<FileJson size={12} />} footerStatus="OBJECT">
+            <IDEPanel title="profile.json" path="identity/profile.json" icon={<FileJson size={12} />} footerStatus="OBJECT">
                 <div className="space-y-1 text-xs md:text-sm">
                     <div><span className="text-term-purple">const</span> <span className="text-term-blue">developer</span> = &#123;</div>
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"name"</span>: <span className="text-accent">"Andrey Kutsenko"</span>,</div>
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"role"</span>: <span className="text-accent">"Software Engineer"</span>,</div>
-                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"focus"</span>: [<span className="text-accent">"Automation"</span>, <span className="text-accent">"LLM Ops"</span>, <span className="text-accent">"Growth"</span>],</div>
-                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"status"</span>: <span className="text-accent">"Building SimpleProcess.io"</span>,</div>
-                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"location"</span>: <span className="text-accent">"San Francisco Bay Area"</span></div>
+                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"location"</span>: <span className="text-accent">"San Francisco, CA"</span>,</div>
+                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"phone"</span>: <span className="text-accent">"929-273-8787"</span>,</div>
+                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"focus"</span>: [</div>
+                    <div className="pl-8 md:pl-12"><span className="text-accent">"Banking Systems"</span>,</div>
+                    <div className="pl-8 md:pl-12"><span className="text-accent">"Data Processing & Parsing"</span>,</div>
+                    <div className="pl-8 md:pl-12"><span className="text-accent">"Automation Development"</span>,</div>
+                    <div className="pl-8 md:pl-12"><span className="text-accent">"Test Automation & QA"</span></div>
+                    <div className="pl-4 md:pl-6">],</div>
+                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"company"</span>: <span className="text-accent">"InfoIMAGE + SIMPLE PROCESS LLC"</span></div>
                     <div>&#125;;</div>
                 </div>
             </IDEPanel>
         </div>
 
-        {/* Uplink / Terminal Panel */}
+        {/* Contact Panel */}
         <div className="lg:col-span-5">
-            <IDEPanel title="contact.sh" path="uplink.sh" icon={<TerminalIcon size={12} />} footerStatus="BASH">
+            <IDEPanel title="contact.sh" path="uplink/contact.sh" icon={<TerminalIcon size={12} />} footerStatus="BASH">
                 <div className="text-fg-dark-muted mb-4 opacity-50 italic text-xs"># Initialize communication channels...</div>
                 <div className="space-y-4">
                     <ContactItem icon={<Mail size={14} />} label="Email" value="kutsenko@gmail.com" href="mailto:kutsenko@gmail.com" />
+                    <ContactItem icon={<Phone size={14} />} label="Phone" value="929-273-8787" href="tel:929-273-8787" />
                     <ContactItem icon={<Linkedin size={14} />} label="LinkedIn" value="andreykutsenko" href="https://www.linkedin.com/in/andreykutsenko/" />
                     <ContactItem icon={<Send size={14} />} label="Telegram" value="@kutsenko_dev" href="https://t.me/kutsenko_dev" />
-                    <div className="pt-2 flex items-center gap-2">
-                        <span className="text-accent font-bold">$</span>
-                        <div className="w-2.5 h-5 bg-accent/80 animate-blink"></div>
-                    </div>
+                    <ContactItem icon={<MapPin size={14} />} label="Location" value="San Francisco, CA 94122" href="https://maps.google.com/?q=San+Francisco+CA" />
                 </div>
             </IDEPanel>
         </div>
@@ -158,29 +162,40 @@ export const About: React.FC<AboutProps> = () => {
         {/* Stack Panel */}
         <div className="lg:col-span-12">
             <IDEPanel title="stack.yaml" path="config/stack.yaml" icon={<Server size={12} />} footerStatus="YAML">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
                     <section>
-                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Core_Engine:</div>
+                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Languages:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
                             <li><span className="text-term-orange">Python:</span> <span className="text-fg-dark-muted">expert</span></li>
                             <li><span className="text-term-orange">TypeScript:</span> <span className="text-fg-dark-muted">pro</span></li>
-                            <li><span className="text-term-orange">Rust:</span> <span className="text-fg-dark-muted">tooling</span></li>
+                            <li><span className="text-term-orange">SQL:</span> <span className="text-fg-dark-muted">expert</span></li>
+                            <li><span className="text-term-orange">Shell:</span> <span className="text-fg-dark-muted">pro</span></li>
+                            <li><span className="text-term-orange">Rust:</span> <span className="text-fg-dark-muted">learning</span></li>
                         </ul>
                     </section>
                     <section>
-                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Intelligence:</div>
+                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Automation:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">LLM:</span> <span className="text-fg-dark-muted">Agentic Workflows</span></li>
-                            <li><span className="text-term-orange">Ops:</span> <span className="text-fg-dark-muted">n8n Orchestration</span></li>
-                            <li><span className="text-term-orange">CRM:</span> <span className="text-fg-dark-muted">Deep Integrations</span></li>
+                            <li><span className="text-term-orange">n8n:</span> <span className="text-fg-dark-muted">workflows</span></li>
+                            <li><span className="text-term-orange">CRM:</span> <span className="text-fg-dark-muted">HubSpot/Salesforce</span></li>
+                            <li><span className="text-term-orange">Data:</span> <span className="text-fg-dark-muted">parsing & extraction</span></li>
+                            <li><span className="text-term-orange">API:</span> <span className="text-fg-dark-muted">REST testing</span></li>
                         </ul>
                     </section>
                     <section>
-                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Data_Ops:</div>
+                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Database:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">DB:</span> <span className="text-fg-dark-muted">Postgres/ClickHouse</span></li>
-                            <li><span className="text-term-orange">Edge:</span> <span className="text-fg-dark-muted">Cloudflare Workers</span></li>
-                            <li><span className="text-term-orange">Infra:</span> <span className="text-fg-dark-muted">Docker/Unix/CI</span></li>
+                            <li><span className="text-term-orange">Oracle:</span> <span className="text-fg-dark-muted">enterprise</span></li>
+                            <li><span className="text-term-orange">MS SQL:</span> <span className="text-fg-dark-muted">server</span></li>
+                            <li><span className="text-term-orange">Postgres:</span> <span className="text-fg-dark-muted">ops</span></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Infra:</div>
+                        <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
+                            <li><span className="text-term-orange">Docker:</span> <span className="text-fg-dark-muted">containers</span></li>
+                            <li><span className="text-term-orange">Unix:</span> <span className="text-fg-dark-muted">shell/admin</span></li>
+                            <li><span className="text-term-orange">Cloudflare:</span> <span className="text-fg-dark-muted">edge</span></li>
                         </ul>
                     </section>
                 </div>
@@ -193,37 +208,61 @@ export const About: React.FC<AboutProps> = () => {
                 <div className="space-y-0">
                     <GitCommit 
                         hash="ef42a1" 
-                        date="2023-Present" 
+                        date="09/2023-Present" 
                         branch="main" 
                         role="Software Engineer" 
                         company="InfoIMAGE" 
-                        desc="Building core automation for fintech operations."
+                        desc="Data parsing, extraction, and multi-platform software optimization for fintech operations."
                         isCurrent
                     />
                     <GitCommit 
                         hash="9d11b5" 
-                        date="2023-Present" 
+                        date="05/2023-Present" 
                         branch="feature/ceo" 
-                        role="Founder & CEO" 
+                        role="CEO & Co-founder" 
                         company="SIMPLE PROCESS LLC" 
-                        desc="Architecting AI-driven outbound sales engines."
+                        desc="Business process optimization, CRM integrations (HubSpot, Salesforce), and AI-driven sales engines."
                         isCurrent
                     />
                     <GitCommit 
                         hash="3c88a2" 
-                        date="2022-2023" 
+                        date="01/2022-09/2023" 
                         branch="main" 
                         role="QA Engineer" 
                         company="InfoIMAGE" 
-                        desc="Developed automation-first testing frameworks."
+                        desc="Automated test scripts with Python & Shell, Page Object pattern, REST API testing with Postman."
                     />
                     <GitCommit 
                         hash="a102bc" 
-                        date="2017-2021" 
+                        date="03/2017-12/2021" 
                         branch="master" 
                         role="Freelance Consultant" 
                         company="Remote" 
-                        desc="Custom business process automation and data scrapers."
+                        desc="Data parsing, extraction, and transformation. 20% operational efficiency improvement for clients."
+                    />
+                    <GitCommit 
+                        hash="b5c9d1" 
+                        date="05/2013-10/2015" 
+                        branch="banking" 
+                        role="Deputy Head" 
+                        company="BPS-Sberbank" 
+                        desc="Credit administration, operational risk management, BI reporting, and SLA compliance."
+                    />
+                    <GitCommit 
+                        hash="c7a3e2" 
+                        date="12/2010-04/2013" 
+                        branch="banking" 
+                        role="Head of Standards" 
+                        company="BPS-Sberbank" 
+                        desc="BPMN process optimization, TOF project coordination, KPI development."
+                    />
+                    <GitCommit 
+                        hash="d8f4b3" 
+                        date="12/2004-12/2010" 
+                        branch="dev" 
+                        role="Chief Engineer-Programmer" 
+                        company="BPS-Sberbank" 
+                        desc="Remote Banking Service development with JavaScript, HTML, CSS, Oracle, MS SQL Server."
                     />
                 </div>
             </IDEPanel>
@@ -233,4 +272,3 @@ export const About: React.FC<AboutProps> = () => {
     </div>
   );
 };
-

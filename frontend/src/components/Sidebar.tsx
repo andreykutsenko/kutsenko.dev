@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { Lang, Theme } from '../types';
-import { FileJson, FileCode, FileText, ChevronRight, Terminal, Folder, Github } from 'lucide-react';
+import { FileJson, FileCode, FileText, ChevronRight, Folder, Github } from 'lucide-react';
 
 interface SidebarProps {
   theme: Theme;
@@ -12,16 +12,6 @@ export const Sidebar: React.FC<SidebarProps> = () => {
   return (
     <aside className="w-14 lg:w-64 border-r border-border-light dark:border-border-dark bg-slate-50 dark:bg-[#0d1117] flex flex-col justify-between z-20 transition-all">
       
-      {/* Workspace Header */}
-      <div className="h-12 flex items-center px-4 border-b border-border-light dark:border-border-dark">
-          <div className="hidden lg:flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-fg-dark-muted opacity-80">
-             <span>Workspace: kutsenko.dev</span>
-          </div>
-          <div className="lg:hidden w-full flex justify-center text-accent">
-             <Terminal size={18} />
-          </div>
-      </div>
-
       {/* Explorer Tree */}
       <nav className="flex-1 py-4 flex flex-col overflow-y-auto scrollbar-hide">
         <div className="px-4 mb-2 hidden lg:flex items-center gap-1 text-[10px] font-bold text-fg-dark-muted uppercase opacity-40">
