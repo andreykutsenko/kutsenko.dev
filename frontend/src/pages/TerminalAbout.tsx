@@ -1,5 +1,5 @@
 import { Lang } from '../types';
-import { User, Server, Terminal as TerminalIcon, GraduationCap } from 'lucide-react';
+import { User, Server, Terminal as TerminalIcon } from 'lucide-react';
 
 interface TerminalAboutProps {
   lang: Lang;
@@ -90,8 +90,7 @@ export const TerminalAbout: React.FC<TerminalAboutProps> = ({ t }) => {
                     <span className="opacity-50">Name</span> <span>Andrey Kutsenko</span>
                     <span className="opacity-50">Role</span> <span>Software Engineer</span>
                     <span className="opacity-50">Focus</span> <span>Banking Systems & Data Processing</span>
-                    <span className="opacity-50">Location</span> <span>San Francisco, CA 94122</span>
-                    <span className="opacity-50">Phone</span> <span>929-273-8787</span>
+                    <span className="opacity-50">Location</span> <span>San Francisco, CA</span>
                     <span className="opacity-50">Company</span> 
                     <span>
                       <a 
@@ -112,7 +111,6 @@ export const TerminalAbout: React.FC<TerminalAboutProps> = ({ t }) => {
              <Prompt>ls -la ~/links</Prompt>
              <div className="space-y-1 mt-2 text-xs">
                  <Output isLink><a href="mailto:kutsenko@gmail.com" className="text-accent-light dark:text-accent hover:underline">→ kutsenko@gmail.com</a></Output>
-                 <Output isLink><a href="tel:929-273-8787" className="text-accent-light dark:text-accent hover:underline">→ 929-273-8787</a></Output>
                  <Output isLink><a href="https://www.linkedin.com/in/andreykutsenko/" target="_blank" rel="noopener noreferrer" className="text-accent-light dark:text-accent hover:underline">→ linkedin/andreykutsenko</a></Output>
                  <Output isLink><a href="https://t.me/kutsenko_dev" target="_blank" rel="noopener noreferrer" className="text-accent-light dark:text-accent hover:underline">→ t.me/kutsenko_dev</a></Output>
              </div>
@@ -125,26 +123,22 @@ export const TerminalAbout: React.FC<TerminalAboutProps> = ({ t }) => {
                     <div className="space-y-1">
                         <div className="text-fg-light dark:text-fg-dark font-bold mb-2 pb-1 border-b border-border-light dark:border-white/10 w-fit text-[10px] uppercase tracking-wider">Languages</div>
                         <div>Python, TypeScript</div>
-                        <div>SQL, Shell Script</div>
-                        <div>Rust</div>
+                        <div>SQL, Rust</div>
                     </div>
                     <div className="space-y-1">
                         <div className="text-fg-light dark:text-fg-dark font-bold mb-2 pb-1 border-b border-border-light dark:border-white/10 w-fit text-[10px] uppercase tracking-wider">Automation</div>
                         <div>n8n, CRM integrations</div>
-                        <div>HubSpot, Salesforce</div>
-                        <div>Data parsing & extraction</div>
+                        <div>Data parsing</div>
                     </div>
                     <div className="space-y-1">
                         <div className="text-fg-light dark:text-fg-dark font-bold mb-2 pb-1 border-b border-border-light dark:border-white/10 w-fit text-[10px] uppercase tracking-wider">Database</div>
                         <div>Oracle, MS SQL Server</div>
                         <div>PostgreSQL</div>
-                        <div>REST API testing</div>
                     </div>
                     <div className="space-y-1">
                         <div className="text-fg-light dark:text-fg-dark font-bold mb-2 pb-1 border-b border-border-light dark:border-white/10 w-fit text-[10px] uppercase tracking-wider">Infra</div>
                         <div>Docker, Cloudflare</div>
-                        <div>Unix/Linux admin</div>
-                        <div>CI/CD pipelines</div>
+                        <div>LLM Evals/Ops</div>
                     </div>
                 </div>
         </TerminalPanel>
@@ -180,27 +174,6 @@ export const TerminalAbout: React.FC<TerminalAboutProps> = ({ t }) => {
                 <div className="flex gap-3 opacity-30">
                     <span className="shrink-0">[12/2004-12/2010]</span>
                     <span>Chief Engineer-Programmer @ BPS-Sberbank</span>
-                </div>
-           </div>
-        </TerminalPanel>
-
-        {/* Education */}
-        <TerminalPanel title="education.log" icon={<GraduationCap size={12} className="text-blue-400" />} className="md:col-span-2">
-           <Prompt>cat ~/education.txt</Prompt>
-           <div className="pl-5 mt-2 space-y-3 text-xs font-mono">
-                <div>
-                    <div className="flex gap-3 items-center">
-                        <span className="text-accent shrink-0">[2005]</span>
-                        <span className="text-fg-light dark:text-fg-dark font-bold">Master's Degree in Management</span>
-                    </div>
-                    <div className="pl-16 text-fg-dark-muted opacity-70">Gomel State Technical University, Belarus</div>
-                </div>
-                <div>
-                    <div className="flex gap-3 items-center">
-                        <span className="text-accent shrink-0">[1999]</span>
-                        <span className="text-fg-light dark:text-fg-dark font-bold">Master's Degree in Industrial Electronics</span>
-                    </div>
-                    <div className="pl-16 text-fg-dark-muted opacity-70">Gomel State Technical University Pavel Sukhoi, Belarus</div>
                 </div>
            </div>
         </TerminalPanel>

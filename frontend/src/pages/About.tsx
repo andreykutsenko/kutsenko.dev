@@ -1,5 +1,5 @@
 import { Lang } from '../types';
-import { Server, Terminal as TerminalIcon, GitBranch, Mail, Linkedin, Send, FileJson, History, Phone, MapPin } from 'lucide-react';
+import { Server, Terminal as TerminalIcon, GitBranch, Mail, Linkedin, Send, FileJson, History, MapPin } from 'lucide-react';
 
 interface AboutProps {
   lang: Lang;
@@ -132,7 +132,6 @@ export const About: React.FC<AboutProps> = () => {
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"name"</span>: <span className="text-accent">"Andrey Kutsenko"</span>,</div>
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"role"</span>: <span className="text-accent">"Software Engineer"</span>,</div>
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"location"</span>: <span className="text-accent">"San Francisco, CA"</span>,</div>
-                    <div className="pl-4 md:pl-6"><span className="text-term-orange">"phone"</span>: <span className="text-accent">"929-273-8787"</span>,</div>
                     <div className="pl-4 md:pl-6"><span className="text-term-orange">"focus"</span>: [</div>
                     <div className="pl-8 md:pl-12"><span className="text-accent">"Banking Systems"</span>,</div>
                     <div className="pl-8 md:pl-12"><span className="text-accent">"Data Processing & Parsing"</span>,</div>
@@ -151,10 +150,9 @@ export const About: React.FC<AboutProps> = () => {
                 <div className="text-fg-dark-muted mb-4 opacity-50 italic text-xs"># Initialize communication channels...</div>
                 <div className="space-y-4">
                     <ContactItem icon={<Mail size={14} />} label="Email" value="kutsenko@gmail.com" href="mailto:kutsenko@gmail.com" />
-                    <ContactItem icon={<Phone size={14} />} label="Phone" value="929-273-8787" href="tel:929-273-8787" />
                     <ContactItem icon={<Linkedin size={14} />} label="LinkedIn" value="andreykutsenko" href="https://www.linkedin.com/in/andreykutsenko/" />
                     <ContactItem icon={<Send size={14} />} label="Telegram" value="@kutsenko_dev" href="https://t.me/kutsenko_dev" />
-                    <ContactItem icon={<MapPin size={14} />} label="Location" value="San Francisco, CA 94122" href="https://maps.google.com/?q=San+Francisco+CA" />
+                    <ContactItem icon={<MapPin size={14} />} label="Location" value="San Francisco, CA" href="https://maps.google.com/?q=San+Francisco+CA" />
                 </div>
             </IDEPanel>
         </div>
@@ -166,36 +164,34 @@ export const About: React.FC<AboutProps> = () => {
                     <section>
                         <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Languages:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">Python:</span> <span className="text-fg-dark-muted">expert</span></li>
-                            <li><span className="text-term-orange">TypeScript:</span> <span className="text-fg-dark-muted">pro</span></li>
-                            <li><span className="text-term-orange">SQL:</span> <span className="text-fg-dark-muted">expert</span></li>
-                            <li><span className="text-term-orange">Shell:</span> <span className="text-fg-dark-muted">pro</span></li>
-                            <li><span className="text-term-orange">Rust:</span> <span className="text-fg-dark-muted">learning</span></li>
+                            <li><span className="text-term-orange">Python</span></li>
+                            <li><span className="text-term-orange">TypeScript</span></li>
+                            <li><span className="text-term-orange">SQL</span></li>
+                            <li><span className="text-term-orange">Rust</span></li>
                         </ul>
                     </section>
                     <section>
                         <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Automation:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">n8n:</span> <span className="text-fg-dark-muted">workflows</span></li>
-                            <li><span className="text-term-orange">CRM:</span> <span className="text-fg-dark-muted">HubSpot/Salesforce</span></li>
-                            <li><span className="text-term-orange">Data:</span> <span className="text-fg-dark-muted">parsing & extraction</span></li>
-                            <li><span className="text-term-orange">API:</span> <span className="text-fg-dark-muted">REST testing</span></li>
+                            <li><span className="text-term-orange">n8n</span></li>
+                            <li><span className="text-term-orange">CRM integrations</span></li>
+                            <li><span className="text-term-orange">Data parsing</span></li>
                         </ul>
                     </section>
                     <section>
                         <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Database:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">Oracle:</span> <span className="text-fg-dark-muted">enterprise</span></li>
-                            <li><span className="text-term-orange">MS SQL:</span> <span className="text-fg-dark-muted">server</span></li>
-                            <li><span className="text-term-orange">Postgres:</span> <span className="text-fg-dark-muted">ops</span></li>
+                            <li><span className="text-term-orange">Oracle</span></li>
+                            <li><span className="text-term-orange">MS SQL Server</span></li>
+                            <li><span className="text-term-orange">PostgreSQL</span></li>
                         </ul>
                     </section>
                     <section>
                         <div className="text-term-purple mb-3 font-bold text-[11px] uppercase tracking-widest border-b border-white/5 pb-1">Infra:</div>
                         <ul className="space-y-2 pl-4 border-l border-accent/20 text-xs">
-                            <li><span className="text-term-orange">Docker:</span> <span className="text-fg-dark-muted">containers</span></li>
-                            <li><span className="text-term-orange">Unix:</span> <span className="text-fg-dark-muted">shell/admin</span></li>
-                            <li><span className="text-term-orange">Cloudflare:</span> <span className="text-fg-dark-muted">edge</span></li>
+                            <li><span className="text-term-orange">Docker</span></li>
+                            <li><span className="text-term-orange">Cloudflare</span></li>
+                            <li><span className="text-term-orange">LLM Evals/Ops</span></li>
                         </ul>
                     </section>
                 </div>
