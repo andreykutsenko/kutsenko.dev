@@ -46,9 +46,10 @@ const getFileIcon = (ext: string, size = 12) => {
 interface EditorTabsProps {
   openTabs: string[];
   onCloseTab: (path: string) => void;
+  onCloseAllTabs?: () => void;
 }
 
-export const EditorTabs: React.FC<EditorTabsProps> = ({ openTabs, onCloseTab }) => {
+export const EditorTabs: React.FC<EditorTabsProps> = ({ openTabs, onCloseTab, onCloseAllTabs }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -92,6 +93,17 @@ export const EditorTabs: React.FC<EditorTabsProps> = ({ openTabs, onCloseTab }) 
       
       {/* Empty space filler */}
       <div className="flex-1 border-b border-transparent"></div>
+      
+      {/* Close All button */}
+      {openTabs.length > 1 && onCloseAllTabs && (
+        <button
+          onClick={onCloseAllTabs}
+          className="px-2 py-1 text-[10px] text-fg-dark-muted hover:text-fg-dark hover:bg-white/5 transition-colors font-mono"
+          title="Close all tabs"
+        >
+          ✕ all
+        </button>
+      )}
     </div>
   );
 };

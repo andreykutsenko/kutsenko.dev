@@ -81,6 +81,12 @@ function App() {
     }
   }, [openTabs, location.pathname, navigate]);
 
+  // Handle close all tabs
+  const handleCloseAllTabs = useCallback(() => {
+    setOpenTabs(['/']);
+    navigate('/');
+  }, [navigate]);
+
   // Handle refresh
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -154,7 +160,7 @@ function App() {
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Editor Tabs */}
-          <EditorTabs openTabs={openTabs} onCloseTab={handleCloseTab} />
+          <EditorTabs openTabs={openTabs} onCloseTab={handleCloseTab} onCloseAllTabs={handleCloseAllTabs} />
 
           {/* Editor Content */}
           <main className={`flex-1 overflow-y-auto overflow-x-hidden bg-panel-light dark:bg-panel-dark transition-all ${
