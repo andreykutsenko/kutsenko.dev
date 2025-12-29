@@ -265,7 +265,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2 text-[13px]">
         {data.github.map((item, idx) => {
           const itemId = `github-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -273,21 +273,19 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
           return (
             <div 
               key={idx}
-              className="p-4 border border-border-light dark:border-border-dark rounded-lg hover:border-accent/50 transition-all bg-slate-50 dark:bg-white/[0.02] group"
+              className="flex items-start gap-3 pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-orange/30"
             >
-              <div className="flex justify-between items-start mb-2">
-                <a 
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-term-blue font-bold group-hover:text-accent transition-colors flex-1"
-                >
-                  {item.name}
-                </a>
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] px-2 py-0.5 bg-term-purple/10 text-term-purple border border-term-purple/20 rounded uppercase font-bold">
-                    {item.language}
-                  </span>
+              <span className="text-term-blue shrink-0">repo:</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <a 
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-term-blue transition-colors font-medium flex-1"
+                  >
+                    {item.name}
+                  </a>
                   <BookmarkStar 
                     isActive={saved}
                     onClick={(e) => {
@@ -296,17 +294,11 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
                     }}
                   />
                 </div>
-              </div>
-              <p className="text-[11px] text-fg-dark-muted italic opacity-80 mb-3 line-clamp-2">
-                {item.description}
-              </p>
-              <div className="flex gap-6 text-[10px] font-bold">
-                <span className="flex items-center gap-1.5 text-term-orange">
-                  <Star size={10} /> {item.stars?.toLocaleString()}
-                </span>
-                <span className="flex items-center gap-1.5 text-accent">
-                  <GitFork size={10} /> {item.forks || 0}
-                </span>
+                <div className="flex gap-4 mt-1 text-[10px] text-fg-dark-muted">
+                  <span className="text-term-orange flex items-center gap-1"><Star size={10} /> {item.stars?.toLocaleString()}</span>
+                  <span className="text-term-purple">{item.language}</span>
+                  <span className="flex items-center gap-1"><GitFork size={10} /> {item.forks || 0}</span>
+                </div>
               </div>
             </div>
           );
@@ -411,21 +403,25 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-6">
+      <div className="space-y-3">
         {data.lessWrong.map((item, idx) => {
           const itemId = `lw-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
           
           return (
-            <div key={idx} className="group">
-              <div className="flex items-start justify-between gap-2 mb-1">
+            <div 
+              key={idx} 
+              className="flex items-start gap-3 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-[#519aba]/30 pl-4"
+            >
+              <span className="text-[#519aba] shrink-0">##</span>
+              <div className="flex-1 flex items-start justify-between gap-2">
                 <a 
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#519aba] group-hover:text-accent transition-colors flex-1"
+                  className="text-fg-light dark:text-fg-dark group-hover:text-[#519aba] transition-colors"
                 >
-                  ## {item.title}
+                  {item.title}
                 </a>
                 <BookmarkStar 
                   isActive={saved}
@@ -435,9 +431,6 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
                   }}
                 />
               </div>
-              <blockquote className="border-l-2 border-accent/30 pl-4 text-[12px] text-fg-dark-muted italic opacity-80 group-hover:border-accent transition-colors">
-                &gt; {item.summary}
-              </blockquote>
             </div>
           );
         })}
