@@ -290,7 +290,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
                     isActive={saved}
                     onClick={(e) => {
                       e.preventDefault();
-                      toggleBookmark?.({ id: itemId, type: 'github', title: item.name || '', url: item.url || '' });
+                      toggleBookmark?.({ id: itemId, type: 'github', title: item.name || '', url: item.url || '', description: item.description || '' });
                     }}
                   />
                 </div>

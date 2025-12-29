@@ -5,6 +5,7 @@ export interface BookmarkItem {
   type: 'hn' | 'github' | 'llm' | 'lesswrong';
   title: string;
   url: string;
+  description?: string;
   savedAt: string;
 }
 

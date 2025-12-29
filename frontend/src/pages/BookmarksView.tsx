@@ -147,6 +147,11 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ bookmarks, removeB
                       {bookmark.title}
                       <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50" />
                     </a>
+                    {bookmark.description && (
+                      <div className="text-[11px] text-fg-dark-muted mt-1 leading-snug line-clamp-2">
+                        {bookmark.description}
+                      </div>
+                    )}
                     <div className="flex items-center gap-3 mt-1 text-[10px] text-fg-dark-muted">
                       <span className={getCategoryColor(bookmark.type)}>
                         {getCategoryLabel(bookmark.type)}
