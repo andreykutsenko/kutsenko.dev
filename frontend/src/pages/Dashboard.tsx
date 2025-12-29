@@ -294,9 +294,14 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
                     }}
                   />
                 </div>
+                {item.description && (
+                  <div className="text-[11px] text-fg-dark-muted mt-1 line-clamp-1">
+                    {item.description}
+                  </div>
+                )}
                 <div className="flex gap-4 mt-1 text-[10px] text-fg-dark-muted">
                   <span className="text-term-orange flex items-center gap-1"><Star size={10} /> {item.stars?.toLocaleString()}</span>
-                  <span className="text-term-purple">{item.language}</span>
+                  {item.language && <span className="text-term-purple">{item.language}</span>}
                   <span className="flex items-center gap-1"><GitFork size={10} /> {item.forks || 0}</span>
                 </div>
               </div>
