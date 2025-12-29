@@ -15,7 +15,9 @@ import {
   Zap,
   Trophy,
   FlaskConical,
-  DollarSign
+  DollarSign,
+  PanelLeftClose,
+  PanelLeft
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -23,6 +25,8 @@ interface SidebarProps {
   theme: Theme;
   lang: Lang;
   t: (key: string) => string;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 // File type icons based on extension
@@ -54,11 +58,41 @@ export const getLanguageFromFile = (pathname: string) => {
   return 'Plain Text';
 };
 
-export const Sidebar: React.FC<SidebarProps> = () => {
+export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggleCollapse }) => {
   const location = useLocation();
   const [workspaceOpen, setWorkspaceOpen] = useState(true);
   const [dashboardOpen, setDashboardOpen] = useState(true);
   const [aiSignalsOpen, setAiSignalsOpen] = useState(false); // Collapsed by default
+
+  // When collapsed, show only the toggle button
+  if (collapsed) {
+    return (
+      <aside className="w-12 border-r border-border-light dark:border-border-dark bg-slate-50 dark:bg-[#0d1117] flex flex-col z-20 transition-all">
+        <div className="flex items-center justify-center py-3 border-b border-border-light dark:border-border-dark">
+          <button 
+            onClick={onToggleCollapse}
+            className="p-2 text-fg-dark-muted hover:text-accent transition-colors"
+            title="Expand sidebar"
+          >
+            <PanelLeft size={18} />
+          </button>
+        </div>
+        
+        {/* Minimal icon navigation when collapsed */}
+        <nav className="flex-1 py-2 flex flex-col items-center gap-1">
+          <NavLink to="/" className={`p-2 rounded transition-colors ${location.pathname === '/' ? 'text-accent bg-accent/10' : 'text-fg-dark-muted hover:text-accent'}`}>
+            <Files size={18} />
+          </NavLink>
+          <NavLink to="/bookmarks" className={`p-2 rounded transition-colors ${location.pathname === '/bookmarks' ? 'text-accent bg-accent/10' : 'text-fg-dark-muted hover:text-accent'}`}>
+            <Bookmark size={18} />
+          </NavLink>
+          <NavLink to="/about" className={`p-2 rounded transition-colors ${location.pathname === '/about' ? 'text-accent bg-accent/10' : 'text-fg-dark-muted hover:text-accent'}`}>
+            <FileText size={18} />
+          </NavLink>
+        </nav>
+      </aside>
+    );
+  }
 
   return (
     <aside className="w-12 md:w-14 lg:w-64 border-r border-border-light dark:border-border-dark bg-slate-50 dark:bg-[#0d1117] flex flex-col z-20 transition-all">
@@ -76,9 +110,16 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         </button>
       </div>
 
-      {/* Explorer Header */}
-      <div className="hidden lg:flex items-center px-4 py-2 border-b border-border-light dark:border-border-dark">
+      {/* Sidebar Header with Toggle */}
+      <div className="hidden lg:flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark">
         <span className="text-[10px] font-bold text-fg-dark-muted uppercase tracking-widest">Explorer</span>
+        <button 
+          onClick={onToggleCollapse}
+          className="p-1 text-fg-dark-muted hover:text-accent transition-colors rounded hover:bg-white/5"
+          title="Collapse sidebar (Zen Mode)"
+        >
+          <PanelLeftClose size={14} />
+        </button>
       </div>
       
       {/* File Tree */}

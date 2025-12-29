@@ -21,6 +21,7 @@ function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -155,7 +156,13 @@ function App() {
       {/* Content Area: Sidebar + Editor */}
       <div className="flex flex-1 overflow-hidden z-10">
         {/* Left Sidebar - File Explorer */}
-        <Sidebar theme={theme} lang={lang} t={t} />
+        <Sidebar 
+          theme={theme} 
+          lang={lang} 
+          t={t} 
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(prev => !prev)}
+        />
 
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
