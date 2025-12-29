@@ -12,7 +12,11 @@ import {
   Search,
   GitBranch,
   Settings,
-  Bookmark
+  Bookmark,
+  Zap,
+  Trophy,
+  FlaskConical,
+  DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -123,6 +127,44 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                 icon={getFileIcon('md')} 
                 label="less_wrong.md" 
                 isActive={location.pathname === '/lesswrong'}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* AI Signals folder */}
+        {dashboardOpen && (
+          <div className="lg:ml-4">
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 text-[11px] text-fg-dark-muted">
+              <ChevronDown size={10} className="opacity-50" />
+              <Folder size={12} className="text-accent opacity-70" />
+              <span className="opacity-60">ai_signals</span>
+            </div>
+
+            <div className="lg:ml-4">
+              <FileItem 
+                to="/arena" 
+                icon={<Trophy size={14} className="text-term-orange" />} 
+                label="lmsys_arena.json" 
+                isActive={location.pathname === '/arena'}
+              />
+              <FileItem 
+                to="/papers" 
+                icon={<FlaskConical size={14} className="text-term-purple" />} 
+                label="papers.py" 
+                isActive={location.pathname === '/papers'}
+              />
+              <FileItem 
+                to="/tool" 
+                icon={<Zap size={14} className="text-accent" />} 
+                label="tool_of_day.md" 
+                isActive={location.pathname === '/tool'}
+              />
+              <FileItem 
+                to="/prices" 
+                icon={<DollarSign size={14} className="text-term-green" />} 
+                label="token_prices.json" 
+                isActive={location.pathname === '/prices'}
               />
             </div>
           </div>

@@ -9,6 +9,7 @@ import { IntegratedTerminal } from './components/IntegratedTerminal';
 import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dashboard';
 import { About } from './pages/About';
 import { BookmarksView } from './pages/BookmarksView';
+import { ArenaView, PapersView, ToolView, PricesView } from './pages/AISignals';
 import { useBookmarks } from './hooks/useBookmarks';
 import { Moon, Sun, Command } from 'lucide-react';
 
@@ -180,6 +181,29 @@ function App() {
                   <LessWrongView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
                 </div>
               } />
+              
+              {/* AI Signals */}
+              <Route path="/arena" element={
+                <div className="p-4 md:p-6">
+                  <ArenaView />
+                </div>
+              } />
+              <Route path="/papers" element={
+                <div className="p-4 md:p-6">
+                  <PapersView />
+                </div>
+              } />
+              <Route path="/tool" element={
+                <div className="p-4 md:p-6">
+                  <ToolView />
+                </div>
+              } />
+              <Route path="/prices" element={
+                <div className="p-4 md:p-6">
+                  <PricesView />
+                </div>
+              } />
+              
               <Route path="/bookmarks" element={
                 <div className="p-4 md:p-6">
                   <BookmarksView bookmarks={bookmarks} removeBookmark={removeBookmark} />

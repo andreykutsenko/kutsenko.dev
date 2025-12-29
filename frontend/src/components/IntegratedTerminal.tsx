@@ -90,6 +90,11 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
     }
   }, [history]);
 
+  const handleClose = useCallback(() => {
+    setInput('');
+    onClose();
+  }, [onClose]);
+
   const processCommand = useCallback((cmd: string) => {
     const trimmed = cmd.trim().toLowerCase();
     
@@ -129,7 +134,7 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
       
       case 'exit':
       case 'gui':
-        onClose();
+        handleClose();
         return;
       
       case '':
@@ -141,13 +146,13 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
 
     setHistory(newHistory);
     setInput('');
-  }, [history, bookmarks, onClose]);
+  }, [history, bookmarks, handleClose]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       processCommand(input);
     } else if (e.key === 'Escape') {
-      onClose();
+      handleClose();
     }
   };
 
@@ -168,7 +173,7 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
           <span className="opacity-50">— bash</span>
         </div>
         <button 
-          onClick={onClose}
+          onClick={handleClose}
           className="p-1 text-fg-dark-muted hover:text-accent hover:bg-white/5 rounded transition-colors"
           title="Close terminal (Esc)"
         >

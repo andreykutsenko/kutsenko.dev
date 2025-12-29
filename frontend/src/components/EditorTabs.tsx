@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FileJson, FileCode, FileText, X, Bookmark } from 'lucide-react';
+import { FileJson, FileCode, FileText, X, Bookmark, Trophy, FlaskConical, Zap, DollarSign } from 'lucide-react';
 
 // Tab configuration
 const TABS = [
@@ -7,6 +7,12 @@ const TABS = [
   { path: '/github', label: 'github.json', ext: 'json' },
   { path: '/llm', label: 'llm.py', ext: 'py' },
   { path: '/lesswrong', label: 'less_wrong.md', ext: 'md' },
+  // AI Signals
+  { path: '/arena', label: 'lmsys_arena.json', ext: 'arena' },
+  { path: '/papers', label: 'papers.py', ext: 'papers' },
+  { path: '/tool', label: 'tool_of_day.md', ext: 'tool' },
+  { path: '/prices', label: 'token_prices.json', ext: 'prices' },
+  // Root files
   { path: '/bookmarks', label: 'bookmarks.md', ext: 'bookmark' },
   { path: '/about', label: 'about_me.md', ext: 'md' },
 ];
@@ -24,6 +30,14 @@ const getFileIcon = (ext: string, size = 12) => {
       return <FileText size={size} className="text-[#519aba]" />;
     case 'bookmark':
       return <Bookmark size={size} className="text-term-orange" />;
+    case 'arena':
+      return <Trophy size={size} className="text-term-orange" />;
+    case 'papers':
+      return <FlaskConical size={size} className="text-term-purple" />;
+    case 'tool':
+      return <Zap size={size} className="text-accent" />;
+    case 'prices':
+      return <DollarSign size={size} className="text-term-green" />;
     default:
       return <FileText size={size} className="text-fg-dark-muted" />;
   }
