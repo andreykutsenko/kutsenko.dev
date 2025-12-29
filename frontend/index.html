@@ -32,9 +32,11 @@
             },
             animation: {
               'blink': 'blink 1s step-end infinite',
+              'spin': 'spin 1s linear infinite',
             },
             keyframes: {
-              blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } }
+              blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } },
+              spin: { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }
             }
           },
         },

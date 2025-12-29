@@ -1,65 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { fetchDashboardData, fetchTranslations } from '../services/api';
 import { DashboardData, Lang } from '../types';
-import { GitFork, Star, Terminal, Cpu, BookOpen, Activity, Globe, Clock } from 'lucide-react';
+import { GitFork, Star, ExternalLink } from 'lucide-react';
 
-interface DashboardProps {
+// Shared props interface
+interface ViewProps {
   lang: Lang;
   t: (key: string) => string;
+  refreshTrigger?: number;
+  onSyncUpdate?: (time: string) => void;
 }
-
-interface IDETabProps {
-  title: string;
-  path: string;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-  footerStatus?: string;
-  lastSync?: string;
-}
-
-const IDETab: React.FC<IDETabProps> = ({ title, path, children, icon, footerStatus, lastSync }) => (
-  <div className="border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark flex flex-col h-full rounded shadow-xl transition-all hover:border-accent/40">
-    {/* Tab Header */}
-    <div className="flex bg-slate-100 dark:bg-[#0d1117] border-b border-border-light dark:border-border-dark">
-        <div className="px-4 py-2 bg-panel-light dark:bg-panel-dark border-r border-border-light dark:border-border-dark flex items-center gap-2 text-[10px] font-bold text-accent uppercase tracking-widest">
-           {icon}
-           <span>{title}</span>
-        </div>
-        <div className="flex-1 flex items-center justify-end px-3 gap-1.5 opacity-20">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-400"></div>
-            <div className="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-        </div>
-    </div>
-    
-    {/* Path Bar */}
-    <div className="px-4 py-1.5 bg-slate-50 dark:bg-[#161b22] border-b border-border-light dark:border-border-dark flex items-center gap-2 text-[9px] text-fg-dark-muted font-mono">
-       <span className="opacity-40">~</span>
-       <span>/</span>
-       <span className="opacity-40">streams</span>
-       <span>/</span>
-       <span className="text-fg-light dark:text-fg-dark">{path}</span>
-    </div>
-
-    <div className="p-4 overflow-y-auto scrollbar-hide flex-1 font-mono text-[13px] leading-relaxed">
-      {children}
-    </div>
-
-    {/* Footer with sync status */}
-    <div className="px-3 py-1 bg-slate-100 dark:bg-[#0d1117] border-t border-border-light dark:border-border-dark flex justify-between items-center text-[9px] font-mono text-fg-dark-muted">
-       <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1 text-accent"><Activity size={10} /> {footerStatus || 'IDLE'}</span>
-          <span className="hidden sm:flex items-center gap-1"><Globe size={10} /> 127.0.0.1</span>
-       </div>
-       {lastSync && (
-         <div className="flex items-center gap-1.5 opacity-60">
-           <Clock size={9} />
-           <span>{lastSync}</span>
-         </div>
-       )}
-    </div>
-  </div>
-);
 
 // Format relative time (e.g., "just now", "10m ago", "1h ago")
 const formatRelativeTime = (date: Date) => {
@@ -77,31 +27,39 @@ const formatRelativeTime = (date: Date) => {
   return `${Math.floor(diffHours / 24)}d ago`;
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
+// Shared data hook
+const useDashboardData = (lang: Lang, refreshTrigger: number, onSyncUpdate?: (time: string) => void) => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [translatedData, setTranslatedData] = useState<DashboardData | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
-  const [, setTick] = useState(0); // Force re-render for relative time updates
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    const fetched = await fetchDashboardData();
+    setData(fetched);
+    setLoading(false);
+    const updateTime = fetched.updatedAt ? new Date(fetched.updatedAt) : new Date();
+    setLastUpdate(updateTime);
+    if (onSyncUpdate) {
+      onSyncUpdate(formatRelativeTime(updateTime));
+    }
+  }, [onSyncUpdate]);
 
   useEffect(() => {
-    fetchDashboardData().then(fetched => {
-      setData(fetched);
-      setLoading(false);
-      // Use updatedAt from API (when cron ran), not page load time
-      setLastUpdate(fetched.updatedAt ? new Date(fetched.updatedAt) : new Date());
-    });
-  }, []);
+    fetchData();
+  }, [fetchData, refreshTrigger]);
 
-  // Update relative time display every 10 seconds
+  // Update sync time display periodically
   useEffect(() => {
+    if (!lastUpdate || !onSyncUpdate) return;
     const interval = setInterval(() => {
-      setTick(t => t + 1);
+      onSyncUpdate(formatRelativeTime(lastUpdate));
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [lastUpdate, onSyncUpdate]);
 
-  // Translate ALL sections when language changes
+  // Translate when language changes
   useEffect(() => {
     if (!data) return;
     if (lang === 'en') {
@@ -112,7 +70,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
     const translateAllSections = async () => {
       const newData = JSON.parse(JSON.stringify(data)) as DashboardData;
       
-      // Collect all texts to translate
       const allTexts: string[] = [
         ...newData.hackerNews.map(i => i.title || ''),
         ...newData.github.map(i => i.description || ''),
@@ -121,10 +78,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
         ...newData.lessWrong.map(i => i.summary || ''),
       ];
       
-      // Translate in one batch
       const translated = await fetchTranslations(allTexts, lang);
       
-      // Distribute translations back
       let idx = 0;
       newData.hackerNews.forEach((item) => { item.title = translated[idx++]; });
       newData.github.forEach((item) => { item.description = translated[idx++]; });
@@ -138,117 +93,216 @@ export const Dashboard: React.FC<DashboardProps> = ({ lang, t }) => {
     translateAllSections();
   }, [data, lang]);
 
-  const displayData = translatedData || data;
-  const syncTime = lastUpdate ? formatRelativeTime(lastUpdate) : undefined;
+  return { data: translatedData || data, loading };
+};
 
-  if (loading || !displayData) {
-    return (
-      <div className="h-[70vh] flex flex-col items-center justify-center text-fg-dark-muted gap-6">
-         <div className="w-16 h-1 border border-border-dark overflow-hidden rounded-full">
-            <div className="w-full h-full bg-accent animate-pulse"></div>
-         </div>
-         <p className="text-xs font-mono uppercase tracking-[0.3em] opacity-60 animate-pulse">{t('status.loading')}</p>
-      </div>
-    );
-  }
+// Loading component
+const LoadingState: React.FC<{ t: (key: string) => string }> = ({ t }) => (
+  <div className="h-[60vh] flex flex-col items-center justify-center text-fg-dark-muted gap-6">
+    <div className="w-16 h-1 border border-border-dark overflow-hidden rounded-full">
+      <div className="w-full h-full bg-accent animate-pulse"></div>
+    </div>
+    <p className="text-xs font-mono uppercase tracking-[0.3em] opacity-60 animate-pulse">{t('status.loading')}</p>
+  </div>
+);
+
+// Line numbers component
+const LineNumbers: React.FC<{ count: number }> = ({ count }) => (
+  <div className="select-none text-right pr-4 text-fg-dark-muted opacity-30 text-[11px] leading-relaxed border-r border-border-dark mr-4">
+    {Array.from({ length: count }, (_, i) => (
+      <div key={i}>{i + 1}</div>
+    ))}
+  </div>
+);
+
+// ===== HACKER NEWS VIEW =====
+export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
+  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+
+  if (loading || !data) return <LoadingState t={t} />;
 
   return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full pb-10">
-        
-        {/* Hacker News - Log Style */}
-        <div className="h-[450px]">
-            <IDETab title="hn_monitor" path="hacker_news.log" icon={<Terminal size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
-                <div className="space-y-4">
-                    {displayData.hackerNews.map((item, idx) => (
-                        <div key={idx} className="group flex gap-4 hover:bg-white/[0.02] p-2 -mx-2 rounded transition-colors border-l border-transparent hover:border-accent/20">
-                            <span className="text-fg-dark-muted opacity-30 text-[10px] pt-1">{(idx + 1).toString().padStart(2, '0')}</span>
-                            <div className="flex-1 min-w-0">
-                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-fg-light dark:text-fg-dark hover:text-accent transition-colors block truncate font-bold">
-                                    <span className="text-term-blue">[FETCH]</span> {item.title}
-                                </a>
-                                <div className="flex gap-4 mt-1 opacity-50 text-[10px] font-bold">
-                                    <span className="text-term-orange">POINTS: {item.points}</span>
-                                    <span className="text-term-purple">REPLIES: {item.comments}</span>
-                                    {item.author && <span className="text-fg-dark-muted hidden sm:inline">AUTHOR: @{item.author}</span>}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </IDETab>
-        </div>
-        
-        {/* GitHub Trending */}
-        <div className="h-[450px]">
-            <IDETab title="git_monitor" path="github_trending.sh" icon={<GitFork size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
-                <div className="space-y-3">
-                    {displayData.github.map((item, idx) => (
-                        <div key={idx} className="p-3 border border-border-light dark:border-border-dark bg-slate-50 dark:bg-white/[0.01] hover:border-accent/30 rounded group">
-                            <div className="flex justify-between items-center mb-1">
-                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-term-blue font-bold hover:underline truncate">
-                                    {item.name}
-                                </a>
-                                <span className="text-[9px] px-2 py-0.5 bg-term-purple/10 text-term-purple border border-term-purple/20 rounded uppercase font-black shrink-0 ml-2">
-                                    {item.language}
-                                </span>
-                            </div>
-                            <p className="text-[11px] text-fg-dark-muted mb-3 line-clamp-2 italic opacity-80 leading-snug">
-                                # {item.description}
-                            </p>
-                            <div className="flex gap-5 text-[10px] font-black tracking-widest uppercase">
-                                <span className="flex items-center gap-1.5 text-term-orange"><Star size={10} /> {item.stars?.toLocaleString()}</span>
-                                <span className="flex items-center gap-1.5 text-accent"><GitFork size={10} /> {item.forks || 0}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </IDETab>
-        </div>
-
-        {/* LLM News */}
-        <div className="h-[400px]">
-            <IDETab title="neural_feed" path="llm_watch.stream" icon={<Cpu size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
-                <div className="space-y-3">
-                    {displayData.llmNews.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-3 group">
-                            <span className="text-accent shrink-0 pt-0.5 opacity-50 select-none">❯</span>
-                            <div className="flex-1">
-                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-fg-light dark:text-fg-dark hover:text-term-orange transition-colors">
-                                    {item.title}
-                                </a>
-                                <div className="text-[10px] mt-1 text-term-purple flex items-center gap-2">
-                                   <span className="font-bold">SCORE: {item.score}</span>
-                                   <span className="opacity-40">|</span>
-                                   <span className="opacity-40">UTC {new Date().getHours()}:00</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </IDETab>
-        </div>
-
-        {/* LessWrong */}
-        <div className="h-[400px]">
-            <IDETab title="rational_db" path="essays.md" icon={<BookOpen size={12} />} footerStatus="SYNCED" lastSync={syncTime}>
-                <div className="space-y-6">
-                    {displayData.lessWrong.map((item, idx) => (
-                        <div key={idx} className="relative pl-5 group cursor-pointer">
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent/10 group-hover:bg-accent transition-all"></div>
-                            <a href={item.url} target="_blank" rel="noopener noreferrer">
-                                <h4 className="font-bold text-fg-light dark:text-fg-dark mb-1 group-hover:text-accent transition-colors">
-                                    {item.title}
-                                </h4>
-                                <p className="text-[11px] text-fg-dark-muted line-clamp-2 leading-relaxed opacity-80 italic">
-                                    "{item.summary}"
-                                </p>
-                            </a>
-                        </div>
-                    ))}
-                </div>
-            </IDETab>
-        </div>
-
+    <div className="max-w-4xl">
+      {/* File header comment */}
+      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
+        <span className="text-term-purple">// hacker_news.ts</span> - Top stories from Hacker News API
       </div>
+      
+      <div className="flex">
+        <LineNumbers count={data.hackerNews.length + 5} />
+        <div className="flex-1 space-y-2 text-[13px]">
+          <div className="text-term-purple">interface</div>
+          <div className="pl-4">
+            <span className="text-term-blue">HNStory</span> {'{'}
+          </div>
+          
+          {data.hackerNews.map((item, idx) => (
+            <a 
+              key={idx}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l-2 border-transparent hover:border-accent"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-term-orange shrink-0">{(idx + 1).toString().padStart(2, '0')}.</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium">
+                    {item.title}
+                    <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50" />
+                  </div>
+                  <div className="flex gap-4 mt-1 text-[10px] text-fg-dark-muted">
+                    <span className="text-term-orange">points: {item.points}</span>
+                    <span className="text-term-purple">comments: {item.comments}</span>
+                    {item.author && <span className="hidden sm:inline">by: @{item.author}</span>}
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+          
+          <div className="pl-4">{'}'}</div>
+        </div>
+      </div>
+    </div>
   );
+};
+
+// ===== GITHUB VIEW =====
+export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
+  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+
+  if (loading || !data) return <LoadingState t={t} />;
+
+  return (
+    <div className="max-w-4xl">
+      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
+        <span className="text-term-orange">// github.json</span> - Trending repositories
+      </div>
+      
+      <div className="font-mono text-[13px]">
+        <div className="text-fg-dark-muted opacity-60">{'{'}</div>
+        <div className="pl-4 text-term-orange">"trending"</div>
+        <div className="pl-4 text-fg-dark-muted">: [</div>
+        
+        {data.github.map((item, idx) => (
+          <a 
+            key={idx}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block ml-8 my-3 p-4 border border-border-light dark:border-border-dark rounded-lg hover:border-accent/50 transition-all bg-slate-50 dark:bg-white/[0.02] group"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-term-blue font-bold group-hover:text-accent transition-colors">
+                "{item.name}"
+              </span>
+              <span className="text-[9px] px-2 py-0.5 bg-term-purple/10 text-term-purple border border-term-purple/20 rounded uppercase font-bold">
+                {item.language}
+              </span>
+            </div>
+            <p className="text-[11px] text-fg-dark-muted italic opacity-80 mb-3 line-clamp-2">
+              "{item.description}"
+            </p>
+            <div className="flex gap-6 text-[10px] font-bold">
+              <span className="flex items-center gap-1.5 text-term-orange">
+                <Star size={10} /> {item.stars?.toLocaleString()}
+              </span>
+              <span className="flex items-center gap-1.5 text-accent">
+                <GitFork size={10} /> {item.forks || 0}
+              </span>
+            </div>
+          </a>
+        ))}
+        
+        <div className="pl-4 text-fg-dark-muted">]</div>
+        <div className="text-fg-dark-muted opacity-60">{'}'}</div>
+      </div>
+    </div>
+  );
+};
+
+// ===== LLM NEWS VIEW =====
+export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
+  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+
+  if (loading || !data) return <LoadingState t={t} />;
+
+  return (
+    <div className="max-w-4xl">
+      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
+        <span className="text-term-purple"># llm.py</span> - AI/ML news aggregator
+      </div>
+      
+      <div className="font-mono text-[13px]">
+        <div className="text-term-purple">class <span className="text-term-blue">LLMFeed</span>:</div>
+        <div className="pl-4 text-term-purple">def <span className="text-term-orange">__init__</span>(self):</div>
+        <div className="pl-8 text-fg-dark-muted opacity-60"># Latest AI news items</div>
+        <div className="pl-8 mb-4">self.<span className="text-term-blue">items</span> = [</div>
+        
+        {data.llmNews.map((item, idx) => (
+          <a 
+            key={idx}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block ml-12 my-2 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-purple/30 pl-4"
+          >
+            <div className="flex items-start gap-2">
+              <span className="text-term-orange shrink-0">#{idx + 1}</span>
+              <div className="flex-1">
+                <div className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors">
+                  "{item.title}"
+                </div>
+                <div className="text-[10px] text-term-purple mt-1">
+                  score={item.score}
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+        
+        <div className="pl-8">]</div>
+      </div>
+    </div>
+  );
+};
+
+// ===== LESSWRONG VIEW =====
+export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
+  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+
+  if (loading || !data) return <LoadingState t={t} />;
+
+  return (
+    <div className="max-w-4xl">
+      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
+        <span className="text-[#519aba]"># less_wrong.md</span> - Rationality essays
+      </div>
+      
+      <div className="font-mono text-[13px] space-y-6">
+        <div className="text-[#519aba] text-lg font-bold"># LessWrong Feed</div>
+        
+        {data.lessWrong.map((item, idx) => (
+          <a 
+            key={idx}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group"
+          >
+            <div className="text-[#519aba] mb-1">## {item.title}</div>
+            <blockquote className="border-l-2 border-accent/30 pl-4 text-[12px] text-fg-dark-muted italic opacity-80 group-hover:border-accent transition-colors">
+              &gt; {item.summary}
+            </blockquote>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ===== LEGACY GRID DASHBOARD (for backward compatibility) =====
+export const Dashboard: React.FC<ViewProps> = ({ lang, t }) => {
+  return <HackerNewsView lang={lang} t={t} />;
 };
