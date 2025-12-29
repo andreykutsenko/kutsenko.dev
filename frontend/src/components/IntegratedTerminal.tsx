@@ -26,7 +26,7 @@ const ABOUT_TEXT = `
 ┌─────────────────────────────────────────────────────────────┐
 │  Andrey Kutsenko                                            │
 │  Software engineer building automation tools and AI agents. │
-│  Location: Tashkent, Uzbekistan                             │
+│  Location: San Francisco, CA                                │
 │                                                             │
 │  Expertise: Python, TypeScript, Infrastructure, LLMs       │
 │  Focus: AI agents, automation, data pipelines              │
