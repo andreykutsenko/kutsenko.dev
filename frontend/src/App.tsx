@@ -7,7 +7,7 @@ import { TerminalSidebar } from './components/TerminalSidebar';
 import { ViewToggle, ViewMode } from './components/ViewToggle';
 import { EditorTabs } from './components/EditorTabs';
 import { StatusBar } from './components/StatusBar';
-import { Dashboard, HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dashboard';
+import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dashboard';
 import { TerminalDashboard } from './pages/TerminalDashboard';
 import { TerminalAbout } from './pages/TerminalAbout';
 import { About } from './pages/About';
