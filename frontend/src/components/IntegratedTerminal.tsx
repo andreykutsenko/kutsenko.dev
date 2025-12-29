@@ -59,21 +59,22 @@ drwxr-xr-x  dashboard/
 export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, onClose, bookmarks }) => {
   const [history, setHistory] = useState<TerminalLine[]>([]);
   const [input, setInput] = useState('');
-  const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const prevIsOpen = useRef(false);
 
-  // Show welcome message on first open
+  // Show welcome message EVERY time terminal opens
   useEffect(() => {
-    if (isOpen && !hasShownWelcome) {
+    if (isOpen && !prevIsOpen.current) {
+      // Terminal just opened - show welcome
       setHistory([
         { type: 'ascii', content: ASCII_WELCOME },
         { type: 'output', content: "Welcome to the system. Type 'help' for commands." },
         { type: 'output', content: '' },
       ]);
-      setHasShownWelcome(true);
     }
-  }, [isOpen, hasShownWelcome]);
+    prevIsOpen.current = isOpen;
+  }, [isOpen]);
 
   // Focus input when opened
   useEffect(() => {
@@ -197,19 +198,19 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
         ))}
 
         {/* Input Line */}
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-center gap-1 mt-1">
           <span className="text-term-green shrink-0">guest@kutsenko.dev:~$</span>
+          <span className="animate-blink text-accent">█</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none text-fg-dark font-mono text-[12px] caret-accent"
+            className="flex-1 bg-transparent border-none outline-none text-fg-dark font-mono text-[12px] caret-transparent"
             spellCheck={false}
             autoComplete="off"
           />
-          <span className="animate-blink text-accent">█</span>
         </div>
       </div>
     </div>
