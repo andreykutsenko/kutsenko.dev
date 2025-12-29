@@ -11,7 +11,8 @@ import {
   Files,
   Search,
   GitBranch,
-  Settings
+  Settings,
+  Bookmark
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -46,6 +47,7 @@ export const getLanguageFromFile = (pathname: string) => {
   if (pathname === '/hn') return 'TypeScript';
   if (pathname === '/lesswrong') return 'Markdown';
   if (pathname === '/about') return 'Markdown';
+  if (pathname === '/bookmarks') return 'Markdown';
   return 'Plain Text';
 };
 
@@ -128,8 +130,14 @@ export const Sidebar: React.FC<SidebarProps> = () => {
 
         <div className="hidden lg:block my-3 border-t border-border-light dark:border-border-dark mx-3 opacity-30"></div>
 
-        {/* About file (root level) */}
+        {/* Root level files */}
         <div className={dashboardOpen ? 'lg:ml-4' : ''}>
+          <FileItem 
+            to="/bookmarks" 
+            icon={<Bookmark size={14} className="text-term-orange" />} 
+            label="bookmarks.md" 
+            isActive={location.pathname === '/bookmarks'}
+          />
           <FileItem 
             to="/about" 
             icon={getFileIcon('md')} 

@@ -11,6 +11,7 @@ import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dash
 import { TerminalDashboard } from './pages/TerminalDashboard';
 import { TerminalAbout } from './pages/TerminalAbout';
 import { About } from './pages/About';
+import { BookmarksView } from './pages/BookmarksView';
 import { useBookmarks } from './hooks/useBookmarks';
 import { Moon, Sun, Command, SquareTerminal } from 'lucide-react';
 
@@ -28,7 +29,7 @@ function App() {
   const navigate = useNavigate();
   
   // Bookmarks system
-  const { count: savedCount, isBookmarked, toggleBookmark } = useBookmarks();
+  const { bookmarks, count: savedCount, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
 
   // Add current path to open tabs if not already there
   useEffect(() => {
@@ -228,6 +229,11 @@ function App() {
               <Route path="/lesswrong" element={
                 <div className="p-4 md:p-6">
                   <LessWrongView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
+                </div>
+              } />
+              <Route path="/bookmarks" element={
+                <div className="p-4 md:p-6">
+                  <BookmarksView bookmarks={bookmarks} removeBookmark={removeBookmark} />
                 </div>
               } />
               <Route path="/about" element={

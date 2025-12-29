@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FileJson, FileCode, FileText, X } from 'lucide-react';
+import { FileJson, FileCode, FileText, X, Bookmark } from 'lucide-react';
 
 // Tab configuration
 const TABS = [
@@ -7,6 +7,7 @@ const TABS = [
   { path: '/github', label: 'github.json', ext: 'json' },
   { path: '/llm', label: 'llm.py', ext: 'py' },
   { path: '/lesswrong', label: 'less_wrong.md', ext: 'md' },
+  { path: '/bookmarks', label: 'bookmarks.md', ext: 'bookmark' },
   { path: '/about', label: 'about_me.md', ext: 'md' },
 ];
 
@@ -21,6 +22,8 @@ const getFileIcon = (ext: string, size = 12) => {
       return <FileCode size={size} className="text-term-purple" />;
     case 'md':
       return <FileText size={size} className="text-[#519aba]" />;
+    case 'bookmark':
+      return <Bookmark size={size} className="text-term-orange" />;
     default:
       return <FileText size={size} className="text-fg-dark-muted" />;
   }
