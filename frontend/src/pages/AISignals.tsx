@@ -164,13 +164,13 @@ export const ArenaView: React.FC = () => {
       </div>
 
       <a 
-        href="https://chat.lmsys.org/?leaderboard" 
+        href="https://lmarena.ai/" 
         target="_blank" 
         rel="noopener noreferrer"
         className="flex items-center gap-2 mt-6 text-xs text-fg-dark-muted hover:text-accent transition-colors"
       >
         <ExternalLink size={12} />
-        View full leaderboard on lmsys.org
+        View full leaderboard on lmarena.ai
       </a>
     </div>
   );

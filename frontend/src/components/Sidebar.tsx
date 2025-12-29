@@ -57,7 +57,9 @@ export const getLanguageFromFile = (pathname: string) => {
 
 export const Sidebar: React.FC<SidebarProps> = () => {
   const location = useLocation();
+  const [workspaceOpen, setWorkspaceOpen] = useState(true);
   const [dashboardOpen, setDashboardOpen] = useState(true);
+  const [aiSignalsOpen, setAiSignalsOpen] = useState(false); // Collapsed by default
 
   return (
     <aside className="w-12 md:w-14 lg:w-64 border-r border-border-light dark:border-border-dark bg-slate-50 dark:bg-[#0d1117] flex flex-col z-20 transition-all">
@@ -88,105 +90,117 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         
         {/* Project Root */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 text-[11px] font-bold text-fg-dark-muted hover:bg-white/5 cursor-pointer select-none"
-             onClick={() => setDashboardOpen(!dashboardOpen)}>
-          {dashboardOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          {dashboardOpen ? <FolderOpen size={14} className="text-term-blue" /> : <Folder size={14} className="text-term-blue" />}
+             onClick={() => setWorkspaceOpen(!workspaceOpen)}>
+          {workspaceOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          {workspaceOpen ? <FolderOpen size={14} className="text-term-blue" /> : <Folder size={14} className="text-term-blue" />}
           <span>kts-workspace</span>
         </div>
 
-        {/* Dashboard folder */}
-        {dashboardOpen && (
+        {/* Dashboard folder - collapsible */}
+        {workspaceOpen && (
           <div className="lg:ml-4">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 text-[11px] text-fg-dark-muted">
-              <ChevronDown size={10} className="opacity-50" />
-              <Folder size={12} className="text-term-orange opacity-70" />
+            <div 
+              className="hidden lg:flex items-center gap-2 px-3 py-1 text-[11px] text-fg-dark-muted hover:bg-white/5 cursor-pointer select-none"
+              onClick={() => setDashboardOpen(!dashboardOpen)}
+            >
+              {dashboardOpen ? <ChevronDown size={10} className="opacity-50" /> : <ChevronRight size={10} className="opacity-50" />}
+              {dashboardOpen ? <FolderOpen size={12} className="text-term-orange opacity-70" /> : <Folder size={12} className="text-term-orange opacity-70" />}
               <span className="opacity-60">dashboard</span>
             </div>
 
-            <div className="lg:ml-4">
-              <FileItem 
-                to="/" 
-                icon={getFileIcon('ts')} 
-                label="hacker_news.ts" 
-                isActive={location.pathname === '/' || location.pathname === '/hn'}
-              />
-              <FileItem 
-                to="/github" 
-                icon={getFileIcon('json')} 
-                label="github.json" 
-                isActive={location.pathname === '/github'}
-              />
-              <FileItem 
-                to="/llm" 
-                icon={getFileIcon('py')} 
-                label="llm.py" 
-                isActive={location.pathname === '/llm'}
-              />
-              <FileItem 
-                to="/lesswrong" 
-                icon={getFileIcon('md')} 
-                label="less_wrong.md" 
-                isActive={location.pathname === '/lesswrong'}
-              />
-            </div>
+            {dashboardOpen && (
+              <div className="lg:ml-4">
+                <FileItem 
+                  to="/" 
+                  icon={getFileIcon('ts')} 
+                  label="hacker_news.ts" 
+                  isActive={location.pathname === '/' || location.pathname === '/hn'}
+                />
+                <FileItem 
+                  to="/github" 
+                  icon={getFileIcon('json')} 
+                  label="github.json" 
+                  isActive={location.pathname === '/github'}
+                />
+                <FileItem 
+                  to="/llm" 
+                  icon={getFileIcon('py')} 
+                  label="llm.py" 
+                  isActive={location.pathname === '/llm'}
+                />
+                <FileItem 
+                  to="/lesswrong" 
+                  icon={getFileIcon('md')} 
+                  label="less_wrong.md" 
+                  isActive={location.pathname === '/lesswrong'}
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {/* AI Signals folder */}
-        {dashboardOpen && (
+        {/* AI Signals folder - collapsible */}
+        {workspaceOpen && (
           <div className="lg:ml-4">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 text-[11px] text-fg-dark-muted">
-              <ChevronDown size={10} className="opacity-50" />
-              <Folder size={12} className="text-accent opacity-70" />
+            <div 
+              className="hidden lg:flex items-center gap-2 px-3 py-1 text-[11px] text-fg-dark-muted hover:bg-white/5 cursor-pointer select-none"
+              onClick={() => setAiSignalsOpen(!aiSignalsOpen)}
+            >
+              {aiSignalsOpen ? <ChevronDown size={10} className="opacity-50" /> : <ChevronRight size={10} className="opacity-50" />}
+              {aiSignalsOpen ? <FolderOpen size={12} className="text-accent opacity-70" /> : <Folder size={12} className="text-accent opacity-70" />}
               <span className="opacity-60">ai_signals</span>
             </div>
 
-            <div className="lg:ml-4">
-              <FileItem 
-                to="/arena" 
-                icon={<Trophy size={14} className="text-term-orange" />} 
-                label="lmsys_arena.json" 
-                isActive={location.pathname === '/arena'}
-              />
-              <FileItem 
-                to="/papers" 
-                icon={<FlaskConical size={14} className="text-term-purple" />} 
-                label="papers.py" 
-                isActive={location.pathname === '/papers'}
-              />
-              <FileItem 
-                to="/tool" 
-                icon={<Zap size={14} className="text-accent" />} 
-                label="tool_of_day.md" 
-                isActive={location.pathname === '/tool'}
-              />
-              <FileItem 
-                to="/prices" 
-                icon={<DollarSign size={14} className="text-term-green" />} 
-                label="token_prices.json" 
-                isActive={location.pathname === '/prices'}
-              />
-            </div>
+            {aiSignalsOpen && (
+              <div className="lg:ml-4">
+                <FileItem 
+                  to="/arena" 
+                  icon={<Trophy size={14} className="text-term-orange" />} 
+                  label="lmsys_arena.json" 
+                  isActive={location.pathname === '/arena'}
+                />
+                <FileItem 
+                  to="/papers" 
+                  icon={<FlaskConical size={14} className="text-term-purple" />} 
+                  label="papers.py" 
+                  isActive={location.pathname === '/papers'}
+                />
+                <FileItem 
+                  to="/tool" 
+                  icon={<Zap size={14} className="text-accent" />} 
+                  label="tool_of_day.md" 
+                  isActive={location.pathname === '/tool'}
+                />
+                <FileItem 
+                  to="/prices" 
+                  icon={<DollarSign size={14} className="text-term-green" />} 
+                  label="token_prices.json" 
+                  isActive={location.pathname === '/prices'}
+                />
+              </div>
+            )}
           </div>
         )}
 
         <div className="hidden lg:block my-3 border-t border-border-light dark:border-border-dark mx-3 opacity-30"></div>
 
         {/* Root level files */}
-        <div className={dashboardOpen ? 'lg:ml-4' : ''}>
-          <FileItem 
-            to="/bookmarks" 
-            icon={<Bookmark size={14} className="text-term-orange" />} 
-            label="bookmarks.md" 
-            isActive={location.pathname === '/bookmarks'}
-          />
-          <FileItem 
-            to="/about" 
-            icon={getFileIcon('md')} 
-            label="about_me.md" 
-            isActive={location.pathname === '/about'}
-          />
-        </div>
+        {workspaceOpen && (
+          <div className="lg:ml-4">
+            <FileItem 
+              to="/bookmarks" 
+              icon={<Bookmark size={14} className="text-term-orange" />} 
+              label="bookmarks.md" 
+              isActive={location.pathname === '/bookmarks'}
+            />
+            <FileItem 
+              to="/about" 
+              icon={getFileIcon('md')} 
+              label="about_me.md" 
+              isActive={location.pathname === '/about'}
+            />
+          </div>
+        )}
       </nav>
 
       {/* Sidebar Footer */}
