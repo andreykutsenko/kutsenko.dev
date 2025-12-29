@@ -91,8 +91,16 @@ export const About: React.FC<AboutProps> = () => {
               <div className="text-fg-dark-muted">Data parsing & automation for fintech</div>
             </div>
             <div className="border-l border-accent/30 pl-3">
-              <div className="text-fg-light dark:text-fg-dark font-bold">CEO @ SIMPLE PROCESS LLC</div>
-              <div className="text-fg-dark-muted">Business automation & AI-driven tools</div>
+              <a 
+                href="https://simpleprocess.io" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-fg-light dark:text-fg-dark font-bold hover:text-accent transition-colors inline-flex items-center gap-2"
+              >
+                CEO @ SIMPLE PROCESS LLC
+                <ExternalLink size={10} className="opacity-50" />
+              </a>
+              <div className="text-fg-dark-muted">Business automation & AI-driven tools → <a href="https://simpleprocess.io" target="_blank" rel="noopener noreferrer" className="text-term-blue hover:underline">simpleprocess.io</a></div>
             </div>
           </div>
         </div>
