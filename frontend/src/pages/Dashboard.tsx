@@ -335,7 +335,7 @@ export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSy
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-2">
+      <div className="space-y-2 text-[13px]">
         {data.llmNews.map((item, idx) => {
           const itemId = `llm-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -403,7 +403,7 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2 text-[13px]">
         {data.lessWrong.map((item, idx) => {
           const itemId = `lw-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
