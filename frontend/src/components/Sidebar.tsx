@@ -11,7 +11,6 @@ import {
   Files,
   Search,
   GitBranch,
-  Settings,
   Bookmark,
   Zap,
   Trophy,
@@ -78,11 +77,8 @@ export const Sidebar: React.FC<SidebarProps> = () => {
       </div>
 
       {/* Explorer Header */}
-      <div className="hidden lg:flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark">
+      <div className="hidden lg:flex items-center px-4 py-2 border-b border-border-light dark:border-border-dark">
         <span className="text-[10px] font-bold text-fg-dark-muted uppercase tracking-widest">Explorer</span>
-        <button className="text-fg-dark-muted hover:text-accent transition-colors opacity-50 hover:opacity-100">
-          <Settings size={12} />
-        </button>
       </div>
       
       {/* File Tree */}
