@@ -1,14 +1,116 @@
-import { Trophy, FlaskConical, Zap, DollarSign, ExternalLink, Star, GitFork } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trophy, FlaskConical, Zap, DollarSign, ExternalLink, Star, GitFork, Loader2 } from 'lucide-react';
+import { fetchAISignals } from '../services/api';
+
+// Types
+interface ArenaModel {
+  rank: number;
+  model: string;
+  elo: number;
+  organization: string;
+  change: string;
+}
+
+interface Paper {
+  title: string;
+  authors: string;
+  stars: number;
+  repo: string;
+  arxiv: string;
+  category: string;
+}
+
+interface Tool {
+  name: string;
+  tagline: string;
+  description: string;
+  votes: number;
+  url: string;
+  category: string;
+}
+
+interface TokenPrice {
+  model: string;
+  provider: string;
+  input: number;
+  output: number;
+  context: string;
+}
+
+interface AISignalsData {
+  updatedAt: string;
+  arena: ArenaModel[];
+  papers: Paper[];
+  toolOfDay: Tool;
+  tokenPrices: TokenPrice[];
+}
+
+// Hook to fetch AI signals data
+const useAISignals = () => {
+  const [data, setData] = useState<AISignalsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const result = await fetchAISignals();
+        setData(result);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch AI signals:', err);
+        setError('Failed to load data');
+        // Use fallback data
+        setData({
+          updatedAt: new Date().toISOString(),
+          arena: [
+            { rank: 1, model: 'GPT-4o', elo: 1290, organization: 'OpenAI', change: '+1' },
+            { rank: 2, model: 'Claude 3.5 Sonnet', elo: 1285, organization: 'Anthropic', change: '0' },
+            { rank: 3, model: 'Gemini 1.5 Pro', elo: 1267, organization: 'Google', change: '-1' },
+          ],
+          papers: [
+            { title: 'Attention Is All You Need', authors: 'Vaswani et al.', stars: 15000, repo: 'tensorflow/tensor2tensor', arxiv: 'https://arxiv.org/abs/1706.03762', category: 'NLP' },
+          ],
+          toolOfDay: {
+            name: 'Cursor',
+            tagline: 'The AI Code Editor',
+            description: 'Built to make you extraordinarily productive.',
+            votes: 3200,
+            url: 'https://cursor.com',
+            category: 'Developer Tools',
+          },
+          tokenPrices: [
+            { model: 'GPT-4o', provider: 'OpenAI', input: 2.50, output: 10.00, context: '128K' },
+            { model: 'Claude 3.5 Sonnet', provider: 'Anthropic', input: 3.00, output: 15.00, context: '200K' },
+          ],
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  return { data, loading, error };
+};
+
+// Loading component
+const LoadingState = () => (
+  <div className="flex items-center justify-center py-12 text-fg-dark-muted">
+    <Loader2 className="animate-spin mr-2" size={16} />
+    <span className="text-xs font-mono">FETCHING DATA...</span>
+  </div>
+);
 
 // ===== LMSYS ARENA VIEW =====
-// Mock data - would come from lmsys.org API
-const MOCK_ARENA_DATA = [
-  { rank: 1, model: 'GPT-4o', elo: 1287, organization: 'OpenAI', change: '+2' },
-  { rank: 2, model: 'Claude 3.5 Sonnet', elo: 1268, organization: 'Anthropic', change: '0' },
-  { rank: 3, model: 'Gemini 1.5 Pro', elo: 1254, organization: 'Google', change: '-1' },
-];
-
 export const ArenaView: React.FC = () => {
+  const { data, loading } = useAISignals();
+
+  if (loading || !data) return <LoadingState />;
+
+  const arenaData = data.arena.slice(0, 5); // Top 5
+
   return (
     <div className="max-w-2xl">
       <div className="flex justify-between items-center mb-6">
@@ -22,13 +124,13 @@ export const ArenaView: React.FC = () => {
         <Trophy size={24} className="text-term-orange" />
         <div>
           <h2 className="text-lg font-bold text-fg-light dark:text-fg-dark">LMSYS Chatbot Arena</h2>
-          <p className="text-xs text-fg-dark-muted">Top 3 models by ELO rating (live)</p>
+          <p className="text-xs text-fg-dark-muted">Top models by ELO rating</p>
         </div>
       </div>
 
       {/* Leaderboard */}
       <div className="space-y-3">
-        {MOCK_ARENA_DATA.map((model, idx) => (
+        {arenaData.map((model, idx) => (
           <div 
             key={idx}
             className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
@@ -75,35 +177,11 @@ export const ArenaView: React.FC = () => {
 };
 
 // ===== PAPERS WITH CODE VIEW =====
-// Mock data - would come from paperswithcode.com API
-const MOCK_PAPERS_DATA = [
-  { 
-    title: 'Scaling Laws for Neural Language Models', 
-    authors: 'Kaplan et al.',
-    stars: 2847,
-    repo: 'openai/scaling-laws',
-    arxiv: 'https://arxiv.org/abs/2001.08361',
-    category: 'NLP'
-  },
-  { 
-    title: 'Chain-of-Thought Prompting Elicits Reasoning', 
-    authors: 'Wei et al.',
-    stars: 1923,
-    repo: 'google-research/chain-of-thought',
-    arxiv: 'https://arxiv.org/abs/2201.11903',
-    category: 'Reasoning'
-  },
-  { 
-    title: 'Constitutional AI: Harmlessness from AI Feedback', 
-    authors: 'Bai et al.',
-    stars: 856,
-    repo: 'anthropic/constitutional-ai',
-    arxiv: 'https://arxiv.org/abs/2212.08073',
-    category: 'Alignment'
-  },
-];
-
 export const PapersView: React.FC = () => {
+  const { data, loading } = useAISignals();
+
+  if (loading || !data) return <LoadingState />;
+
   return (
     <div className="max-w-3xl">
       <div className="flex justify-between items-center mb-6">
@@ -123,7 +201,7 @@ export const PapersView: React.FC = () => {
 
       {/* Papers List */}
       <div className="space-y-4">
-        {MOCK_PAPERS_DATA.map((paper, idx) => (
+        {data.papers.map((paper, idx) => (
           <div 
             key={idx}
             className="p-4 border border-border-dark rounded-lg bg-black/10 hover:border-term-purple/50 transition-all group"
@@ -145,15 +223,17 @@ export const PapersView: React.FC = () => {
                 </a>
                 <div className="text-xs text-fg-dark-muted mt-1">{paper.authors}</div>
               </div>
-              <div className="flex items-center gap-3 text-xs text-fg-dark-muted">
+              <div className="flex items-center gap-3 text-xs text-fg-dark-muted shrink-0">
                 <span className="flex items-center gap-1">
                   <Star size={12} className="text-term-orange" />
-                  {paper.stars}
+                  {paper.stars.toLocaleString()}
                 </span>
-                <span className="flex items-center gap-1">
-                  <GitFork size={12} />
-                  {paper.repo}
-                </span>
+                {paper.repo && (
+                  <span className="flex items-center gap-1 hidden md:flex">
+                    <GitFork size={12} />
+                    {paper.repo}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -174,18 +254,13 @@ export const PapersView: React.FC = () => {
 };
 
 // ===== AI TOOL OF THE DAY =====
-// Mock data - would come from Product Hunt or curated
-const MOCK_TOOL = {
-  name: 'Cursor',
-  tagline: 'The AI Code Editor',
-  description: 'Built to make you extraordinarily productive. Cursor is a fork of VS Code with native AI integration.',
-  votes: 2847,
-  url: 'https://cursor.com',
-  category: 'Developer Tools',
-  featured: true
-};
-
 export const ToolView: React.FC = () => {
+  const { data, loading } = useAISignals();
+
+  if (loading || !data) return <LoadingState />;
+
+  const tool = data.toolOfDay;
+
   return (
     <div className="max-w-2xl">
       <div className="flex justify-between items-center mb-6">
@@ -210,29 +285,29 @@ export const ToolView: React.FC = () => {
         </div>
         
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-xl bg-black/20 flex items-center justify-center text-2xl">
+          <div className="w-16 h-16 rounded-xl bg-black/20 flex items-center justify-center text-2xl shrink-0">
             ⚡
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h3 className="text-xl font-black text-fg-light dark:text-fg-dark mb-1">
-              {MOCK_TOOL.name}
+              {tool.name}
             </h3>
-            <p className="text-sm text-accent font-medium mb-2">{MOCK_TOOL.tagline}</p>
+            <p className="text-sm text-accent font-medium mb-2">{tool.tagline}</p>
             <p className="text-xs text-fg-dark-muted leading-relaxed">
-              {MOCK_TOOL.description}
+              {tool.description}
             </p>
           </div>
         </div>
 
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-accent/20">
           <div className="flex items-center gap-4 text-xs text-fg-dark-muted">
-            <span className="px-2 py-1 bg-black/20 rounded">{MOCK_TOOL.category}</span>
+            <span className="px-2 py-1 bg-black/20 rounded">{tool.category}</span>
             <span className="flex items-center gap-1">
-              <span className="text-term-orange">▲</span> {MOCK_TOOL.votes} votes
+              <span className="text-term-orange">▲</span> {tool.votes.toLocaleString()} votes
             </span>
           </div>
           <a 
-            href={MOCK_TOOL.url}
+            href={tool.url}
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-accent text-black font-bold text-xs rounded-lg hover:bg-accent/80 transition-colors flex items-center gap-2"
@@ -243,23 +318,18 @@ export const ToolView: React.FC = () => {
       </div>
 
       <p className="text-[10px] text-fg-dark-muted mt-4 text-center opacity-50">
-        Updated daily from Product Hunt & Twitter/X trends
+        Rotates daily from curated AI tools list
       </p>
     </div>
   );
 };
 
 // ===== TOKEN PRICES VIEW =====
-// Mock data - would come from OpenAI/Anthropic pricing pages
-const MOCK_PRICES = [
-  { model: 'GPT-4o', provider: 'OpenAI', input: 2.50, output: 10.00, context: '128K' },
-  { model: 'GPT-4o-mini', provider: 'OpenAI', input: 0.15, output: 0.60, context: '128K' },
-  { model: 'Claude 3.5 Sonnet', provider: 'Anthropic', input: 3.00, output: 15.00, context: '200K' },
-  { model: 'Claude 3.5 Haiku', provider: 'Anthropic', input: 0.25, output: 1.25, context: '200K' },
-  { model: 'Gemini 1.5 Pro', provider: 'Google', input: 1.25, output: 5.00, context: '2M' },
-];
-
 export const PricesView: React.FC = () => {
+  const { data, loading } = useAISignals();
+
+  if (loading || !data) return <LoadingState />;
+
   return (
     <div className="max-w-3xl">
       <div className="flex justify-between items-center mb-6">
@@ -288,7 +358,7 @@ export const PricesView: React.FC = () => {
         </div>
         
         {/* Rows */}
-        {MOCK_PRICES.map((price, idx) => (
+        {data.tokenPrices.map((price, idx) => (
           <div 
             key={idx}
             className={`grid grid-cols-5 gap-2 px-4 py-3 text-xs border-t border-border-dark hover:bg-white/5 transition-colors ${
@@ -307,7 +377,7 @@ export const PricesView: React.FC = () => {
       </div>
 
       <p className="text-[10px] text-fg-dark-muted mt-4 opacity-50">
-        Prices as of December 2025. Check provider websites for latest.
+        Prices as of December 2024. Check provider websites for latest.
       </p>
     </div>
   );
