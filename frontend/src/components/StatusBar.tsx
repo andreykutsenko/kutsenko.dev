@@ -1,4 +1,4 @@
-import { GitBranch, AlertCircle, CheckCircle, RefreshCw, Clock } from 'lucide-react';
+import { GitBranch, AlertCircle, CheckCircle, RefreshCw, Clock, Bookmark } from 'lucide-react';
 import { getLanguageFromFile } from './Sidebar';
 
 interface StatusBarProps {
@@ -6,6 +6,7 @@ interface StatusBarProps {
   lastSync: string | null;
   isRefreshing: boolean;
   onRefresh: () => void;
+  savedCount?: number;
   errors?: number;
   warnings?: number;
 }
@@ -15,6 +16,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   lastSync,
   isRefreshing,
   onRefresh,
+  savedCount = 0,
   errors = 0,
   warnings = 0,
 }) => {
@@ -45,6 +47,17 @@ export const StatusBar: React.FC<StatusBarProps> = ({
 
       {/* Right Section */}
       <div className="flex items-center gap-3">
+        {/* Saved Count */}
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded cursor-default ${
+          savedCount > 0 ? 'bg-white/10' : 'opacity-60'
+        }`}>
+          <Bookmark size={10} fill={savedCount > 0 ? 'currentColor' : 'none'} />
+          <span>Saved: {savedCount}</span>
+        </div>
+
+        {/* Separator */}
+        <div className="h-3 w-px bg-white/20"></div>
+
         {/* Last Sync */}
         {lastSync && (
           <div className="hidden sm:flex items-center gap-1.5 opacity-80">
@@ -80,4 +93,3 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     </footer>
   );
 };
-

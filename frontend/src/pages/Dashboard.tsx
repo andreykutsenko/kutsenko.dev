@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { fetchDashboardData, fetchTranslations } from '../services/api';
 import { DashboardData, Lang } from '../types';
-import { GitFork, Star, ExternalLink } from 'lucide-react';
+import { GitFork, Star, ExternalLink, Code, Eye } from 'lucide-react';
+import { BookmarkItem } from '../hooks/useBookmarks';
 
 // Shared props interface
 interface ViewProps {
@@ -9,6 +10,8 @@ interface ViewProps {
   t: (key: string) => string;
   refreshTrigger?: number;
   onSyncUpdate?: (time: string) => void;
+  isBookmarked?: (id: string) => boolean;
+  toggleBookmark?: (item: Omit<BookmarkItem, 'savedAt'>) => void;
 }
 
 // Format relative time (e.g., "just now", "10m ago", "1h ago")
@@ -93,7 +96,7 @@ const useDashboardData = (lang: Lang, refreshTrigger: number, onSyncUpdate?: (ti
     translateAllSections();
   }, [data, lang]);
 
-  return { data: translatedData || data, loading };
+  return { data: translatedData || data, rawData: data, loading };
 };
 
 // Loading component
@@ -106,197 +109,338 @@ const LoadingState: React.FC<{ t: (key: string) => string }> = ({ t }) => (
   </div>
 );
 
-// Line numbers component
-const LineNumbers: React.FC<{ count: number }> = ({ count }) => (
-  <div className="select-none text-right pr-4 text-fg-dark-muted opacity-30 text-[11px] leading-relaxed border-r border-border-dark mr-4">
-    {Array.from({ length: count }, (_, i) => (
-      <div key={i}>{i + 1}</div>
-    ))}
+// View Mode Toggle
+const ViewModeToggle: React.FC<{ mode: 'preview' | 'raw'; onChange: (mode: 'preview' | 'raw') => void }> = ({ mode, onChange }) => (
+  <div className="flex items-center gap-1 border border-border-light dark:border-border-dark rounded p-0.5 bg-slate-100 dark:bg-black/30">
+    <button
+      onClick={() => onChange('preview')}
+      className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold rounded transition-colors ${
+        mode === 'preview' ? 'bg-panel-light dark:bg-panel-dark text-accent' : 'text-fg-dark-muted hover:text-fg-dark'
+      }`}
+      title="Preview mode"
+    >
+      <Eye size={10} />
+      <span className="hidden sm:inline">Preview</span>
+    </button>
+    <button
+      onClick={() => onChange('raw')}
+      className={`flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold rounded transition-colors ${
+        mode === 'raw' ? 'bg-panel-light dark:bg-panel-dark text-accent' : 'text-fg-dark-muted hover:text-fg-dark'
+      }`}
+      title="Raw JSON"
+    >
+      <Code size={10} />
+      <span className="hidden sm:inline">Raw</span>
+    </button>
+  </div>
+);
+
+// Bookmark Star Button
+const BookmarkStar: React.FC<{ 
+  isActive: boolean; 
+  onClick: (e: React.MouseEvent) => void;
+}> = ({ isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`p-1 rounded transition-all hover:scale-110 ${
+      isActive 
+        ? 'text-term-orange' 
+        : 'text-fg-dark-muted opacity-40 hover:opacity-100 hover:text-term-orange'
+    }`}
+    title={isActive ? 'Remove from bookmarks' : 'Add to bookmarks'}
+  >
+    <Star size={12} fill={isActive ? 'currentColor' : 'none'} />
+  </button>
+);
+
+// Raw JSON Display
+const RawJsonView: React.FC<{ data: unknown; title: string }> = ({ data, title }) => (
+  <div className="max-w-4xl">
+    <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
+      <span className="text-term-orange">// {title}</span> - Raw JSON data
+    </div>
+    <pre className="bg-slate-50 dark:bg-black/30 border border-border-light dark:border-border-dark rounded-lg p-4 overflow-x-auto text-[11px] leading-relaxed">
+      <code className="text-fg-light dark:text-fg-dark">
+        {JSON.stringify(data, null, 2)}
+      </code>
+    </pre>
   </div>
 );
 
 // ===== HACKER NEWS VIEW =====
-export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
-  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate, isBookmarked, toggleBookmark }) => {
+  const { data, rawData, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+  const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview');
 
   if (loading || !data) return <LoadingState t={t} />;
 
+  if (viewMode === 'raw') {
+    return (
+      <div>
+        <div className="flex justify-end mb-4">
+          <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+        </div>
+        <RawJsonView data={rawData?.hackerNews} title="hacker_news.json" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
-      {/* File header comment */}
-      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
-        <span className="text-term-purple">// hacker_news.ts</span> - Top stories from Hacker News API
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-fg-dark-muted opacity-50 text-xs font-mono">
+          <span className="text-term-purple">// hacker_news.ts</span> - Top stories from Hacker News API
+        </div>
+        <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="flex">
-        <LineNumbers count={data.hackerNews.length + 5} />
-        <div className="flex-1 space-y-2 text-[13px]">
-          <div className="text-term-purple">interface</div>
-          <div className="pl-4">
-            <span className="text-term-blue">HNStory</span> {'{'}
-          </div>
+      <div className="space-y-2 text-[13px]">
+        {data.hackerNews.map((item, idx) => {
+          const itemId = `hn-${item.url}`;
+          const saved = isBookmarked?.(itemId) ?? false;
           
-          {data.hackerNews.map((item, idx) => (
-            <a 
+          return (
+            <div 
               key={idx}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l-2 border-transparent hover:border-accent"
+              className="flex items-start gap-3 pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l-2 border-transparent hover:border-accent"
             >
-              <div className="flex items-start gap-3">
-                <span className="text-term-orange shrink-0">{(idx + 1).toString().padStart(2, '0')}.</span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium">
+              <span className="text-term-orange shrink-0 pt-0.5">{(idx + 1).toString().padStart(2, '0')}.</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <a 
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium flex-1"
+                  >
                     {item.title}
                     <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50" />
-                  </div>
-                  <div className="flex gap-4 mt-1 text-[10px] text-fg-dark-muted">
-                    <span className="text-term-orange">points: {item.points}</span>
-                    <span className="text-term-purple">comments: {item.comments}</span>
-                    {item.author && <span className="hidden sm:inline">by: @{item.author}</span>}
-                  </div>
+                  </a>
+                  <BookmarkStar 
+                    isActive={saved}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleBookmark?.({ id: itemId, type: 'hn', title: item.title || '', url: item.url || '' });
+                    }}
+                  />
+                </div>
+                <div className="flex gap-4 mt-1 text-[10px] text-fg-dark-muted">
+                  <span className="text-term-orange">points: {item.points}</span>
+                  <span className="text-term-purple">comments: {item.comments}</span>
+                  {item.author && <span className="hidden sm:inline">by: @{item.author}</span>}
                 </div>
               </div>
-            </a>
-          ))}
-          
-          <div className="pl-4">{'}'}</div>
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 // ===== GITHUB VIEW =====
-export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
-  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate, isBookmarked, toggleBookmark }) => {
+  const { data, rawData, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+  const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview');
 
   if (loading || !data) return <LoadingState t={t} />;
 
+  if (viewMode === 'raw') {
+    return (
+      <div>
+        <div className="flex justify-end mb-4">
+          <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+        </div>
+        <RawJsonView data={rawData?.github} title="github.json" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
-      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
-        <span className="text-term-orange">// github.json</span> - Trending repositories
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-fg-dark-muted opacity-50 text-xs font-mono">
+          <span className="text-term-orange">// github.json</span> - Trending repositories
+        </div>
+        <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="font-mono text-[13px]">
-        <div className="text-fg-dark-muted opacity-60">{'{'}</div>
-        <div className="pl-4 text-term-orange">"trending"</div>
-        <div className="pl-4 text-fg-dark-muted">: [</div>
-        
-        {data.github.map((item, idx) => (
-          <a 
-            key={idx}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block ml-8 my-3 p-4 border border-border-light dark:border-border-dark rounded-lg hover:border-accent/50 transition-all bg-slate-50 dark:bg-white/[0.02] group"
-          >
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-term-blue font-bold group-hover:text-accent transition-colors">
-                "{item.name}"
-              </span>
-              <span className="text-[9px] px-2 py-0.5 bg-term-purple/10 text-term-purple border border-term-purple/20 rounded uppercase font-bold">
-                {item.language}
-              </span>
+      <div className="space-y-3">
+        {data.github.map((item, idx) => {
+          const itemId = `github-${item.url}`;
+          const saved = isBookmarked?.(itemId) ?? false;
+          
+          return (
+            <div 
+              key={idx}
+              className="p-4 border border-border-light dark:border-border-dark rounded-lg hover:border-accent/50 transition-all bg-slate-50 dark:bg-white/[0.02] group"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <a 
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-term-blue font-bold group-hover:text-accent transition-colors flex-1"
+                >
+                  {item.name}
+                </a>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] px-2 py-0.5 bg-term-purple/10 text-term-purple border border-term-purple/20 rounded uppercase font-bold">
+                    {item.language}
+                  </span>
+                  <BookmarkStar 
+                    isActive={saved}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleBookmark?.({ id: itemId, type: 'github', title: item.name || '', url: item.url || '' });
+                    }}
+                  />
+                </div>
+              </div>
+              <p className="text-[11px] text-fg-dark-muted italic opacity-80 mb-3 line-clamp-2">
+                {item.description}
+              </p>
+              <div className="flex gap-6 text-[10px] font-bold">
+                <span className="flex items-center gap-1.5 text-term-orange">
+                  <Star size={10} /> {item.stars?.toLocaleString()}
+                </span>
+                <span className="flex items-center gap-1.5 text-accent">
+                  <GitFork size={10} /> {item.forks || 0}
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-fg-dark-muted italic opacity-80 mb-3 line-clamp-2">
-              "{item.description}"
-            </p>
-            <div className="flex gap-6 text-[10px] font-bold">
-              <span className="flex items-center gap-1.5 text-term-orange">
-                <Star size={10} /> {item.stars?.toLocaleString()}
-              </span>
-              <span className="flex items-center gap-1.5 text-accent">
-                <GitFork size={10} /> {item.forks || 0}
-              </span>
-            </div>
-          </a>
-        ))}
-        
-        <div className="pl-4 text-fg-dark-muted">]</div>
-        <div className="text-fg-dark-muted opacity-60">{'}'}</div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 // ===== LLM NEWS VIEW =====
-export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
-  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate, isBookmarked, toggleBookmark }) => {
+  const { data, rawData, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+  const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview');
 
   if (loading || !data) return <LoadingState t={t} />;
 
+  if (viewMode === 'raw') {
+    return (
+      <div>
+        <div className="flex justify-end mb-4">
+          <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+        </div>
+        <RawJsonView data={rawData?.llmNews} title="llm.json" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
-      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
-        <span className="text-term-purple"># llm.py</span> - AI/ML news aggregator
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-fg-dark-muted opacity-50 text-xs font-mono">
+          <span className="text-term-purple"># llm.py</span> - AI/ML news aggregator
+        </div>
+        <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="font-mono text-[13px]">
-        <div className="text-term-purple">class <span className="text-term-blue">LLMFeed</span>:</div>
-        <div className="pl-4 text-term-purple">def <span className="text-term-orange">__init__</span>(self):</div>
-        <div className="pl-8 text-fg-dark-muted opacity-60"># Latest AI news items</div>
-        <div className="pl-8 mb-4">self.<span className="text-term-blue">items</span> = [</div>
-        
-        {data.llmNews.map((item, idx) => (
-          <a 
-            key={idx}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block ml-12 my-2 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-purple/30 pl-4"
-          >
-            <div className="flex items-start gap-2">
+      <div className="space-y-2">
+        {data.llmNews.map((item, idx) => {
+          const itemId = `llm-${item.url}`;
+          const saved = isBookmarked?.(itemId) ?? false;
+          
+          return (
+            <div 
+              key={idx}
+              className="flex items-start gap-3 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-purple/30 pl-4"
+            >
               <span className="text-term-orange shrink-0">#{idx + 1}</span>
-              <div className="flex-1">
-                <div className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors">
-                  "{item.title}"
+              <div className="flex-1 flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <a 
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors block"
+                  >
+                    {item.title}
+                  </a>
+                  <div className="text-[10px] text-term-purple mt-1">
+                    score={item.score}
+                  </div>
                 </div>
-                <div className="text-[10px] text-term-purple mt-1">
-                  score={item.score}
-                </div>
+                <BookmarkStar 
+                  isActive={saved}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleBookmark?.({ id: itemId, type: 'llm', title: item.title || '', url: item.url || '' });
+                  }}
+                />
               </div>
             </div>
-          </a>
-        ))}
-        
-        <div className="pl-8">]</div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 // ===== LESSWRONG VIEW =====
-export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate }) => {
-  const { data, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSyncUpdate, isBookmarked, toggleBookmark }) => {
+  const { data, rawData, loading } = useDashboardData(lang, refreshTrigger, onSyncUpdate);
+  const [viewMode, setViewMode] = useState<'preview' | 'raw'>('preview');
 
   if (loading || !data) return <LoadingState t={t} />;
 
+  if (viewMode === 'raw') {
+    return (
+      <div>
+        <div className="flex justify-end mb-4">
+          <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+        </div>
+        <RawJsonView data={rawData?.lessWrong} title="less_wrong.json" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl">
-      <div className="text-fg-dark-muted opacity-50 text-xs mb-4 font-mono">
-        <span className="text-[#519aba]"># less_wrong.md</span> - Rationality essays
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-fg-dark-muted opacity-50 text-xs font-mono">
+          <span className="text-[#519aba]"># less_wrong.md</span> - Rationality essays
+        </div>
+        <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="font-mono text-[13px] space-y-6">
-        <div className="text-[#519aba] text-lg font-bold"># LessWrong Feed</div>
-        
-        {data.lessWrong.map((item, idx) => (
-          <a 
-            key={idx}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block group"
-          >
-            <div className="text-[#519aba] mb-1">## {item.title}</div>
-            <blockquote className="border-l-2 border-accent/30 pl-4 text-[12px] text-fg-dark-muted italic opacity-80 group-hover:border-accent transition-colors">
-              &gt; {item.summary}
-            </blockquote>
-          </a>
-        ))}
+      <div className="space-y-6">
+        {data.lessWrong.map((item, idx) => {
+          const itemId = `lw-${item.url}`;
+          const saved = isBookmarked?.(itemId) ?? false;
+          
+          return (
+            <div key={idx} className="group">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <a 
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#519aba] group-hover:text-accent transition-colors flex-1"
+                >
+                  ## {item.title}
+                </a>
+                <BookmarkStar 
+                  isActive={saved}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleBookmark?.({ id: itemId, type: 'lesswrong', title: item.title || '', url: item.url || '' });
+                  }}
+                />
+              </div>
+              <blockquote className="border-l-2 border-accent/30 pl-4 text-[12px] text-fg-dark-muted italic opacity-80 group-hover:border-accent transition-colors">
+                &gt; {item.summary}
+              </blockquote>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dash
 import { TerminalDashboard } from './pages/TerminalDashboard';
 import { TerminalAbout } from './pages/TerminalAbout';
 import { About } from './pages/About';
+import { useBookmarks } from './hooks/useBookmarks';
 import { Moon, Sun, Command, SquareTerminal } from 'lucide-react';
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
   
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Bookmarks system
+  const { count: savedCount, isBookmarked, toggleBookmark } = useBookmarks();
 
   // Add current path to open tabs if not already there
   useEffect(() => {
@@ -208,22 +212,22 @@ function App() {
               {/* Dashboard views - each data source is a "file" */}
               <Route path="/" element={
                 <div className="p-4 md:p-6">
-                  <HackerNewsView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} />
+                  <HackerNewsView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
                 </div>
               } />
               <Route path="/github" element={
                 <div className="p-4 md:p-6">
-                  <GithubView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} />
+                  <GithubView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
                 </div>
               } />
               <Route path="/llm" element={
                 <div className="p-4 md:p-6">
-                  <LLMView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} />
+                  <LLMView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
                 </div>
               } />
               <Route path="/lesswrong" element={
                 <div className="p-4 md:p-6">
-                  <LessWrongView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} />
+                  <LessWrongView lang={lang} t={t} refreshTrigger={refreshTrigger} onSyncUpdate={setLastSync} isBookmarked={isBookmarked} toggleBookmark={toggleBookmark} />
                 </div>
               } />
               <Route path="/about" element={
@@ -242,6 +246,7 @@ function App() {
         lastSync={lastSync}
         isRefreshing={isRefreshing}
         onRefresh={handleRefresh}
+        savedCount={savedCount}
       />
     </div>
   );
