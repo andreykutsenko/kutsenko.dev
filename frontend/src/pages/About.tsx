@@ -23,7 +23,7 @@ export const About: React.FC<AboutProps> = () => {
             Andrey Kutsenko
           </h1>
           <p className="text-fg-dark-muted text-xs">
-            Software engineer building automation tools and AI agents.
+            Software engineer focused on automation, data processing, and fintech systems.
           </p>
         </div>
 
@@ -35,11 +35,11 @@ export const About: React.FC<AboutProps> = () => {
           </div>
           <div className="flex gap-4">
             <span className="text-term-purple w-20">focus:</span>
-            <span className="text-fg-light dark:text-fg-dark">Banking systems, Data processing, Automation</span>
+            <span className="text-fg-light dark:text-fg-dark">Automation, Data processing, FinTech systems</span>
           </div>
           <div className="flex gap-4">
             <span className="text-term-purple w-20">stack:</span>
-            <span className="text-term-orange">Python, TypeScript, SQL, Docker</span>
+            <span className="text-term-orange">Python, SQL, Shell, TypeScript, Docker</span>
           </div>
         </div>
 
@@ -82,14 +82,21 @@ export const About: React.FC<AboutProps> = () => {
           </div>
         </div>
 
-        {/* Career - Just Current */}
+        {/* Career - Current Role */}
         <div>
           <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Current</div>
-          <div className="space-y-3 text-xs">
-            <div className="border-l border-accent/30 pl-3">
+          <div className="space-y-1 text-xs">
+            <div className="border-l-2 border-accent pl-3">
               <div className="text-fg-light dark:text-fg-dark font-bold">Software Engineer @ InfoIMAGE</div>
-              <div className="text-fg-dark-muted">Data parsing & automation for fintech</div>
+              <div className="text-fg-dark-muted">Data parsing, document processing, and automation in Unix/Linux environments for fintech.</div>
             </div>
+          </div>
+        </div>
+
+        {/* Side Projects */}
+        <div>
+          <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Side projects</div>
+          <div className="space-y-1 text-xs">
             <div className="border-l border-accent/30 pl-3">
               <a 
                 href="https://simpleprocess.io" 
@@ -97,10 +104,10 @@ export const About: React.FC<AboutProps> = () => {
                 rel="noopener noreferrer"
                 className="text-fg-light dark:text-fg-dark font-bold hover:text-accent transition-colors inline-flex items-center gap-2"
               >
-                CEO @ SIMPLE PROCESS LLC
+                SimpleProcess.io
                 <ExternalLink size={10} className="opacity-50" />
               </a>
-              <div className="text-fg-dark-muted">Business automation & AI-driven tools → <a href="https://simpleprocess.io" target="_blank" rel="noopener noreferrer" className="text-term-blue hover:underline">simpleprocess.io</a></div>
+              <div className="text-fg-dark-muted">Business automation & AI-driven outreach tools.</div>
             </div>
           </div>
         </div>
