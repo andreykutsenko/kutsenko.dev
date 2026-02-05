@@ -1,0 +1,8 @@
+{
+  "name": "kutsenko-dev",
+  "private": true,
+  "scripts": {
+    "serve": "python3 -m http.server 8080",
+    "serve:simpleprocess": "npx serve sites/simpleprocess -p 8081"
+  }
+}
