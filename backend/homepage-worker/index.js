@@ -278,6 +278,16 @@ export async function updateStravaCache(env) {
     }
   }
 
+  const dayMiles = {};
+  for (const r of runs) {
+    const day = (r.start_date_local || r.start_date || "").slice(0, 10);
+    if (!day) continue;
+    dayMiles[day] = (dayMiles[day] || 0) + (r.distance || 0);
+  }
+  const days = Object.keys(dayMiles)
+    .sort()
+    .map((date) => ({ date, miles: miles(dayMiles[date]) }));
+
   const currentWeek = weekStartUTC(new Date());
   const weeks = [];
   for (let i = 7; i >= 0; i--) {
@@ -298,6 +308,7 @@ export async function updateStravaCache(env) {
     updatedAt: new Date().toISOString(),
     week: { miles: miles(weekMeters), runs: weekRuns.length },
     weeks,
+    days,
     recent,
     ytd,
     all,

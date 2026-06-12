@@ -13,6 +13,42 @@ const fmtDuration = (sec: number): string => {
   return h > 0 ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
 };
 
+const HEAT_WEEKS = 10;
+const DAY_MS = 86400000;
+
+interface HeatCell {
+  date: string;
+  miles: number;
+  future: boolean;
+}
+
+const buildHeatGrid = (days: Array<{ date: string; miles: number }>): HeatCell[][] => {
+  const byDate = new Map(days.map((d) => [d.date, d.miles]));
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const dow = (new Date(todayUtc).getUTCDay() + 6) % 7;
+  const weekStart = todayUtc - dow * DAY_MS;
+  const cols: HeatCell[][] = [];
+  for (let w = HEAT_WEEKS - 1; w >= 0; w--) {
+    const col: HeatCell[] = [];
+    for (let d = 0; d < 7; d++) {
+      const t = weekStart - w * 7 * DAY_MS + d * DAY_MS;
+      const iso = new Date(t).toISOString().slice(0, 10);
+      col.push({ date: iso, miles: byDate.get(iso) ?? 0, future: t > todayUtc });
+    }
+    cols.push(col);
+  }
+  return cols;
+};
+
+const heatClass = (mi: number): string => {
+  if (mi <= 0) return 'bg-black/10 dark:bg-white/5';
+  if (mi < 5) return 'bg-accent/25';
+  if (mi < 8) return 'bg-accent/50';
+  if (mi < 11) return 'bg-accent/75';
+  return 'bg-accent';
+};
+
 export const RunningView = () => {
   const [data, setData] = useState<StravaData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,6 +112,36 @@ export const RunningView = () => {
           </div>
         ))}
       </div>
+
+      {data.days && data.days.length > 0 && (
+        <div className="mb-8">
+          <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Training log, last {HEAT_WEEKS} weeks</div>
+          <div className="flex gap-1">
+            {buildHeatGrid(data.days).map((col, i) => (
+              <div key={i} className="flex flex-col gap-1">
+                {col.map((cell) => (
+                  <div
+                    key={cell.date}
+                    title={cell.future ? undefined : `${cell.date}: ${cell.miles} mi`}
+                    className={`w-3 h-3 rounded-[2px] transition-colors duration-200 ease-in-out ${
+                      cell.future ? 'opacity-0' : heatClass(cell.miles)
+                    }`}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 mt-2 text-[10px] text-fg-dark-muted">
+            <span className="mr-1">less</span>
+            <div className="w-3 h-3 rounded-[2px] bg-black/10 dark:bg-white/5" />
+            <div className="w-3 h-3 rounded-[2px] bg-accent/25" />
+            <div className="w-3 h-3 rounded-[2px] bg-accent/50" />
+            <div className="w-3 h-3 rounded-[2px] bg-accent/75" />
+            <div className="w-3 h-3 rounded-[2px] bg-accent" />
+            <span className="ml-1">more</span>
+          </div>
+        </div>
+      )}
 
       <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Recent runs</div>
       <div className="space-y-2">

@@ -195,7 +195,7 @@ export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-2 text-[13px]">
+      <div className="space-y-3 text-[13px]">
         {data.hackerNews.map((item, idx) => {
           const itemId = `hn-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -203,7 +203,7 @@ export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 
           return (
             <div 
               key={idx}
-              className="flex items-start gap-3 pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l-2 border-transparent hover:border-accent"
+              className="flex items-start gap-3 pl-4 py-2.5 hover:bg-accent/5 rounded transition-colors duration-200 ease-in-out group border-l-2 border-transparent hover:border-accent"
             >
               <span className="text-term-orange shrink-0 pt-0.5">{(idx + 1).toString().padStart(2, '0')}.</span>
               <div className="flex-1 min-w-0">
@@ -212,10 +212,10 @@ export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 
                     href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium flex-1"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors duration-200 ease-in-out font-medium flex-1"
                   >
                     {item.title}
-                    <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50" />
+                    <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
                   </a>
                   <BookmarkStar 
                     isActive={saved}
@@ -266,7 +266,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-2 text-[13px]">
+      <div className="space-y-3 text-[13px]">
         {data.github.map((item, idx) => {
           const itemId = `github-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -274,7 +274,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
           return (
             <div 
               key={idx}
-              className="flex items-start gap-3 pl-4 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-orange/30"
+              className="flex items-start gap-3 pl-4 py-2.5 hover:bg-accent/5 rounded transition-colors duration-200 ease-in-out group border-l border-term-orange/30"
             >
               <span className="text-term-blue shrink-0">repo:</span>
               <div className="flex-1 min-w-0">
@@ -283,7 +283,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
                     href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-fg-light dark:text-fg-dark group-hover:text-term-blue transition-colors font-medium flex-1"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-term-blue transition-colors duration-200 ease-in-out font-medium flex-1"
                   >
                     {item.name}
                   </a>
@@ -341,7 +341,7 @@ export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSy
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-2 text-[13px]">
+      <div className="space-y-3 text-[13px]">
         {data.llmNews.map((item, idx) => {
           const itemId = `llm-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -349,7 +349,7 @@ export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSy
           return (
             <div 
               key={idx}
-              className="flex items-start gap-3 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-term-purple/30 pl-4"
+              className="flex items-start gap-3 py-2.5 hover:bg-accent/5 rounded transition-colors duration-200 ease-in-out group border-l border-term-purple/30 pl-4"
             >
               <span className="text-term-orange shrink-0">#{idx + 1}</span>
               <div className="flex-1 flex items-start justify-between gap-2">
@@ -358,7 +358,7 @@ export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSy
                     href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors block"
+                    className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors duration-200 ease-in-out block"
                   >
                     {item.title}
                   </a>
@@ -409,7 +409,7 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
         <ViewModeToggle mode={viewMode} onChange={setViewMode} />
       </div>
       
-      <div className="space-y-2 text-[13px]">
+      <div className="space-y-3 text-[13px]">
         {data.lessWrong.map((item, idx) => {
           const itemId = `lw-${item.url}`;
           const saved = isBookmarked?.(itemId) ?? false;
@@ -417,7 +417,7 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
           return (
             <div 
               key={idx} 
-              className="flex items-start gap-3 py-2 hover:bg-accent/5 rounded transition-colors group border-l border-[#519aba]/30 pl-4"
+              className="flex items-start gap-3 py-2.5 hover:bg-accent/5 rounded transition-colors duration-200 ease-in-out group border-l border-[#519aba]/30 pl-4"
             >
               <span className="text-[#519aba] shrink-0">##</span>
               <div className="flex-1 flex items-start justify-between gap-2">
@@ -425,7 +425,7 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
                   href={safeUrl(item.url)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-fg-light dark:text-fg-dark group-hover:text-[#519aba] transition-colors"
+                  className="text-fg-light dark:text-fg-dark group-hover:text-[#519aba] transition-colors duration-200 ease-in-out"
                 >
                   {item.title}
                 </a>

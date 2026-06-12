@@ -119,6 +119,8 @@ export const fetchAISignals = async (): Promise<AISignalsData> => {
 export interface StravaData {
   updatedAt: string | null;
   week: { miles: number; runs: number } | null;
+  weeks?: Array<{ start: string; miles: number; runs: number }>;
+  days?: Array<{ date: string; miles: number }>;
   recent: Array<{
     name: string;
     miles: number;
