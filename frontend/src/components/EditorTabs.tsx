@@ -8,10 +8,9 @@ const TABS = [
   { path: '/llm', label: 'llm.py', ext: 'py' },
   { path: '/lesswrong', label: 'less_wrong.md', ext: 'md' },
   // AI Signals
-  { path: '/arena', label: 'lmsys_arena.json', ext: 'arena' },
+  { path: '/models', label: 'models.json', ext: 'prices' },
   { path: '/papers', label: 'papers.py', ext: 'papers' },
-  { path: '/tool', label: 'tool_of_day.md', ext: 'tool' },
-  { path: '/prices', label: 'token_prices.json', ext: 'prices' },
+  { path: '/trending', label: 'trending.json', ext: 'tool' },
   // Root files
   { path: '/bookmarks', label: 'bookmarks.md', ext: 'bookmark' },
   { path: '/about', label: 'about_me.md', ext: 'md' },

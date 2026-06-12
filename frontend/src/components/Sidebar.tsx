@@ -13,7 +13,6 @@ import {
   GitBranch,
   Bookmark,
   Zap,
-  Trophy,
   FlaskConical,
   DollarSign,
   PanelLeftClose,
@@ -190,29 +189,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggleCol
 
             {aiSignalsOpen && (
               <div className="lg:ml-4">
-                <FileItem 
-                  to="/arena" 
-                  icon={<Trophy size={14} className="text-term-orange" />} 
-                  label="lmsys_arena.json" 
-                  isActive={location.pathname === '/arena'}
+                <FileItem
+                  to="/models"
+                  icon={<DollarSign size={14} className="text-term-green" />}
+                  label="models.json"
+                  isActive={location.pathname === '/models'}
                 />
-                <FileItem 
-                  to="/papers" 
-                  icon={<FlaskConical size={14} className="text-term-purple" />} 
-                  label="papers.py" 
+                <FileItem
+                  to="/papers"
+                  icon={<FlaskConical size={14} className="text-term-purple" />}
+                  label="papers.py"
                   isActive={location.pathname === '/papers'}
                 />
-                <FileItem 
-                  to="/tool" 
-                  icon={<Zap size={14} className="text-accent" />} 
-                  label="tool_of_day.md" 
-                  isActive={location.pathname === '/tool'}
-                />
-                <FileItem 
-                  to="/prices" 
-                  icon={<DollarSign size={14} className="text-term-green" />} 
-                  label="token_prices.json" 
-                  isActive={location.pathname === '/prices'}
+                <FileItem
+                  to="/trending"
+                  icon={<Zap size={14} className="text-accent" />}
+                  label="trending.json"
+                  isActive={location.pathname === '/trending'}
                 />
               </div>
             )}

@@ -4,10 +4,12 @@
 /llm        / 200
 /lesswrong  / 200
 /hn         / 200
-/arena      / 200
+/models     / 200
 /papers     / 200
-/tool       / 200
-/prices     / 200
+/trending   / 200
+/arena      /models   301
+/tool       /trending 301
+/prices     /models   301
 /bookmarks  / 200
 /about      / 200
 /running    /about 301

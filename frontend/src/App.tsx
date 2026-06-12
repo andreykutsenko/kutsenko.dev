@@ -9,7 +9,7 @@ import { IntegratedTerminal } from './components/IntegratedTerminal';
 import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dashboard';
 import { About } from './pages/About';
 import { BookmarksView } from './pages/BookmarksView';
-import { ArenaView, PapersView, ToolView, PricesView } from './pages/AISignals';
+import { ModelsView, PapersView, TrendingView } from './pages/AISignals';
 import { useBookmarks } from './hooks/useBookmarks';
 import { Moon, Sun, Command } from 'lucide-react';
 
@@ -198,9 +198,9 @@ function App() {
               } />
               
               {/* AI Signals */}
-              <Route path="/arena" element={
+              <Route path="/models" element={
                 <div className="p-4 md:p-6">
-                  <ArenaView />
+                  <ModelsView />
                 </div>
               } />
               <Route path="/papers" element={
@@ -208,14 +208,9 @@ function App() {
                   <PapersView />
                 </div>
               } />
-              <Route path="/tool" element={
+              <Route path="/trending" element={
                 <div className="p-4 md:p-6">
-                  <ToolView />
-                </div>
-              } />
-              <Route path="/prices" element={
-                <div className="p-4 md:p-6">
-                  <PricesView />
+                  <TrendingView />
                 </div>
               } />
               

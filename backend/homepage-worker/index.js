@@ -6,20 +6,19 @@ const REDDIT_LLM_URL =
 const LESSWRONG_RSS_URL = "https://www.lesswrong.com/feed.xml?view=rss";
 const REDDIT_USER_AGENT = "kutsenko-homepage/1.0 (+https://kutsenko.dev)";
 
-// AI Signals endpoints
-const LMSYS_LEADERBOARD_URL = "https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard/resolve/main/leaderboard_table_20240201.csv";
-const PAPERS_WITH_CODE_URL = "https://paperswithcode.com/api/v1/papers/?ordering=-github_stars&page_size=5";
-const PRODUCT_HUNT_AI_URL = "https://www.producthunt.com/topics/artificial-intelligence?order=newest";
-
-// Token prices - updated manually (prices as of Dec 2024)
-const TOKEN_PRICES = [
-  { model: 'GPT-4o', provider: 'OpenAI', input: 2.50, output: 10.00, context: '128K' },
-  { model: 'GPT-4o-mini', provider: 'OpenAI', input: 0.15, output: 0.60, context: '128K' },
-  { model: 'Claude 3.5 Sonnet', provider: 'Anthropic', input: 3.00, output: 15.00, context: '200K' },
-  { model: 'Claude 3.5 Haiku', provider: 'Anthropic', input: 0.25, output: 1.25, context: '200K' },
-  { model: 'Gemini 1.5 Pro', provider: 'Google', input: 1.25, output: 5.00, context: '2M' },
-  { model: 'Gemini 1.5 Flash', provider: 'Google', input: 0.075, output: 0.30, context: '1M' },
-  { model: 'DeepSeek V3', provider: 'DeepSeek', input: 0.27, output: 1.10, context: '128K' },
+// AI Signals endpoints (live sources, no API keys required)
+const OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models";
+const HF_DAILY_PAPERS_URL = "https://huggingface.co/api/daily_papers?limit=12";
+const FEATURED_PROVIDERS = [
+  "anthropic",
+  "openai",
+  "google",
+  "deepseek",
+  "moonshotai",
+  "meta-llama",
+  "mistralai",
+  "x-ai",
+  "qwen",
 ];
 
 async function fetchJson(url, options = {}) {
@@ -99,10 +98,9 @@ export default {
           console.error("Failed to refresh AI signals cache:", error);
           cached = {
             updatedAt: new Date().toISOString(),
-            arena: [],
+            models: [],
             papers: [],
-            toolOfDay: null,
-            tokenPrices: TOKEN_PRICES,
+            trending: [],
           };
         }
       }
@@ -508,30 +506,26 @@ export async function updateAISignalsCache(env) {
         () => null
       )) || null;
 
-    const arena = await fetchLMSYSArena()
-      .catch((error) => {
-        console.error("Failed to fetch LMSYS Arena:", error);
-        return previous?.arena ?? getDefaultArena();
-      });
+    const models = await fetchOpenRouterModels().catch((error) => {
+      console.error("Failed to fetch OpenRouter models:", error);
+      return previous?.models ?? [];
+    });
 
-    const papers = await fetchPapersWithCode()
-      .catch((error) => {
-        console.error("Failed to fetch Papers with Code:", error);
-        return previous?.papers ?? [];
-      });
+    const papers = await fetchDailyPapers().catch((error) => {
+      console.error("Failed to fetch HF daily papers:", error);
+      return previous?.papers ?? [];
+    });
 
-    const toolOfDay = await fetchAIToolOfDay()
-      .catch((error) => {
-        console.error("Failed to fetch AI Tool of Day:", error);
-        return previous?.toolOfDay ?? getDefaultTool();
-      });
+    const trending = await fetchTrendingAIRepos(env).catch((error) => {
+      console.error("Failed to fetch trending AI repos:", error);
+      return previous?.trending ?? [];
+    });
 
     const payload = {
       updatedAt: new Date().toISOString(),
-      arena,
+      models,
       papers,
-      toolOfDay,
-      tokenPrices: TOKEN_PRICES,
+      trending,
     };
 
     await env.HOMEPAGE_CACHE.put("ai_signals_json", JSON.stringify(payload));
@@ -542,163 +536,106 @@ export async function updateAISignalsCache(env) {
   }
 }
 
-// Fallback data for LMSYS Arena
-function getDefaultArena() {
-  return [
-    { rank: 1, model: 'GPT-4o', elo: 1287, organization: 'OpenAI', change: '0' },
-    { rank: 2, model: 'Claude 3.5 Sonnet', elo: 1268, organization: 'Anthropic', change: '0' },
-    { rank: 3, model: 'Gemini 1.5 Pro', elo: 1254, organization: 'Google', change: '0' },
-  ];
+// Live model list + pricing from OpenRouter: newest two models per
+// featured provider, prices converted to $ per 1M tokens.
+async function fetchOpenRouterModels() {
+  const data = await fetchJson(OPENROUTER_MODELS_URL, {
+    headers: { "User-Agent": "kutsenko-homepage-worker" },
+  });
+  const list = Array.isArray(data?.data) ? data.data : [];
+  const perM = (value) =>
+    Math.round(parseFloat(value || "0") * 1e6 * 100) / 100;
+
+  const byProvider = new Map();
+  for (const m of list) {
+    const id = m.id || "";
+    if (id.startsWith("~") || id.includes(":")) continue;
+    const provider = id.split("/")[0];
+    if (!FEATURED_PROVIDERS.includes(provider)) continue;
+    const inputPerM = perM(m.pricing?.prompt);
+    const outputPerM = perM(m.pricing?.completion);
+    if (!inputPerM && !outputPerM) continue;
+    const bucket = byProvider.get(provider) || [];
+    bucket.push({
+      id,
+      name: m.name || id,
+      provider,
+      context: m.context_length || 0,
+      inputPerM,
+      outputPerM,
+      created: m.created || 0,
+    });
+    byProvider.set(provider, bucket);
+  }
+
+  const models = [];
+  for (const bucket of byProvider.values()) {
+    bucket.sort((a, b) => (b.created || 0) - (a.created || 0));
+    models.push(...bucket.slice(0, 2));
+  }
+  models.sort((a, b) => (b.created || 0) - (a.created || 0));
+  return models.slice(0, 14).map(({ created, ...rest }) => ({
+    ...rest,
+    addedAt: created ? new Date(created * 1000).toISOString().slice(0, 10) : null,
+  }));
 }
 
-// Fallback for AI Tool
-function getDefaultTool() {
-  return {
-    name: 'Cursor',
-    tagline: 'The AI Code Editor',
-    description: 'Built to make you extraordinarily productive. Cursor is a fork of VS Code with native AI integration.',
-    votes: 2847,
-    url: 'https://cursor.com',
-    category: 'Developer Tools',
+// Trending papers with community upvotes from HuggingFace Daily Papers
+async function fetchDailyPapers() {
+  const data = await fetchJson(HF_DAILY_PAPERS_URL, {
+    headers: { "User-Agent": "kutsenko-homepage-worker" },
+  });
+  const items = Array.isArray(data) ? data : [];
+  return items.slice(0, 8).map((item) => {
+    const paper = item.paper || {};
+    return {
+      title: paper.title || "Untitled",
+      upvotes: paper.upvotes || 0,
+      authors: (paper.authors || [])
+        .slice(0, 3)
+        .map((a) => a?.name)
+        .filter(Boolean)
+        .join(", "),
+      url: paper.id
+        ? `https://arxiv.org/abs/${paper.id}`
+        : "https://huggingface.co/papers",
+      publishedAt: (item.publishedAt || "").slice(0, 10),
+      summary: (paper.summary || "").replace(/\s+/g, " ").slice(0, 180),
+    };
+  });
+}
+
+// Fresh AI/LLM repos from the last 30 days, by stars (GitHub search)
+async function fetchTrendingAIRepos(env) {
+  const since = new Date(Date.now() - 30 * 86400000)
+    .toISOString()
+    .slice(0, 10);
+  const url = `${GH_BASE}?${new URLSearchParams({
+    q: `topic:llm created:>${since}`,
+    sort: "stars",
+    order: "desc",
+    per_page: "8",
+  }).toString()}`;
+
+  const headers = {
+    "User-Agent": "kutsenko-homepage-worker",
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
   };
-}
-
-// Fetch LMSYS Chatbot Arena leaderboard
-async function fetchLMSYSArena() {
-  try {
-    // Try to fetch from HuggingFace API (they host the leaderboard data)
-    const res = await fetch('https://huggingface.co/api/spaces/lmsys/chatbot-arena-leaderboard', {
-      headers: {
-        'User-Agent': 'kutsenko-homepage-worker',
-      },
-    });
-    
-    // If API doesn't work, return hardcoded recent data
-    // This is updated based on https://chat.lmsys.org/?leaderboard
-    return [
-      { rank: 1, model: 'GPT-4o', elo: 1290, organization: 'OpenAI', change: '+1' },
-      { rank: 2, model: 'Claude 3.5 Sonnet', elo: 1285, organization: 'Anthropic', change: '0' },
-      { rank: 3, model: 'Gemini 1.5 Pro', elo: 1267, organization: 'Google', change: '-1' },
-      { rank: 4, model: 'GPT-4 Turbo', elo: 1255, organization: 'OpenAI', change: '0' },
-      { rank: 5, model: 'Claude 3 Opus', elo: 1248, organization: 'Anthropic', change: '0' },
-    ];
-  } catch (error) {
-    console.error("LMSYS Arena fetch failed:", error);
-    return getDefaultArena();
+  if (env.GITHUB_TOKEN) {
+    headers.Authorization = `token ${env.GITHUB_TOKEN}`;
   }
-}
 
-// Fetch Papers with Code trending
-async function fetchPapersWithCode() {
-  try {
-    const res = await fetch(PAPERS_WITH_CODE_URL, {
-      headers: {
-        'User-Agent': 'kutsenko-homepage-worker',
-        'Accept': 'application/json',
-      },
-    });
-    
-    if (!res.ok) {
-      throw new Error(`Papers with Code request failed (${res.status})`);
-    }
-    
-    const data = await res.json();
-    const results = Array.isArray(data?.results) ? data.results : [];
-    
-    return results.slice(0, 5).map((paper) => ({
-      title: paper.title || 'Untitled',
-      authors: paper.authors?.slice(0, 3).join(', ') || 'Unknown',
-      stars: paper.repository?.stars || 0,
-      repo: paper.repository?.full_name || '',
-      arxiv: paper.arxiv_id ? `https://arxiv.org/abs/${paper.arxiv_id}` : paper.url_abs,
-      category: paper.proceeding || 'AI/ML',
-    }));
-  } catch (error) {
-    console.error("Papers with Code fetch failed:", error);
-    // Return fallback data
-    return [
-      { 
-        title: 'Attention Is All You Need', 
-        authors: 'Vaswani et al.',
-        stars: 15000,
-        repo: 'tensorflow/tensor2tensor',
-        arxiv: 'https://arxiv.org/abs/1706.03762',
-        category: 'NLP'
-      },
-      { 
-        title: 'BERT: Pre-training of Deep Bidirectional Transformers', 
-        authors: 'Devlin et al.',
-        stars: 12000,
-        repo: 'google-research/bert',
-        arxiv: 'https://arxiv.org/abs/1810.04805',
-        category: 'NLP'
-      },
-      { 
-        title: 'GPT-4 Technical Report', 
-        authors: 'OpenAI',
-        stars: 8000,
-        repo: 'openai/evals',
-        arxiv: 'https://arxiv.org/abs/2303.08774',
-        category: 'LLM'
-      },
-    ];
-  }
-}
-
-// Fetch AI Tool of the Day from Product Hunt or curated list
-async function fetchAIToolOfDay() {
-  try {
-    // Product Hunt doesn't have a free public API, so we use a curated rotation
-    const tools = [
-      {
-        name: 'Cursor',
-        tagline: 'The AI Code Editor',
-        description: 'Built to make you extraordinarily productive. Cursor is a fork of VS Code with native AI integration.',
-        votes: 3200,
-        url: 'https://cursor.com',
-        category: 'Developer Tools',
-      },
-      {
-        name: 'v0 by Vercel',
-        tagline: 'Generate UI with AI',
-        description: 'Generate React components from text descriptions. Powered by AI, built by Vercel.',
-        votes: 2800,
-        url: 'https://v0.dev',
-        category: 'Design Tools',
-      },
-      {
-        name: 'Perplexity',
-        tagline: 'AI-powered search engine',
-        description: 'Get instant, accurate answers with cited sources. The AI search engine that understands you.',
-        votes: 4500,
-        url: 'https://perplexity.ai',
-        category: 'Search',
-      },
-      {
-        name: 'Bolt.new',
-        tagline: 'Build apps instantly',
-        description: 'Create full-stack web apps from prompts. Deploy instantly with zero configuration.',
-        votes: 2100,
-        url: 'https://bolt.new',
-        category: 'Developer Tools',
-      },
-      {
-        name: 'Claude',
-        tagline: 'AI assistant by Anthropic',
-        description: 'A helpful, harmless, and honest AI assistant. Great for analysis, writing, and coding.',
-        votes: 5000,
-        url: 'https://claude.ai',
-        category: 'AI Assistant',
-      },
-    ];
-    
-    // Rotate based on day of year
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    return tools[dayOfYear % tools.length];
-  } catch (error) {
-    console.error("AI Tool fetch failed:", error);
-    return getDefaultTool();
-  }
+  const data = await fetchJson(url, { headers });
+  const items = Array.isArray(data?.items) ? data.items : [];
+  return items.map((repo) => ({
+    name: repo.full_name || repo.name,
+    url: repo.html_url,
+    description: repo.description,
+    stars: repo.stargazers_count || 0,
+    language: repo.language,
+    createdAt: repo.created_at || null,
+  }));
 }
 
 async function translateBatch(texts, target, env) {
