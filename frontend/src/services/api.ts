@@ -115,6 +115,32 @@ export const fetchAISignals = async (): Promise<AISignalsData> => {
   }
 };
 
+// Strava running stats
+export interface StravaData {
+  updatedAt: string | null;
+  week: { miles: number; runs: number } | null;
+  recent: Array<{
+    name: string;
+    miles: number;
+    movingTimeSec: number;
+    paceSecPerMile: number | null;
+    date: string;
+  }>;
+  ytd: { miles: number; runs: number } | null;
+  all: { miles: number; runs: number } | null;
+}
+
+export const fetchStrava = async (): Promise<StravaData | null> => {
+  try {
+    const res = await fetch('/api/strava');
+    if (!res.ok) throw new Error(`Request failed (${res.status})`);
+    return await res.json();
+  } catch (error) {
+    console.warn('Strava API unavailable.');
+    return null;
+  }
+};
+
 export const fetchTranslations = async (texts: string[], target: string): Promise<string[]> => {
   if (target === 'en') return texts;
   try {

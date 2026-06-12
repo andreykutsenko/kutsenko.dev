@@ -337,10 +337,31 @@
         var TRACK = 34;
         var div = document.createElement('div');
         out.appendChild(div);
+        var fmtPace = function (sec) {
+          if (!sec) return '?:??';
+          return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+        };
         var finish = function () {
-          div.textContent = '🏁 26.2 mi in 3 seconds — if only.';
-          print('real splits: strava.com/athletes/kutsenko');
-          input.scrollIntoView({ block: 'nearest' });
+          div.textContent = '🏁 26.2 mi in 3 seconds — if only. Pulling real telemetry...';
+          fetch('/api/strava')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              var lines = [];
+              if (d && d.week) lines.push('this week:  ' + d.week.miles + ' mi across ' + d.week.runs + ' runs');
+              if (d && d.ytd) lines.push('this year:  ' + d.ytd.miles + ' mi over ' + d.ytd.runs + ' runs');
+              var last = d && d.recent && d.recent[0];
+              if (last) lines.push('last run:   ' + last.miles + ' mi @ ' + fmtPace(last.paceSecPerMile) + '/mi (' + last.date + ')');
+              if (!lines.length) throw new Error('no data');
+              div.textContent = '🏁 live from Strava:';
+              lines.forEach(print);
+              print('full log: strava.com/athletes/kutsenko');
+            })
+            .catch(function () {
+              print('telemetry offline — splits at strava.com/athletes/kutsenko');
+            })
+            .then(function () {
+              input.scrollIntoView({ block: 'nearest' });
+            });
         };
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
         var pos = 0;
@@ -350,6 +371,7 @@
           if (pos++ >= TRACK) { clearInterval(timer); finish(); }
         }, 85);
       },
+      pace: function () { commands.run(); },
       strava: function () { commands.run(); },
       matrix: function () { runMatrix(); },
       clear: function () { out.textContent = ''; },

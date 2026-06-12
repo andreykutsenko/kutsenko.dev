@@ -9,6 +9,7 @@ import { IntegratedTerminal } from './components/IntegratedTerminal';
 import { HackerNewsView, GithubView, LLMView, LessWrongView } from './pages/Dashboard';
 import { About } from './pages/About';
 import { BookmarksView } from './pages/BookmarksView';
+import { RunningView } from './pages/Running';
 import { ArenaView, PapersView, ToolView, PricesView } from './pages/AISignals';
 import { useBookmarks } from './hooks/useBookmarks';
 import { Moon, Sun, Command } from 'lucide-react';
@@ -219,6 +220,11 @@ function App() {
                 </div>
               } />
               
+              <Route path="/running" element={
+                <div className="p-4 md:p-6">
+                  <RunningView />
+                </div>
+              } />
               <Route path="/bookmarks" element={
                 <div className="p-4 md:p-6">
                   <BookmarksView bookmarks={bookmarks} removeBookmark={removeBookmark} />

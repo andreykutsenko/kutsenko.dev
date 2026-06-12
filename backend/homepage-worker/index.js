@@ -112,6 +112,27 @@ export default {
       });
     }
 
+    // Strava running stats
+    if (request.method === "GET" && url.pathname === "/api/strava") {
+      const forceRefresh = url.searchParams.has("refresh");
+      let cached = await env.HOMEPAGE_CACHE.get("strava_json", {
+        type: "json",
+      });
+
+      if (forceRefresh || !cached) {
+        try {
+          cached = await updateStravaCache(env);
+        } catch (error) {
+          console.error("Failed to refresh Strava cache:", error);
+          cached = cached || { updatedAt: null, week: null, recent: [], ytd: null };
+        }
+      }
+
+      return new Response(JSON.stringify(cached), {
+        headers: { "content-type": "application/json" },
+      });
+    }
+
     if (url.pathname === "/api/translate" && request.method === "POST") {
       try {
         const body = await request.json();
@@ -143,9 +164,121 @@ export default {
     ctx.waitUntil(Promise.all([
       updateCache(env),
       updateAISignalsCache(env),
+      updateStravaCache(env).catch((error) =>
+        console.error("Scheduled Strava refresh failed:", error)
+      ),
     ]));
   },
 };
+
+// ===== STRAVA =====
+
+const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
+const STRAVA_API = "https://www.strava.com/api/v3";
+const METERS_PER_MILE = 1609.344;
+
+async function stravaAccessToken(env) {
+  // Strava rotates refresh tokens; prefer the latest one persisted in KV
+  // over the initial secret so the chain never breaks.
+  const stored = await env.HOMEPAGE_CACHE.get("strava_refresh_token").catch(
+    () => null
+  );
+  const refreshToken = stored || env.STRAVA_REFRESH_TOKEN;
+  if (!refreshToken) {
+    throw new Error("STRAVA_REFRESH_TOKEN is not configured");
+  }
+
+  const res = await fetch(STRAVA_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: env.STRAVA_CLIENT_ID,
+      client_secret: env.STRAVA_CLIENT_SECRET,
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`Strava token refresh failed (${res.status})`);
+  }
+  const data = await res.json();
+  if (data.refresh_token && data.refresh_token !== refreshToken) {
+    await env.HOMEPAGE_CACHE.put("strava_refresh_token", data.refresh_token);
+  }
+  return data.access_token;
+}
+
+function miles(metersValue) {
+  return Math.round((metersValue / METERS_PER_MILE) * 10) / 10;
+}
+
+function paceSecPerMile(movingTimeSec, meters) {
+  if (!meters) return null;
+  return Math.round(movingTimeSec / (meters / METERS_PER_MILE));
+}
+
+export async function updateStravaCache(env) {
+  const token = await stravaAccessToken(env);
+  const headers = { Authorization: `Bearer ${token}` };
+
+  const activities = await fetchJson(
+    `${STRAVA_API}/athlete/activities?per_page=50`,
+    { headers }
+  );
+  const runs = (Array.isArray(activities) ? activities : []).filter(
+    (a) => a.type === "Run" || a.sport_type === "Run"
+  );
+
+  const weekAgo = Date.now() - 7 * 86400000;
+  const weekRuns = runs.filter(
+    (r) => new Date(r.start_date).getTime() >= weekAgo
+  );
+  const weekMeters = weekRuns.reduce((sum, r) => sum + (r.distance || 0), 0);
+
+  const recent = runs.slice(0, 5).map((r) => ({
+    name: r.name,
+    miles: miles(r.distance || 0),
+    movingTimeSec: r.moving_time || 0,
+    paceSecPerMile: paceSecPerMile(r.moving_time || 0, r.distance || 0),
+    date: (r.start_date_local || r.start_date || "").slice(0, 10),
+  }));
+
+  let ytd = null;
+  let all = null;
+  if (env.STRAVA_ATHLETE_ID) {
+    try {
+      const stats = await fetchJson(
+        `${STRAVA_API}/athletes/${env.STRAVA_ATHLETE_ID}/stats`,
+        { headers }
+      );
+      if (stats?.ytd_run_totals) {
+        ytd = {
+          miles: miles(stats.ytd_run_totals.distance || 0),
+          runs: stats.ytd_run_totals.count || 0,
+        };
+      }
+      if (stats?.all_run_totals) {
+        all = {
+          miles: miles(stats.all_run_totals.distance || 0),
+          runs: stats.all_run_totals.count || 0,
+        };
+      }
+    } catch (error) {
+      console.error("Strava stats fetch failed:", error);
+    }
+  }
+
+  const payload = {
+    updatedAt: new Date().toISOString(),
+    week: { miles: miles(weekMeters), runs: weekRuns.length },
+    recent,
+    ytd,
+    all,
+  };
+
+  await env.HOMEPAGE_CACHE.put("strava_json", JSON.stringify(payload));
+  return payload;
+}
 
 export async function updateCache(env) {
   try {
