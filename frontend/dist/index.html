@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Andrey Kutsenko — software engineer</title>
-  <meta name="description" content="Andrey Kutsenko — software engineer in San Francisco. Automation, data pipelines, fintech systems, LLM experiments. Builder of SimpleProcess.io.">
+  <title>Andrey Kutsenko · software engineer</title>
+  <meta name="description" content="Andrey Kutsenko: software engineer in San Francisco. Automation, data pipelines, fintech systems, LLM experiments. Builder of SimpleProcess.io.">
   <link rel="canonical" href="https://kutsenko.dev/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kutsenko.dev/">
-  <meta property="og:title" content="Andrey Kutsenko — software engineer">
+  <meta property="og:title" content="Andrey Kutsenko · software engineer">
   <meta property="og:description" content="Automation, data pipelines, fintech systems, LLM experiments. Builder of SimpleProcess.io.">
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#fdfdfd" media="(prefers-color-scheme: light)">
@@ -81,7 +81,42 @@
     ul.flat { list-style: none; margin: 0; padding: 0; }
     ul.flat li { margin: .55rem 0; }
     ul.flat .em { margin-right: .4em; }
-    .stack { font-family: var(--mono); font-size: .85em; color: var(--muted); }
+
+    /* dashboard card */
+    #dash-card {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      margin-top: 1.6rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color .15s;
+    }
+    #dash-card:hover { border-color: var(--prompt); }
+    #dash-card .dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--prompt);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 50% { opacity: .3; } }
+    @media (prefers-reduced-motion: reduce) { #dash-card .dot { animation: none; } }
+    #dash-card strong { display: block; font-weight: 650; }
+    #dash-card .sub { color: var(--muted); font-size: .82em; }
+    #dash-card .arrow {
+      margin-left: auto;
+      color: var(--muted);
+      transition: transform .15s, color .15s;
+    }
+    #dash-card:hover .arrow { transform: translateX(4px); color: var(--prompt); }
+
+    /* specs */
+    .specs { font-family: var(--mono); font-size: .82em; line-height: 2; }
+    .specs .k { display: inline-block; width: 9ch; color: var(--muted); }
 
     /* terminal */
     #term {
@@ -114,6 +149,7 @@
       color: var(--muted);
     }
     footer a { color: inherit; }
+    footer p { margin: .3rem 0; }
 
     #theme-btn {
       position: fixed;
@@ -139,43 +175,45 @@
 
   <header>
     <h1>Andrey Kutsenko<span class="cursor" aria-hidden="true"></span></h1>
-    <p>Software engineer in San Francisco. Automation for fintech — data parsing, document pipelines, ops tooling. After hours: LLM experiments and long runs.</p>
+    <p>Software engineer in San Francisco. Automation for fintech: data parsing, document pipelines, ops tooling. After hours: LLM experiments and long runs.</p>
+
+    <a id="dash-card" href="/dashboard/">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        <strong>Live dashboard</strong>
+        <span class="sub">Hacker News · GitHub radar · r/LocalLLaMA · LessWrong · my running log. Refreshed hourly.</span>
+      </span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
   </header>
 
   <main>
     <section>
       <h2 id="now">now</h2>
       <ul class="flat">
-        <li><span class="em">⚙️</span><a href="https://www.infoimageinc.com/">InfoIMAGE</a> — software engineer: data parsing, document pipelines and Unix/Linux automation for fintech.</li>
-        <li><span class="em">🤖</span><a href="https://simpleprocess.io/">SimpleProcess.io</a> — building business automation and AI-driven outreach tools.</li>
+        <li><span class="em">⚙️</span><a href="https://www.infoimageinc.com/">InfoIMAGE</a>: data parsing, document pipelines and Unix/Linux automation for fintech.</li>
+        <li><span class="em">🤖</span><a href="https://simpleprocess.io/">SimpleProcess.io</a>: building business automation and AI-driven outreach tools.</li>
       </ul>
     </section>
 
     <section>
-      <h2 id="projects">projects</h2>
-      <ul class="flat">
-        <li><span class="em">📊</span><a href="/dashboard/">Dashboard</a> — my VS&nbsp;Code-flavored feed reader: Hacker News, GitHub radar, r/LocalLLaMA, LessWrong. Refreshed hourly by a Cloudflare Worker. Press <code>`</code> in there.</li>
-        <li><span class="em">🧾</span><a href="https://github.com/andreykutsenko/kutsenko.dev">This page</a> — a single HTML file. No frameworks, no analytics, no cookies. View source, it won't bite.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2 id="stack">stack</h2>
-      <p class="stack">Python · SQL · Shell · TypeScript · Docker · Cloudflare Workers · LLM APIs</p>
-    </section>
-
-    <section>
-      <h2 id="off-the-clock">off the clock</h2>
-      <ul class="flat">
-        <li><span class="em">🏃</span><a href="https://www.strava.com/athletes/kutsenko">Marathons</a> — long runs are where the best debugging happens. Splits are on Strava; try <code>run</code> in the terminal below.</li>
-      </ul>
+      <h2 id="specs">specs</h2>
+      <div class="specs">
+        <div><span class="k">role</span>software engineer</div>
+        <div><span class="k">focus</span>automation · data pipelines · fintech</div>
+        <div><span class="k">stack</span>python · sql · shell · typescript · docker</div>
+        <div><span class="k">infra</span>cloudflare workers · linux · llm apis</div>
+        <div><span class="k">editor</span>vim, occasionally escaped</div>
+        <div><span class="k">running</span><a href="https://www.strava.com/athletes/kutsenko" id="spec-running">marathons</a></div>
+        <div><span class="k">uptime</span>stable since the fintech era</div>
+      </div>
     </section>
 
     <section>
       <h2 id="contacts">contacts</h2>
       <ul class="flat">
         <li><span class="em">✉️</span><a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a></li>
-        <li><span class="em">💬</span><a href="https://t.me/kutsenko_dev">@kutsenko_dev</a> — Telegram, the fastest way</li>
+        <li><span class="em">💬</span><a href="https://t.me/kutsenko_dev">@kutsenko_dev</a> (Telegram, fastest)</li>
         <li><span class="em">💼</span><a href="https://linkedin.com/in/andreykutsenko">LinkedIn</a></li>
         <li><span class="em">🐙</span><a href="https://github.com/andreykutsenko">GitHub</a></li>
       </ul>
@@ -187,15 +225,16 @@
     <div id="term-line">
       <span class="ps1">guest@kutsenko.dev:~$</span>
       <input id="term-in" type="text" autocomplete="off" autocapitalize="off"
-             spellcheck="false" placeholder="type `help`" aria-label="Terminal input">
+             spellcheck="false" placeholder="type `help`, or `miles` for the running chart" aria-label="Terminal input">
     </div>
-    <noscript><p class="muted">JavaScript is off — the shell is down. Everything above still works.</p></noscript>
+    <noscript><p class="muted">JavaScript is off. The shell is down, everything above still works.</p></noscript>
   </section>
 
   <canvas id="matrix" aria-hidden="true"></canvas>
 
   <footer>
-    <p>For agents: <a href="/llms.txt">llms.txt</a> · © <span id="year">2026</span> Andrey Kutsenko · made of HTML</p>
+    <p>This page is one HTML file: no frameworks, no analytics, no cookies. <a href="https://github.com/andreykutsenko/kutsenko.dev">Source</a>.</p>
+    <p>For agents: <a href="/llms.txt">llms.txt</a> · © <span id="year">2026</span> Andrey Kutsenko</p>
   </footer>
 
   <script>
@@ -225,6 +264,17 @@
     }
     document.getElementById('theme-btn').addEventListener('click', toggleTheme);
 
+    /* ---------- live running line in specs ---------- */
+    fetch('/api/strava')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.week && typeof d.week.miles === 'number') {
+          document.getElementById('spec-running').textContent =
+            d.week.miles + ' mi this week · marathons';
+        }
+      })
+      .catch(function () {});
+
     /* ---------- terminal ---------- */
     var term = document.getElementById('term');
     var out = document.getElementById('term-out');
@@ -252,7 +302,7 @@
 
     var FILES = {
       'about.txt':
-        'Andrey Kutsenko — software engineer, San Francisco.\n' +
+        'Andrey Kutsenko, software engineer, San Francisco.\n' +
         'Fintech roots (InfoIMAGE, BPS-Sberbank). I automate the boring parts:\n' +
         'data parsing, document pipelines, ops tooling. After hours: LLM experiments.',
       'stack.txt':
@@ -263,9 +313,9 @@
         'linkedin  linkedin.com/in/andreykutsenko\n' +
         'github    github.com/andreykutsenko',
       'running.log':
-        '26.2 miles — the only process I still run without automation.\n' +
+        '26.2 miles: the only process I still run without automation.\n' +
         'No cron, no retries, no rollback after mile 20.\n' +
-        'Splits: strava.com/athletes/kutsenko (try `run` for a live demo)'
+        'Splits: strava.com/athletes/kutsenko (try `run` or `miles`)'
     };
 
     var commands = {
@@ -287,7 +337,7 @@
         print('  exit        logout');
       },
       whoami: function () {
-        print('guest. The owner is Andrey Kutsenko — software engineer in San Francisco.');
+        print('guest. The owner is Andrey Kutsenko, software engineer in San Francisco.');
         print('You, however, get root access to nothing. Enjoy responsibly.');
       },
       ls: function () {
@@ -318,12 +368,12 @@
         print('owner: up since the fintech era, load average stable');
       },
       sudo: function () {
-        print('nice try. Permission denied —');
-        print('and there is no analytics here to report you to.');
+        print('nice try. Permission denied.');
+        print('(there is no analytics here to report you to)');
       },
       ru: function () {
         print('Привет! Да, я говорю по-русски.');
-        print('Быстрее всего — Telegram: @kutsenko_dev');
+        print('Быстрее всего: Telegram @kutsenko_dev');
       },
       vim: function () {
         print("you're already inside someone else's interface. :q won't help.");
@@ -337,7 +387,7 @@
           return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
         };
         var finish = function () {
-          div.textContent = '🏁 26.2 mi in 3 seconds — if only. Pulling real telemetry...';
+          div.textContent = '🏁 26.2 mi in 3 seconds. If only. Pulling real telemetry...';
           fetch('/api/strava')
             .then(function (r) { return r.json(); })
             .then(function (d) {
@@ -352,7 +402,7 @@
               print('full log: strava.com/athletes/kutsenko');
             })
             .catch(function () {
-              print('telemetry offline — splits at strava.com/athletes/kutsenko');
+              print('telemetry offline, splits at strava.com/athletes/kutsenko');
             })
             .then(function () {
               input.scrollIntoView({ block: 'nearest' });
@@ -387,7 +437,7 @@
             print('total: ' + total.toFixed(1) + ' mi · avg: ' + (total / weeks.length).toFixed(1) + ' mi/wk');
           })
           .catch(function () {
-            print('telemetry offline — strava.com/athletes/kutsenko', 'err');
+            print('telemetry offline, splits at strava.com/athletes/kutsenko', 'err');
           })
           .then(function () {
             input.scrollIntoView({ block: 'nearest' });
@@ -398,7 +448,7 @@
       clear: function () { out.textContent = ''; },
       exit: function () {
         print('logout');
-        print('(this is a web page — you can just close the tab)');
+        print('(this is a web page, you can just close the tab)');
       }
     };
 
@@ -410,7 +460,7 @@
       if (commands[cmd]) {
         commands[cmd](parts.slice(1).join(' '));
       } else {
-        print(cmd + ': command not found — try `help`', 'err');
+        print(cmd + ': command not found, try `help`', 'err');
       }
       input.scrollIntoView({ block: 'nearest' });
     }

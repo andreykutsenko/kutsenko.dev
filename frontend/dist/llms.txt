@@ -5,17 +5,17 @@
 > Builder of SimpleProcess.io.
 
 ## Work
-- Software Engineer @ InfoIMAGE — data parsing, document processing and
+- Software Engineer @ InfoIMAGE: data parsing, document processing and
   Unix/Linux automation for fintech.
-- SimpleProcess.io (https://simpleprocess.io) — business automation and
+- SimpleProcess.io (https://simpleprocess.io): business automation and
   AI-driven outreach tools.
 
 ## Stack
 Python, SQL, Shell, TypeScript, Docker, Cloudflare Workers, LLM APIs.
 
 ## Pages
-- https://kutsenko.dev/ — this one-page site (plain HTML, no frameworks)
-- https://kutsenko.dev/dashboard/ — personal feed reader (Hacker News,
+- https://kutsenko.dev/: this one-page site (plain HTML, no frameworks)
+- https://kutsenko.dev/dashboard/: personal feed reader (Hacker News,
   GitHub radar, r/LocalLLaMA, LessWrong), refreshed hourly by a
   Cloudflare Worker at /api/homepage.
 
