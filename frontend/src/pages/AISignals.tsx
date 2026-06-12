@@ -261,7 +261,7 @@ export const ToolView: React.FC = () => {
                 rel="noopener noreferrer"
                 className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium"
               >
-                {tool.name} — {tool.tagline}
+                {tool.name}: {tool.tagline}
                 <ExternalLink size={10} className="inline ml-2 opacity-0 group-hover:opacity-50" />
               </a>
             </div>

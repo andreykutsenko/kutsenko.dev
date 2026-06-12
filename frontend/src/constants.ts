@@ -43,7 +43,7 @@ export const I18N: I18nDict = {
       "Led engineering and operations teams in banking, improving KPIs and reducing operational risk.",
     "about.focus.heading": "Current focus",
     "about.focus.body1":
-      "Running SimpleProcess.io — practical automations for outbound ops, enrichment, and AI/LLM-driven agents that tie into CRMs and ops stacks.",
+      "Running SimpleProcess.io: practical automations for outbound ops, enrichment, and AI/LLM-driven agents that tie into CRMs and ops stacks.",
     "about.focus.body2":
       "Building a Telegram Outreach microservice (pet project) based on Telethon: multi-account messaging, response tracking, contact parsing, phone validation, CRM enrichment, and warm-up routines orchestrated with n8n + LLM agents.",
     "about.stack.heading": "Stack & Interests",
@@ -105,7 +105,7 @@ export const I18N: I18nDict = {
       "Руководил инженерными и операционными командами в банке, повышая KPI и снижая риски.",
     "about.focus.heading": "Текущий фокус",
     "about.focus.body1":
-      "Веду SimpleProcess.io — прикладные автоматизации для outbound-операций, энричмента и LLM-агентов, интегрированных с CRM и операционными системами.",
+      "Веду SimpleProcess.io: прикладные автоматизации для outbound-операций, энричмента и LLM-агентов, интегрированных с CRM и операционными системами.",
     "about.focus.body2":
       "Собираю Telegram Outreach микросервис (pet-проект) на Telethon: мультиаккаунт, отслеживание ответов, парсинг контактов, проверка телефонов, энричмент CRM и прогрев аккаунтов с оркестрацией через n8n и LLM-агентов.",
     "about.stack.heading": "Инструменты и интересы",

@@ -170,7 +170,7 @@ export const IntegratedTerminal: React.FC<IntegratedTerminalProps> = ({ isOpen, 
         <div className="flex items-center gap-2 text-[11px] text-fg-dark-muted font-mono">
           <Terminal size={12} className="text-accent" />
           <span className="text-accent">TERMINAL</span>
-          <span className="opacity-50">— bash</span>
+          <span className="opacity-50">· bash</span>
         </div>
         <button 
           onClick={handleClose}
