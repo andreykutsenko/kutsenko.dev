@@ -276,6 +276,7 @@
         print('  ls          list files');
         print('  cat <file>  print a file');
         print('  run         26.2 miles, compressed');
+        print('  miles       weekly mileage chart');
         print('  dashboard   open my feed reader');
         print('  theme       toggle dark/light');
         print('  hire        the important one');
@@ -366,6 +367,32 @@
         }, 85);
       },
       pace: function () { commands.run(); },
+      miles: function () {
+        var div = document.createElement('div');
+        div.textContent = 'plotting mileage...';
+        out.appendChild(div);
+        fetch('/api/strava')
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            var weeks = d && d.weeks;
+            if (!weeks || !weeks.length) throw new Error('no data');
+            var max = Math.max.apply(null, weeks.map(function (w) { return w.miles; })) || 1;
+            var BAR = 24;
+            div.textContent = 'weekly mileage, last ' + weeks.length + ' weeks:';
+            weeks.forEach(function (w) {
+              var n = Math.round((w.miles / max) * BAR);
+              print(w.start.slice(5) + '  ' + '█'.repeat(n) + '░'.repeat(BAR - n) + '  ' + w.miles.toFixed(1));
+            });
+            var total = weeks.reduce(function (sum, w) { return sum + w.miles; }, 0);
+            print('total: ' + total.toFixed(1) + ' mi · avg: ' + (total / weeks.length).toFixed(1) + ' mi/wk');
+          })
+          .catch(function () {
+            print('telemetry offline — strava.com/athletes/kutsenko', 'err');
+          })
+          .then(function () {
+            input.scrollIntoView({ block: 'nearest' });
+          });
+      },
       strava: function () { commands.run(); },
       matrix: function () { runMatrix(); },
       clear: function () { out.textContent = ''; },

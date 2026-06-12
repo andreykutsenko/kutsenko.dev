@@ -217,17 +217,27 @@ function paceSecPerMile(movingTimeSec, meters) {
   return Math.round(movingTimeSec / (meters / METERS_PER_MILE));
 }
 
+function weekStartUTC(date) {
+  const dt = new Date(date);
+  const day = (dt.getUTCDay() + 6) % 7;
+  dt.setUTCDate(dt.getUTCDate() - day);
+  dt.setUTCHours(0, 0, 0, 0);
+  return dt;
+}
+
 export async function updateStravaCache(env) {
   const token = await stravaAccessToken(env);
   const headers = { Authorization: `Bearer ${token}` };
 
+  // `after` makes Strava return oldest-first; 70 days covers 8 full weeks
+  const after = Math.floor((Date.now() - 70 * 86400000) / 1000);
   const activities = await fetchJson(
-    `${STRAVA_API}/athlete/activities?per_page=50`,
+    `${STRAVA_API}/athlete/activities?after=${after}&per_page=100`,
     { headers }
   );
-  const runs = (Array.isArray(activities) ? activities : []).filter(
-    (a) => a.type === "Run" || a.sport_type === "Run"
-  );
+  const runs = (Array.isArray(activities) ? activities : [])
+    .filter((a) => a.type === "Run" || a.sport_type === "Run")
+    .sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
 
   const weekAgo = Date.now() - 7 * 86400000;
   const weekRuns = runs.filter(
@@ -268,9 +278,26 @@ export async function updateStravaCache(env) {
     }
   }
 
+  const currentWeek = weekStartUTC(new Date());
+  const weeks = [];
+  for (let i = 7; i >= 0; i--) {
+    const start = new Date(currentWeek.getTime() - i * 7 * 86400000);
+    const end = new Date(start.getTime() + 7 * 86400000);
+    const bucket = runs.filter((r) => {
+      const t = new Date(r.start_date);
+      return t >= start && t < end;
+    });
+    weeks.push({
+      start: start.toISOString().slice(0, 10),
+      miles: miles(bucket.reduce((sum, r) => sum + (r.distance || 0), 0)),
+      runs: bucket.length,
+    });
+  }
+
   const payload = {
     updatedAt: new Date().toISOString(),
     week: { miles: miles(weekMeters), runs: weekRuns.length },
+    weeks,
     recent,
     ytd,
     all,
