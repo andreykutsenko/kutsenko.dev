@@ -42,7 +42,7 @@ const buildHeatGrid = (days: Array<{ date: string; miles: number }>): HeatCell[]
 };
 
 const heatClass = (mi: number): string => {
-  if (mi <= 0) return 'bg-black/10 dark:bg-white/5';
+  if (mi <= 0) return 'bg-black/10 dark:bg-white/10';
   if (mi < 5) return 'bg-accent/25';
   if (mi < 8) return 'bg-accent/50';
   if (mi < 11) return 'bg-accent/75';
@@ -133,7 +133,7 @@ export const RunningView = () => {
           </div>
           <div className="flex items-center gap-1 mt-2 text-[10px] text-fg-dark-muted">
             <span className="mr-1">less</span>
-            <div className="w-3 h-3 rounded-[2px] bg-black/10 dark:bg-white/5" />
+            <div className="w-3 h-3 rounded-[2px] bg-black/10 dark:bg-white/10" />
             <div className="w-3 h-3 rounded-[2px] bg-accent/25" />
             <div className="w-3 h-3 rounded-[2px] bg-accent/50" />
             <div className="w-3 h-3 rounded-[2px] bg-accent/75" />
