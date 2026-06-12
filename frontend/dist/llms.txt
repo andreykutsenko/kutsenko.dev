@@ -19,6 +19,9 @@ Python, SQL, Shell, TypeScript, Docker, Cloudflare Workers, LLM APIs.
   GitHub radar, r/LocalLLaMA, LessWrong), refreshed hourly by a
   Cloudflare Worker at /api/homepage.
 
+## Off the clock
+- Marathon runner: https://www.strava.com/athletes/kutsenko
+
 ## Contact
 - Email: kutsenko@gmail.com
 - Telegram: @kutsenko_dev (fastest)

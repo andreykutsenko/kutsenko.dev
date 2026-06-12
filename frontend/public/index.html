@@ -171,6 +171,13 @@
     </section>
 
     <section>
+      <h2 id="off-the-clock">off the clock</h2>
+      <ul class="flat">
+        <li><span class="em">🏃</span><a href="https://www.strava.com/athletes/kutsenko">Marathons</a> — long runs are where the best debugging happens. Splits are on Strava; try <code>run</code> in the terminal below.</li>
+      </ul>
+    </section>
+
+    <section>
       <h2 id="contacts">contacts</h2>
       <ul class="flat">
         <li><span class="em">✉️</span><a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a></li>
@@ -260,7 +267,11 @@
         'email     kutsenko@gmail.com\n' +
         'telegram  @kutsenko_dev\n' +
         'linkedin  linkedin.com/in/andreykutsenko\n' +
-        'github    github.com/andreykutsenko'
+        'github    github.com/andreykutsenko',
+      'running.log':
+        '26.2 miles — the only process I still run without automation.\n' +
+        'No cron, no retries, no rollback after mile 20.\n' +
+        'Splits: strava.com/athletes/kutsenko (try `run` for a live demo)'
     };
 
     var commands = {
@@ -270,6 +281,7 @@
         print('  whoami      who you are (and who I am)');
         print('  ls          list files');
         print('  cat <file>  print a file');
+        print('  run         26.2 miles, compressed');
         print('  dashboard   open my feed reader');
         print('  theme       toggle dark/light');
         print('  hire        the important one');
@@ -284,7 +296,7 @@
         print('You, however, get root access to nothing. Enjoy responsibly.');
       },
       ls: function () {
-        print('about.txt  stack.txt  contacts.txt  dashboard/');
+        print('about.txt  stack.txt  contacts.txt  running.log  dashboard/');
       },
       cat: function (arg) {
         if (!arg) { print('usage: cat <file>', 'err'); return; }
@@ -321,6 +333,24 @@
       vim: function () {
         print("you're already inside someone else's interface. :q won't help.");
       },
+      run: function () {
+        var TRACK = 34;
+        var div = document.createElement('div');
+        out.appendChild(div);
+        var finish = function () {
+          div.textContent = '🏁 26.2 mi in 3 seconds — if only.';
+          print('real splits: strava.com/athletes/kutsenko');
+          input.scrollIntoView({ block: 'nearest' });
+        };
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
+        var pos = 0;
+        var timer = setInterval(function () {
+          div.textContent =
+            'mi 0 |' + '·'.repeat(pos) + '🏃' + '·'.repeat(TRACK - pos) + '| mi 26.2';
+          if (pos++ >= TRACK) { clearInterval(timer); finish(); }
+        }, 85);
+      },
+      strava: function () { commands.run(); },
       matrix: function () { runMatrix(); },
       clear: function () { out.textContent = ''; },
       exit: function () {
