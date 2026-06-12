@@ -97,10 +97,11 @@
     }
     #dash-card:hover { border-color: var(--prompt); }
     #dash-card .dot {
+      display: inline-block;
       width: 9px; height: 9px;
+      margin-right: .55ch;
       border-radius: 50%;
       background: var(--prompt);
-      flex-shrink: 0;
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse { 50% { opacity: .3; } }
@@ -178,9 +179,8 @@
     <p>Software engineer in San Francisco. Automation for fintech: data parsing, document pipelines, ops tooling. After hours: LLM experiments and long runs.</p>
 
     <a id="dash-card" href="/dashboard/">
-      <span class="dot" aria-hidden="true"></span>
       <span>
-        <strong>Live dashboard</strong>
+        <strong><span class="dot" aria-hidden="true"></span>Live dashboard</strong>
         <span class="sub">Hacker News · GitHub radar · r/LocalLLaMA · LessWrong · my running log. Refreshed hourly.</span>
       </span>
       <span class="arrow" aria-hidden="true">→</span>
