@@ -239,10 +239,21 @@ export async function updateStravaCache(env) {
     .filter((a) => a.type === "Run" || a.sport_type === "Run")
     .sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
 
-  const weekAgo = Date.now() - 7 * 86400000;
-  const weekRuns = runs.filter(
-    (r) => new Date(r.start_date).getTime() >= weekAgo
-  );
+  // Bucket by the athlete's local calendar day; derive the UTC offset from
+  // Strava's own start_date vs start_date_local pair so evening runs do not
+  // leak into the next UTC day.
+  const tzOffsetMs = runs.length
+    ? Date.parse(runs[0].start_date_local) - Date.parse(runs[0].start_date)
+    : 0;
+  const localDayUTC = (r) =>
+    Date.parse(
+      (r.start_date_local || r.start_date || "").slice(0, 10) + "T00:00:00Z"
+    );
+
+  // Calendar week, Monday start, in athlete-local time
+  const currentWeek = weekStartUTC(new Date(Date.now() + tzOffsetMs));
+  const currentWeekStart = currentWeek.getTime();
+  const weekRuns = runs.filter((r) => localDayUTC(r) >= currentWeekStart);
   const weekMeters = weekRuns.reduce((sum, r) => sum + (r.distance || 0), 0);
 
   const recent = runs.slice(0, 5).map((r) => ({
@@ -288,17 +299,16 @@ export async function updateStravaCache(env) {
     .sort()
     .map((date) => ({ date, miles: miles(dayMiles[date]) }));
 
-  const currentWeek = weekStartUTC(new Date());
   const weeks = [];
   for (let i = 7; i >= 0; i--) {
-    const start = new Date(currentWeek.getTime() - i * 7 * 86400000);
-    const end = new Date(start.getTime() + 7 * 86400000);
+    const start = currentWeekStart - i * 7 * 86400000;
+    const end = start + 7 * 86400000;
     const bucket = runs.filter((r) => {
-      const t = new Date(r.start_date);
+      const t = localDayUTC(r);
       return t >= start && t < end;
     });
     weeks.push({
-      start: start.toISOString().slice(0, 10),
+      start: new Date(start).toISOString().slice(0, 10),
       miles: miles(bucket.reduce((sum, r) => sum + (r.distance || 0), 0)),
       runs: bucket.length,
     });
