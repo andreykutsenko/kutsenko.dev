@@ -40,7 +40,7 @@ const OfflineState = () => (
 
 const fmtContext = (ctx: number): string => {
   if (!ctx) return '?';
-  if (ctx >= 1000000) return `${ctx / 1000000}M`;
+  if (ctx >= 1000000) return `${Math.round(ctx / 100000) / 10}M`;
   return `${Math.round(ctx / 1000)}K`;
 };
 
