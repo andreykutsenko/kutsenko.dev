@@ -16,7 +16,6 @@ import {
   Trophy,
   FlaskConical,
   DollarSign,
-  Footprints,
   PanelLeftClose,
   PanelLeft
 } from 'lucide-react';
@@ -56,7 +55,6 @@ export const getLanguageFromFile = (pathname: string) => {
   if (pathname === '/lesswrong') return 'Markdown';
   if (pathname === '/about') return 'Markdown';
   if (pathname === '/bookmarks') return 'Markdown';
-  if (pathname === '/running') return 'Log';
   return 'Plain Text';
 };
 
@@ -226,12 +224,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onToggleCol
         {/* Root level files */}
         {workspaceOpen && (
           <div className="lg:ml-4">
-            <FileItem
-              to="/running"
-              icon={<Footprints size={14} className="text-accent" />}
-              label="running.log"
-              isActive={location.pathname === '/running'}
-            />
             <FileItem
               to="/bookmarks"
               icon={<Bookmark size={14} className="text-term-orange" />} 

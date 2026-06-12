@@ -10,7 +10,7 @@
 /prices     / 200
 /bookmarks  / 200
 /about      / 200
-/running    / 200
+/running    /about 301
 
 # Old /dashboard URLs now live at the root
 /dashboard/* /:splat 301

@@ -49,7 +49,11 @@ const heatClass = (mi: number): string => {
   return 'bg-accent';
 };
 
-export const RunningView = () => {
+interface RunningViewProps {
+  embedded?: boolean;
+}
+
+export const RunningView = ({ embedded = false }: RunningViewProps) => {
   const [data, setData] = useState<StravaData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,10 +102,12 @@ export const RunningView = () => {
   ];
 
   return (
-    <div className="max-w-3xl font-mono text-sm">
-      <div className="text-fg-dark-muted opacity-50 text-xs mb-6">
-        <span className="text-[#519aba]"># running.log</span> - live telemetry from Strava
-      </div>
+    <div className={embedded ? 'font-mono text-sm' : 'max-w-3xl font-mono text-sm'}>
+      {!embedded && (
+        <div className="text-fg-dark-muted opacity-50 text-xs mb-6">
+          <span className="text-[#519aba]"># running.log</span> - live telemetry from Strava
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         {stats.map((s) => (
@@ -145,7 +151,7 @@ export const RunningView = () => {
 
       <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Recent runs</div>
       <div className="space-y-2">
-        {data.recent.map((run, i) => (
+        {(embedded ? data.recent.slice(0, 3) : data.recent).map((run, i) => (
           <div key={`${run.date}-${i}`} className="flex items-baseline gap-3 border-l-2 border-accent/30 pl-3 py-1">
             <Footprints size={12} className="text-accent shrink-0 self-center" />
             <div className="flex-1 min-w-0">

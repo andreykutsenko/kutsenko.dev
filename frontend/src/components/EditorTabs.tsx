@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FileJson, FileCode, FileText, X, Bookmark, Trophy, FlaskConical, Zap, DollarSign, Footprints } from 'lucide-react';
+import { FileJson, FileCode, FileText, X, Bookmark, Trophy, FlaskConical, Zap, DollarSign } from 'lucide-react';
 
 // Tab configuration
 const TABS = [
@@ -13,7 +13,6 @@ const TABS = [
   { path: '/tool', label: 'tool_of_day.md', ext: 'tool' },
   { path: '/prices', label: 'token_prices.json', ext: 'prices' },
   // Root files
-  { path: '/running', label: 'running.log', ext: 'run' },
   { path: '/bookmarks', label: 'bookmarks.md', ext: 'bookmark' },
   { path: '/about', label: 'about_me.md', ext: 'md' },
 ];
@@ -39,8 +38,6 @@ const getFileIcon = (ext: string, size = 12) => {
       return <Zap size={size} className="text-accent" />;
     case 'prices':
       return <DollarSign size={size} className="text-term-green" />;
-    case 'run':
-      return <Footprints size={size} className="text-accent" />;
     default:
       return <FileText size={size} className="text-fg-dark-muted" />;
   }

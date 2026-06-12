@@ -1,5 +1,6 @@
 import { Lang } from '../types';
 import { Mail, Linkedin, Send, MapPin, ExternalLink } from 'lucide-react';
+import { RunningView } from './Running';
 
 interface AboutProps {
   lang: Lang;
@@ -110,6 +111,12 @@ export const About: React.FC<AboutProps> = () => {
               <div className="text-fg-dark-muted">Business automation & AI-driven outreach tools.</div>
             </div>
           </div>
+        </div>
+
+        {/* Running */}
+        <div>
+          <div className="text-term-purple text-[11px] uppercase tracking-widest mb-3">## Running</div>
+          <RunningView embedded />
         </div>
 
         {/* Footer */}
