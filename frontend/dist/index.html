@@ -75,12 +75,9 @@
     }
     h2::before { content: "## "; color: var(--muted); font-family: var(--mono); font-weight: 400; }
     p { margin: .7rem 0; }
-    a { color: var(--link); text-underline-offset: 3px; }
+    a { color: var(--prompt); text-underline-offset: 3px; }
     a:hover { text-decoration-thickness: 2px; }
     .muted { color: var(--muted); }
-    ul.flat { list-style: none; margin: 0; padding: 0; }
-    ul.flat li { margin: .55rem 0; }
-    ul.flat .em { margin-right: .4em; }
 
     /* dashboard card */
     #dash-card {
@@ -115,9 +112,11 @@
     }
     #dash-card:hover .arrow { transform: translateX(4px); color: var(--prompt); }
 
-    /* specs */
-    .specs { font-family: var(--mono); font-size: .82em; line-height: 2; }
-    .specs .k { display: inline-block; width: 9ch; color: var(--muted); }
+    /* key-value blocks (terminal-output style) */
+    .kv { font-family: var(--mono); font-size: .82em; line-height: 1.9; }
+    .kv > div { display: flex; gap: 1.5ch; margin: .2rem 0; }
+    .kv .k { flex: 0 0 10ch; color: var(--muted); }
+    .kv-wide .k { flex-basis: 14ch; }
 
     /* terminal */
     #term {
@@ -146,7 +145,8 @@
       margin-top: 2.5rem;
       border-top: 1px solid var(--rule);
       padding-top: 1rem;
-      font-size: .78em;
+      font-family: var(--mono);
+      font-size: .72em;
       color: var(--muted);
     }
     footer a { color: inherit; }
@@ -190,33 +190,33 @@
   <main>
     <section>
       <h2 id="now">now</h2>
-      <ul class="flat">
-        <li><span class="em">⚙️</span><a href="https://www.infoimageinc.com/">InfoIMAGE</a>: data parsing, document pipelines and Unix/Linux automation for fintech.</li>
-        <li><span class="em">🤖</span><a href="https://simpleprocess.io/">SimpleProcess.io</a>: building business automation and AI-driven outreach tools.</li>
-      </ul>
+      <div class="kv kv-wide">
+        <div><span class="k"><a href="https://www.infoimageinc.com/">infoimage</a></span><span>data parsing, document pipelines, unix/linux automation for fintech</span></div>
+        <div><span class="k"><a href="https://simpleprocess.io/">simpleprocess</a></span><span>business automation and ai-driven outreach tools</span></div>
+      </div>
     </section>
 
     <section>
       <h2 id="specs">specs</h2>
-      <div class="specs">
-        <div><span class="k">role</span>software engineer</div>
-        <div><span class="k">focus</span>automation · data pipelines · fintech</div>
-        <div><span class="k">stack</span>python · sql · shell · typescript · docker</div>
-        <div><span class="k">infra</span>cloudflare workers · linux · llm apis</div>
-        <div><span class="k">editor</span>vim, occasionally escaped</div>
-        <div><span class="k">running</span><a href="https://www.strava.com/athletes/kutsenko" id="spec-running">marathons</a></div>
-        <div><span class="k">uptime</span>stable since the fintech era</div>
+      <div class="kv">
+        <div><span class="k">role</span><span>software engineer</span></div>
+        <div><span class="k">focus</span><span>automation · data pipelines · fintech</span></div>
+        <div><span class="k">stack</span><span>python · sql · shell · typescript · docker</span></div>
+        <div><span class="k">infra</span><span>cloudflare workers · linux · llm apis</span></div>
+        <div><span class="k">editor</span><span>vim, occasionally escaped</span></div>
+        <div><span class="k">running</span><span><a href="https://www.strava.com/athletes/kutsenko" id="spec-running">marathons</a></span></div>
+        <div><span class="k">uptime</span><span>stable since the fintech era</span></div>
       </div>
     </section>
 
     <section>
       <h2 id="contacts">contacts</h2>
-      <ul class="flat">
-        <li><span class="em">✉️</span><a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a></li>
-        <li><span class="em">💬</span><a href="https://t.me/kutsenko_dev">@kutsenko_dev</a> (Telegram, fastest)</li>
-        <li><span class="em">💼</span><a href="https://linkedin.com/in/andreykutsenko">LinkedIn</a></li>
-        <li><span class="em">🐙</span><a href="https://github.com/andreykutsenko">GitHub</a></li>
-      </ul>
+      <div class="kv">
+        <div><span class="k">email</span><span><a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a></span></div>
+        <div><span class="k">telegram</span><span><a href="https://t.me/kutsenko_dev">@kutsenko_dev</a> <span class="muted">(fastest)</span></span></div>
+        <div><span class="k">linkedin</span><span><a href="https://linkedin.com/in/andreykutsenko">linkedin.com/in/andreykutsenko</a></span></div>
+        <div><span class="k">github</span><span><a href="https://github.com/andreykutsenko">github.com/andreykutsenko</a></span></div>
+      </div>
     </section>
   </main>
 
