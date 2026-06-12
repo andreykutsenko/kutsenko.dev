@@ -78,7 +78,7 @@ export const RunningView = () => {
   if (!data || !data.week) {
     return (
       <div className="text-xs font-mono p-4 text-fg-dark-muted">
-        telemetry offline — splits at{' '}
+        telemetry offline, splits at{' '}
         <a
           href="https://www.strava.com/athletes/kutsenko"
           target="_blank"
