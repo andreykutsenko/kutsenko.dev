@@ -14,10 +14,11 @@
 Python, SQL, Shell, TypeScript, Docker, Cloudflare Workers, LLM APIs.
 
 ## Pages
-- https://kutsenko.dev/: this one-page site (plain HTML, no frameworks)
-- https://kutsenko.dev/dashboard/: personal feed reader (Hacker News,
-  GitHub radar, r/LocalLLaMA, LessWrong), refreshed hourly by a
+- https://kutsenko.dev/: live dashboard (Hacker News, GitHub radar,
+  r/LocalLLaMA, LessWrong, running log), refreshed hourly by a
   Cloudflare Worker at /api/homepage.
+- https://kutsenko.dev/me/: one-page profile (plain HTML, interactive
+  terminal: try `help`, `run`, `miles`).
 
 ## Off the clock
 - Marathon runner: https://www.strava.com/athletes/kutsenko

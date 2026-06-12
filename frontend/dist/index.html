@@ -1,532 +1,83 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Andrey Kutsenko · software engineer</title>
-  <meta name="description" content="Andrey Kutsenko: software engineer in San Francisco. Automation, data pipelines, fintech systems, LLM experiments. Builder of SimpleProcess.io.">
-  <link rel="canonical" href="https://kutsenko.dev/">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kutsenko.dev/">
-  <meta property="og:title" content="Andrey Kutsenko · software engineer">
-  <meta property="og:description" content="Automation, data pipelines, fintech systems, LLM experiments. Builder of SimpleProcess.io.">
-  <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
-  <style>
-    :root {
-      --bg: #faf9f6;
-      --fg: #1a1a1a;
-      --muted: #6b6f76;
-      --link: #0b63c5;
-      --prompt: #1a7f37;
-      --rule: #e7e4dc;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0d1117;
-        --fg: #d6dde3;
-        --muted: #8b949e;
-        --link: #58a6ff;
-        --prompt: #56d364;
-        --rule: #21262d;
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="kutsenko.dev: Andrey Kutsenko's live dashboard. Hacker News, GitHub radar, r/LocalLLaMA, LessWrong, running log." />
+    <link rel="canonical" href="https://kutsenko.dev/" />
+    <title>kutsenko.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'accent': '#56d364',
+              'bg-dark': '#0D1117',
+              'panel-dark': '#161B22',
+              'border-dark': '#30363d',
+              'fg-dark': '#c9d1d9',
+              'fg-dark-muted': '#8b949e',
+              'term-blue': '#58a6ff',
+              'term-purple': '#d2a8ff',
+              'term-orange': '#ffa657',
+              'bg-light': '#f6f4ee',
+              'panel-light': '#fdfcf8',
+              'fg-light': '#24292f',
+              'border-light': '#dad5ca',
+            },
+            fontFamily: {
+              mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+            },
+            animation: {
+              'blink': 'blink 1s step-end infinite',
+              'spin': 'spin 1s linear infinite',
+            },
+            keyframes: {
+              blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } },
+              spin: { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }
+            }
+          },
+        },
       }
-    }
-    html[data-theme="light"] {
-      --bg: #faf9f6; --fg: #1a1a1a; --muted: #6b6f76;
-      --link: #0b63c5; --prompt: #1a7f37; --rule: #e7e4dc;
-    }
-    html[data-theme="dark"] {
-      --bg: #0d1117; --fg: #d6dde3; --muted: #8b949e;
-      --link: #58a6ff; --prompt: #56d364; --rule: #21262d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0 auto;
-      padding: 4rem 1.25rem 3rem;
-      max-width: 66ch;
-      background: var(--bg);
-      color: var(--fg);
-      font: 18px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
-      transition: background .2s, color .2s;
-    }
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 650;
-      letter-spacing: -.01em;
-      margin: 0 0 1rem;
-    }
-    h1 .cursor {
-      display: inline-block;
-      width: .55em; height: 1.1em;
-      margin-left: .15em;
-      background: var(--prompt);
-      vertical-align: text-bottom;
-      animation: blink 1.1s step-end infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-    @media (prefers-reduced-motion: reduce) { h1 .cursor { animation: none; } }
-    h2 {
-      font-size: 1rem;
-      font-weight: 650;
-      margin: 2.4rem 0 .8rem;
-    }
-    h2::before { content: "## "; color: var(--muted); font-family: var(--mono); font-weight: 400; }
-    p { margin: .7rem 0; }
-    a { color: var(--prompt); text-underline-offset: 3px; }
-    a:hover { text-decoration-thickness: 2px; }
-    .muted { color: var(--muted); }
-
-    /* dashboard card */
-    #dash-card {
-      display: flex;
-      align-items: center;
-      gap: .9rem;
-      margin-top: 1.6rem;
-      padding: 1rem 1.1rem;
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color .15s;
-    }
-    #dash-card:hover { border-color: var(--prompt); }
-    #dash-card .dot {
-      display: inline-block;
-      width: 9px; height: 9px;
-      margin-right: .55ch;
-      border-radius: 50%;
-      background: var(--prompt);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 50% { opacity: .3; } }
-    @media (prefers-reduced-motion: reduce) { #dash-card .dot { animation: none; } }
-    #dash-card strong { display: block; font-weight: 650; }
-    #dash-card .sub { color: var(--muted); font-size: .82em; }
-    #dash-card .arrow {
-      margin-left: auto;
-      color: var(--muted);
-      transition: transform .15s, color .15s;
-    }
-    #dash-card:hover .arrow { transform: translateX(4px); color: var(--prompt); }
-
-    /* key-value blocks (terminal-output style) */
-    .kv { font-family: var(--mono); font-size: .82em; line-height: 1.9; }
-    .kv > div { display: flex; gap: 1.5ch; margin: .2rem 0; }
-    .kv .k { flex: 0 0 10ch; color: var(--muted); }
-    .kv-wide .k { flex-basis: 14ch; }
-
-    /* terminal */
-    #term {
-      margin-top: 3rem;
-      border-top: 1px solid var(--rule);
-      padding-top: 1.2rem;
-      font-family: var(--mono);
-      font-size: .82em;
-      cursor: text;
-    }
-    #term-out div { white-space: pre-wrap; word-break: break-word; margin: .15rem 0; }
-    #term-out .err { color: #d1242f; }
-    #term .ps1, #term-out .echo .ps1 { color: var(--prompt); font-weight: 600; }
-    #term-line { display: flex; align-items: baseline; gap: .5ch; }
-    #term-in {
-      flex: 1;
-      border: 0; outline: 0; padding: 0;
-      background: transparent;
-      color: var(--fg);
-      font: inherit;
-      caret-color: var(--prompt);
-    }
-    #term-in::placeholder { color: var(--muted); opacity: .7; }
-
-    footer {
-      margin-top: 2.5rem;
-      border-top: 1px solid var(--rule);
-      padding-top: 1rem;
-      font-family: var(--mono);
-      font-size: .72em;
-      color: var(--muted);
-    }
-    footer a { color: inherit; }
-    footer p { margin: .3rem 0; }
-
-    #theme-btn {
-      position: fixed;
-      top: .9rem; right: 1rem;
-      border: 0; background: none;
-      color: var(--muted);
-      font-size: 1.15rem;
-      cursor: pointer;
-      line-height: 1;
-    }
-    #theme-btn:hover { color: var(--fg); }
-
-    #matrix {
-      position: fixed; inset: 0;
-      z-index: 9;
-      display: none;
-      background: rgba(0,0,0,.85);
-    }
-  </style>
-</head>
-<body>
-  <button id="theme-btn" type="button" aria-label="Toggle dark/light theme" title="theme">◐</button>
-
-  <header>
-    <h1>Andrey Kutsenko<span class="cursor" aria-hidden="true"></span></h1>
-    <p>Software engineer in San Francisco. Automation for fintech: data parsing, document pipelines, ops tooling. After hours: LLM experiments and long runs.</p>
-
-    <a id="dash-card" href="/dashboard/">
-      <span>
-        <strong><span class="dot" aria-hidden="true"></span>Live dashboard</strong>
-        <span class="sub">Hacker News · GitHub radar · r/LocalLLaMA · LessWrong · my running log. Refreshed hourly.</span>
-      </span>
-      <span class="arrow" aria-hidden="true">→</span>
-    </a>
-  </header>
-
-  <main>
-    <section>
-      <h2 id="now">now</h2>
-      <div class="kv kv-wide">
-        <div><span class="k"><a href="https://www.infoimageinc.com/">infoimage</a></span><span>data parsing, document pipelines, unix/linux automation for fintech</span></div>
-        <div><span class="k"><a href="https://simpleprocess.io/">simpleprocess</a></span><span>business automation and ai-driven outreach tools</span></div>
-      </div>
-    </section>
-
-    <section>
-      <h2 id="specs">specs</h2>
-      <div class="kv">
-        <div><span class="k">role</span><span>software engineer</span></div>
-        <div><span class="k">focus</span><span>automation · data pipelines · fintech</span></div>
-        <div><span class="k">stack</span><span>python · sql · shell · typescript · docker</span></div>
-        <div><span class="k">infra</span><span>cloudflare workers · linux · llm apis</span></div>
-        <div><span class="k">editor</span><span>vim, occasionally escaped</span></div>
-        <div><span class="k">running</span><span><a href="https://www.strava.com/athletes/kutsenko" id="spec-running">marathons</a></span></div>
-        <div><span class="k">uptime</span><span>stable since the fintech era</span></div>
-      </div>
-    </section>
-
-    <section>
-      <h2 id="contacts">contacts</h2>
-      <div class="kv">
-        <div><span class="k">email</span><span><a href="mailto:kutsenko@gmail.com">kutsenko@gmail.com</a></span></div>
-        <div><span class="k">telegram</span><span><a href="https://t.me/kutsenko_dev">@kutsenko_dev</a> <span class="muted">(fastest)</span></span></div>
-        <div><span class="k">linkedin</span><span><a href="https://linkedin.com/in/andreykutsenko">linkedin.com/in/andreykutsenko</a></span></div>
-        <div><span class="k">github</span><span><a href="https://github.com/andreykutsenko">github.com/andreykutsenko</a></span></div>
-      </div>
-    </section>
-  </main>
-
-  <section id="term" aria-label="Interactive terminal">
-    <div id="term-out" role="log" aria-live="polite"></div>
-    <div id="term-line">
-      <span class="ps1">guest@kutsenko.dev:~$</span>
-      <input id="term-in" type="text" autocomplete="off" autocapitalize="off"
-             spellcheck="false" placeholder="type `help`, or `miles` for the running chart" aria-label="Terminal input">
-    </div>
-    <noscript><p class="muted">JavaScript is off. The shell is down, everything above still works.</p></noscript>
-  </section>
-
-  <canvas id="matrix" aria-hidden="true"></canvas>
-
-  <footer>
-    <p>This page is one HTML file: no frameworks, no analytics, no cookies. <a href="https://github.com/andreykutsenko/kutsenko.dev">Source</a>.</p>
-    <p>For agents: <a href="/llms.txt">llms.txt</a> · © <span id="year">2026</span> Andrey Kutsenko</p>
-  </footer>
-
-  <script>
-  (function () {
-    'use strict';
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    /* ---------- theme ---------- */
-    var root = document.documentElement;
-    var stored = null;
-    try { stored = localStorage.getItem('theme'); } catch (e) {}
-    if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
-
-    function currentTheme() {
-      var attr = root.getAttribute('data-theme');
-      if (attr) return attr;
-      return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    function setTheme(next) {
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem('theme', next); } catch (e) {}
-      return next;
-    }
-    function toggleTheme() {
-      return setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
-    }
-    document.getElementById('theme-btn').addEventListener('click', toggleTheme);
-
-    /* ---------- live running line in specs ---------- */
-    fetch('/api/strava')
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d && d.week && typeof d.week.miles === 'number') {
-          document.getElementById('spec-running').textContent =
-            d.week.miles + ' mi this week · marathons';
-        }
-      })
-      .catch(function () {});
-
-    /* ---------- terminal ---------- */
-    var term = document.getElementById('term');
-    var out = document.getElementById('term-out');
-    var input = document.getElementById('term-in');
-    var bootTime = Date.now();
-    var history = [];
-    var histPos = -1;
-
-    function print(text, cls) {
-      var div = document.createElement('div');
-      if (cls) div.className = cls;
-      div.textContent = text;
-      out.appendChild(div);
-    }
-    function echo(cmd) {
-      var div = document.createElement('div');
-      div.className = 'echo';
-      var ps1 = document.createElement('span');
-      ps1.className = 'ps1';
-      ps1.textContent = 'guest@kutsenko.dev:~$ ';
-      div.appendChild(ps1);
-      div.appendChild(document.createTextNode(cmd));
-      out.appendChild(div);
-    }
-
-    var FILES = {
-      'about.txt':
-        'Andrey Kutsenko, software engineer, San Francisco.\n' +
-        'Fintech roots (InfoIMAGE, BPS-Sberbank). I automate the boring parts:\n' +
-        'data parsing, document pipelines, ops tooling. After hours: LLM experiments.',
-      'stack.txt':
-        'Python  SQL  Shell  TypeScript  Docker  Cloudflare Workers  LLM APIs',
-      'contacts.txt':
-        'email     kutsenko@gmail.com\n' +
-        'telegram  @kutsenko_dev\n' +
-        'linkedin  linkedin.com/in/andreykutsenko\n' +
-        'github    github.com/andreykutsenko',
-      'running.log':
-        '26.2 miles: the only process I still run without automation.\n' +
-        'No cron, no retries, no rollback after mile 20.\n' +
-        'Splits: strava.com/athletes/kutsenko (try `run` or `miles`)'
-    };
-
-    var commands = {
-      help: function () {
-        print('available commands:');
-        print('  help        this list');
-        print('  whoami      who you are (and who I am)');
-        print('  ls          list files');
-        print('  cat <file>  print a file');
-        print('  run         26.2 miles, compressed');
-        print('  miles       weekly mileage chart');
-        print('  dashboard   open my feed reader');
-        print('  theme       toggle dark/light');
-        print('  hire        the important one');
-        print('  uptime      session stats');
-        print('  matrix      you know what this does');
-        print('  ru          по-русски');
-        print('  clear       clean up');
-        print('  exit        logout');
-      },
-      whoami: function () {
-        print('guest. The owner is Andrey Kutsenko, software engineer in San Francisco.');
-        print('You, however, get root access to nothing. Enjoy responsibly.');
-      },
-      ls: function () {
-        print('about.txt  stack.txt  contacts.txt  running.log  dashboard/');
-      },
-      cat: function (arg) {
-        if (!arg) { print('usage: cat <file>', 'err'); return; }
-        if (arg === 'dashboard' || arg === 'dashboard/') { print('cat: dashboard/: Is a directory', 'err'); return; }
-        if (FILES[arg]) { print(FILES[arg]); return; }
-        print('cat: ' + arg + ': No such file or directory', 'err');
-      },
-      dashboard: function () {
-        print('opening /dashboard/ ...');
-        setTimeout(function () { location.href = '/dashboard/'; }, 400);
-      },
-      theme: function () {
-        print('theme: ' + toggleTheme());
-      },
-      hire: function () {
-        print('drafting email to kutsenko@gmail.com ...');
-        setTimeout(function () {
-          location.href = 'mailto:kutsenko@gmail.com?subject=Hi%20Andrey';
-        }, 400);
-      },
-      uptime: function () {
-        var s = Math.floor((Date.now() - bootTime) / 1000);
-        print('page session: ' + s + 's, 0 trackers running, 0 cookies served');
-        print('owner: up since the fintech era, load average stable');
-      },
-      sudo: function () {
-        print('nice try. Permission denied.');
-        print('(there is no analytics here to report you to)');
-      },
-      ru: function () {
-        print('Привет! Да, я говорю по-русски.');
-        print('Быстрее всего: Telegram @kutsenko_dev');
-      },
-      vim: function () {
-        print("you're already inside someone else's interface. :q won't help.");
-      },
-      run: function () {
-        var TRACK = 34;
-        var div = document.createElement('div');
-        out.appendChild(div);
-        var fmtPace = function (sec) {
-          if (!sec) return '?:??';
-          return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
-        };
-        var finish = function () {
-          div.textContent = '🏁 26.2 mi in 3 seconds. If only. Pulling real telemetry...';
-          fetch('/api/strava')
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-              var lines = [];
-              if (d && d.week) lines.push('this week:  ' + d.week.miles + ' mi across ' + d.week.runs + ' runs');
-              if (d && d.ytd) lines.push('this year:  ' + d.ytd.miles + ' mi over ' + d.ytd.runs + ' runs');
-              var last = d && d.recent && d.recent[0];
-              if (last) lines.push('last run:   ' + last.miles + ' mi @ ' + fmtPace(last.paceSecPerMile) + '/mi (' + last.date + ')');
-              if (!lines.length) throw new Error('no data');
-              div.textContent = '🏁 live from Strava:';
-              lines.forEach(print);
-              print('full log: strava.com/athletes/kutsenko');
-            })
-            .catch(function () {
-              print('telemetry offline, splits at strava.com/athletes/kutsenko');
-            })
-            .then(function () {
-              input.scrollIntoView({ block: 'nearest' });
-            });
-        };
-        if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
-        var pos = 0;
-        var timer = setInterval(function () {
-          div.textContent =
-            'mi 0 |' + '·'.repeat(pos) + '🏃' + '·'.repeat(TRACK - pos) + '| mi 26.2';
-          if (pos++ >= TRACK) { clearInterval(timer); finish(); }
-        }, 85);
-      },
-      pace: function () { commands.run(); },
-      miles: function () {
-        var div = document.createElement('div');
-        div.textContent = 'plotting mileage...';
-        out.appendChild(div);
-        fetch('/api/strava')
-          .then(function (r) { return r.json(); })
-          .then(function (d) {
-            var weeks = d && d.weeks;
-            if (!weeks || !weeks.length) throw new Error('no data');
-            var max = Math.max.apply(null, weeks.map(function (w) { return w.miles; })) || 1;
-            var BAR = 24;
-            div.textContent = 'weekly mileage, last ' + weeks.length + ' weeks:';
-            weeks.forEach(function (w) {
-              var n = Math.round((w.miles / max) * BAR);
-              print(w.start.slice(5) + '  ' + '█'.repeat(n) + '░'.repeat(BAR - n) + '  ' + w.miles.toFixed(1));
-            });
-            var total = weeks.reduce(function (sum, w) { return sum + w.miles; }, 0);
-            print('total: ' + total.toFixed(1) + ' mi · avg: ' + (total / weeks.length).toFixed(1) + ' mi/wk');
-          })
-          .catch(function () {
-            print('telemetry offline, splits at strava.com/athletes/kutsenko', 'err');
-          })
-          .then(function () {
-            input.scrollIntoView({ block: 'nearest' });
-          });
-      },
-      strava: function () { commands.run(); },
-      matrix: function () { runMatrix(); },
-      clear: function () { out.textContent = ''; },
-      exit: function () {
-        print('logout');
-        print('(this is a web page, you can just close the tab)');
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      body { margin: 0; font-family: 'JetBrains Mono', monospace; }
+      .bg-grid {
+        background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+        background-size: 32px 32px;
+        opacity: 0.03;
       }
-    };
-
-    function run(line) {
-      var parts = line.trim().split(/\s+/);
-      var cmd = (parts[0] || '').toLowerCase();
-      if (!cmd) return;
-      echo(line);
-      if (commands[cmd]) {
-        commands[cmd](parts.slice(1).join(' '));
-      } else {
-        print(cmd + ': command not found, try `help`', 'err');
+      .scanline {
+        width: 100%;
+        height: 100px;
+        z-index: 100;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0) 100%);
+        opacity: 0.1;
+        position: absolute;
+        bottom: 100%;
+        animation: scanline 10s linear infinite;
+        pointer-events: none;
       }
-      input.scrollIntoView({ block: 'nearest' });
-    }
-
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        var line = input.value;
-        if (line.trim()) { history.push(line); }
-        histPos = history.length;
-        input.value = '';
-        run(line);
-      } else if (e.key === 'ArrowUp') {
-        if (histPos > 0) { histPos--; input.value = history[histPos]; }
-        e.preventDefault();
-      } else if (e.key === 'ArrowDown') {
-        if (histPos < history.length - 1) { histPos++; input.value = history[histPos]; }
-        else { histPos = history.length; input.value = ''; }
-        e.preventDefault();
+      @keyframes scanline {
+        0% { bottom: 100%; }
+        100% { bottom: -100px; }
       }
-    });
-
-    term.addEventListener('click', function (e) {
-      if (window.getSelection && String(window.getSelection())) return;
-      if (e.target !== input) input.focus();
-    });
-
-    /* ---------- matrix ---------- */
-    var canvas = document.getElementById('matrix');
-    var matrixTimer = null;
-
-    function stopMatrix() {
-      if (matrixTimer) { clearInterval(matrixTimer); matrixTimer = null; }
-      canvas.style.display = 'none';
-      print('back to reality.');
-      input.focus();
-    }
-
-    function runMatrix() {
-      if (matrixTimer) return;
-      var ctx = canvas.getContext('2d');
-      canvas.width = innerWidth;
-      canvas.height = innerHeight;
-      canvas.style.display = 'block';
-      var cols = Math.floor(canvas.width / 14);
-      var drops = [];
-      for (var i = 0; i < cols; i++) drops[i] = Math.floor(Math.random() * canvas.height / 14);
-      var glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01';
-      print('wake up, neo... (8s, or press Esc)');
-      matrixTimer = setInterval(function () {
-        ctx.fillStyle = 'rgba(0,0,0,0.07)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#56d364';
-        ctx.font = '14px monospace';
-        for (var i = 0; i < cols; i++) {
-          var ch = glyphs[Math.floor(Math.random() * glyphs.length)];
-          ctx.fillText(ch, i * 14, drops[i] * 14);
-          drops[i] = drops[i] * 14 > canvas.height && Math.random() > 0.975 ? 0 : drops[i] + 1;
-        }
-      }, 50);
-      setTimeout(function () { if (matrixTimer) stopMatrix(); }, 8000);
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && matrixTimer) stopMatrix();
-    });
-  })();
-  </script>
-</body>
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+      .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BrUIuaZg.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BQQkBT4x.css">
+  </head>
+  <body class="bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark-muted transition-colors duration-200 overflow-hidden">
+    <div class="scanline"></div>
+    <div id="root"></div>
+  </body>
 </html>

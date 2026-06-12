@@ -24,11 +24,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    rollupOptions: {
-      input: {
-        dashboard: path.resolve(__dirname, 'dashboard/index.html'),
-      },
-    },
   },
 });
 

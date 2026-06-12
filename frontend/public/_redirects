@@ -1,16 +1,17 @@
-# SPA fallback for the dashboard (react-router).
-# Target must be /dashboard/ (not /dashboard/index.html): Pages' pretty-URL
-# normalization 308-redirects explicit index.html and breaks the rewrite.
-/dashboard/* /dashboard/ 200
+# SPA fallback for react-router routes at the root
+# (a custom 404.html disables Pages' automatic SPA fallback)
+/github     / 200
+/llm        / 200
+/lesswrong  / 200
+/hn         / 200
+/arena      / 200
+/papers     / 200
+/tool       / 200
+/prices     / 200
+/bookmarks  / 200
+/about      / 200
+/running    / 200
 
-# Old SPA routes that used to live at the root
-/github      /dashboard/github     301
-/llm         /dashboard/llm        301
-/lesswrong   /dashboard/lesswrong  301
-/arena       /dashboard/arena      301
-/papers      /dashboard/papers     301
-/tool        /dashboard/tool       301
-/prices      /dashboard/prices     301
-/bookmarks   /dashboard/bookmarks  301
-/about       /                     301
-/about.html  /                     301
+# Old /dashboard URLs now live at the root
+/dashboard/* /:splat 301
+/dashboard   /       301
