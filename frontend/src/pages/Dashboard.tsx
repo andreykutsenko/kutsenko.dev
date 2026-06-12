@@ -3,6 +3,7 @@ import { fetchDashboardData, fetchTranslations } from '../services/api';
 import { DashboardData, Lang } from '../types';
 import { GitFork, Star, ExternalLink, Code, Eye } from 'lucide-react';
 import { BookmarkItem } from '../hooks/useBookmarks';
+import { safeUrl } from '../utils/safeUrl';
 
 // Shared props interface
 interface ViewProps {
@@ -208,7 +209,7 @@ export const HackerNewsView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <a 
-                    href={item.url}
+                    href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium flex-1"
@@ -279,7 +280,7 @@ export const GithubView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, o
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <a 
-                    href={item.url}
+                    href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-fg-light dark:text-fg-dark group-hover:text-term-blue transition-colors font-medium flex-1"
@@ -354,7 +355,7 @@ export const LLMView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0, onSy
               <div className="flex-1 flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <a 
-                    href={item.url}
+                    href={safeUrl(item.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-fg-light dark:text-fg-dark group-hover:text-term-orange transition-colors block"
@@ -421,7 +422,7 @@ export const LessWrongView: React.FC<ViewProps> = ({ lang, t, refreshTrigger = 0
               <span className="text-[#519aba] shrink-0">##</span>
               <div className="flex-1 flex items-start justify-between gap-2">
                 <a 
-                  href={item.url}
+                  href={safeUrl(item.url)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-fg-light dark:text-fg-dark group-hover:text-[#519aba] transition-colors"

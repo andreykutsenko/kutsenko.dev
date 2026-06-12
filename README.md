@@ -1,52 +1,53 @@
 # kutsenko.dev
 
-Live dashboard with automation status, LLM news, and dual-theme UI.
+Personal site of Andrey Kutsenko. Two faces, one deploy:
 
-## 🎨 Design
+- **`/`** — one-page profile. A single self-contained HTML file
+  (`frontend/public/index.html`): system fonts, dark/light via
+  `prefers-color-scheme`, zero frameworks, zero analytics. The page ends
+  with a working shell prompt — type `help`.
+- **`/dashboard/`** — VS Code-flavored feed reader (React + Vite):
+  Hacker News, GitHub radar, r/LocalLLaMA, LessWrong, AI signals.
+  Data comes from `/api/*` served by a Cloudflare Worker.
 
-- **Modes:** Dark terminal + “Mist” light theme (toggle persists in `localStorage`)
-- **Typography:** CaskaydiaCove NF / Cascadia Code stack
-- **Accent:** `#64ffda` on dark, `#2f7aff` on light
-- **Features:** Responsive grid, EN/RU toggle, cards with live data
+## Structure
 
-## 🚀 Run Locally
+```
+frontend/
+  public/            → copied as-is to the build root
+    index.html       → the one-pager (edit content here)
+    404.html         → terminal-style 404
+    _headers         → security headers (Cloudflare Pages)
+    _redirects       → SPA fallback for /dashboard/*, legacy route redirects
+    llms.txt         → agent-readable profile
+  dashboard/
+    index.html       → SPA entry (built to /dashboard/)
+  src/               → React app (router basename: /dashboard)
+backend/homepage-worker/ → Cloudflare Worker: /api/homepage, /api/ai-signals,
+                           /api/translate; hourly cron refresh into KV
+sites/simpleprocess/     → static mirror of simpleprocess.io (legacy; the real
+                           site now lives separately at simpleprocess.io)
+legacy/static-dashboard/ → previous static version of the site (retired)
+```
+
+## Develop
 
 ```bash
-python3 -m http.server 8080
+npm run dev        # vite dev server → http://localhost:3000/dashboard/
+                   # the one-pager is served at http://localhost:3000/
+npm run build      # builds everything into frontend/dist
+npm run preview    # serve the production build locally
 ```
 
-Then open http://localhost:8080
+## Deploy
 
-## 🧭 Homepage Dashboard
-
-- `index.html` — dashboard with Hacker News, GitHub radar, Best LLM News, LessWrong Reader, and status block.
-- `about.html` — background, current work, and contact section.
-- `/api/homepage` — Cloudflare Worker endpoint that hydrates all feeds (HN, GitHub, r/LocalLLaMA, LessWrong) and caches them in KV.
-- `/api/translate` — Worker proxy to translate dynamic text (defaults to Google Translate API; override via env).
-
-## 📝 Structure
-
-```
-index.html   → dashboard grid + toggles
-about.html   → work / stack / contact
-styles.css   → shared theme tokens + layout
-script.js    → theme/lang toggles, data fetching, translation
-backend/     → Cloudflare Worker (scheduler + APIs)
-```
-
-## ⚙️ Customize
-
-- Update CSS tokens inside `styles.css` (see `:root` + `[data-theme="light"]`).
-- Extend translations by editing the `i18n` object in `script.js`.
-- Data sources are fetched hourly via the Worker — adjust queries inside `backend/homepage-worker/index.js`.
-
-## Deployment
-
-- Static site: deployed from `main` via Cloudflare Pages (no build step).
-- Worker: deploy with `backend/homepage-worker/wrangler.toml`, Cloudflare KV, and `npx wrangler deploy`. Configure:
-  - `HOMEPAGE_CACHE` — KV namespace id.
-  - `TRANSLATE_API_URL` (optional) — override the default Google Translate endpoint (e.g., your own LibreTranslate).
+- **Cloudflare Pages**: build command `npm run build`, output directory
+  `frontend/dist`. Everything (one-pager, dashboard, headers, redirects)
+  ships in one artifact.
+- **Worker**: `cd backend/homepage-worker && npx wrangler deploy`.
+  Bindings: `HOMEPAGE_CACHE` (KV), optional `GITHUB_TOKEN`,
+  `TRANSLATE_API_URL`.
 
 ---
 
-Made with ❤️ and minimalism
+Made of HTML, with ❤️

@@ -1,0 +1,26 @@
+# Andrey Kutsenko
+
+> Software engineer in San Francisco. Automation, data parsing, document
+> pipelines and fintech systems by day; LLM experiments after hours.
+> Builder of SimpleProcess.io.
+
+## Work
+- Software Engineer @ InfoIMAGE — data parsing, document processing and
+  Unix/Linux automation for fintech.
+- SimpleProcess.io (https://simpleprocess.io) — business automation and
+  AI-driven outreach tools.
+
+## Stack
+Python, SQL, Shell, TypeScript, Docker, Cloudflare Workers, LLM APIs.
+
+## Pages
+- https://kutsenko.dev/ — this one-page site (plain HTML, no frameworks)
+- https://kutsenko.dev/dashboard/ — personal feed reader (Hacker News,
+  GitHub radar, r/LocalLLaMA, LessWrong), refreshed hourly by a
+  Cloudflare Worker at /api/homepage.
+
+## Contact
+- Email: kutsenko@gmail.com
+- Telegram: @kutsenko_dev (fastest)
+- LinkedIn: https://linkedin.com/in/andreykutsenko
+- GitHub: https://github.com/andreykutsenko

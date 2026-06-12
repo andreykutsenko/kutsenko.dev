@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ExternalLink, Star, GitFork, Loader2 } from 'lucide-react';
 import { fetchAISignals } from '../services/api';
+import { safeUrl } from '../utils/safeUrl';
 
 // Types
 interface ArenaModel {
@@ -192,7 +193,7 @@ export const PapersView: React.FC = () => {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <a 
-                  href={paper.arxiv}
+                  href={safeUrl(paper.arxiv)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-fg-light dark:text-fg-dark group-hover:text-term-purple transition-colors font-medium flex-1"
@@ -255,7 +256,7 @@ export const ToolView: React.FC = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <a 
-                href={tool.url}
+                href={safeUrl(tool.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-fg-light dark:text-fg-dark group-hover:text-accent transition-colors font-medium"

@@ -2,7 +2,9 @@
   "name": "kutsenko-dev",
   "private": true,
   "scripts": {
-    "serve": "python3 -m http.server 8080",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npx serve frontend/dist",
     "serve:simpleprocess": "npx serve sites/simpleprocess -p 8081"
   }
 }

@@ -28,11 +28,15 @@ export async function onRequestPost(context) {
     const chatId = env.TELEGRAM_CHAT_ID;
 
     if (botToken && chatId) {
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: message }),
-      }).catch(() => {});
+      // waitUntil keeps the request alive after the response is returned;
+      // a bare fetch would be cancelled by the runtime and the message lost
+      context.waitUntil(
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: chatId, text: message }),
+        }).catch(() => {})
+      );
     }
 
   } catch (e) {

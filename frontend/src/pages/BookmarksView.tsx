@@ -1,5 +1,6 @@
 import { Trash2, ExternalLink, Star, FileText, Bookmark } from 'lucide-react';
 import { BookmarkItem } from '../hooks/useBookmarks';
+import { safeUrl } from '../utils/safeUrl';
 
 interface BookmarksViewProps {
   bookmarks: BookmarkItem[];
@@ -139,7 +140,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ bookmarks, removeB
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <a 
-                      href={bookmark.url}
+                      href={safeUrl(bookmark.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-fg-light dark:text-fg-dark hover:text-accent transition-colors font-medium text-sm block truncate"

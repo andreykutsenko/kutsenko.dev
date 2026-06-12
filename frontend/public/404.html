@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — command not found</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root { --bg: #fdfdfd; --fg: #1a1a1a; --muted: #6b6f76; --prompt: #1a7f37; --link: #0b63c5; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0d1117; --fg: #d6dde3; --muted: #8b949e; --prompt: #56d364; --link: #58a6ff; }
+    }
+    body {
+      margin: 0 auto;
+      padding: 4rem 1.25rem;
+      max-width: 66ch;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .ps1 { color: var(--prompt); font-weight: 600; }
+    .err { color: #d1242f; }
+    .muted { color: var(--muted); }
+    a { color: var(--link); text-underline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <p><span class="ps1">guest@kutsenko.dev:~$</span> cd <span id="path">/this-page</span></p>
+  <p class="err">bash: cd: <span id="path2">/this-page</span>: No such file or directory</p>
+  <p class="muted"># exit code 404 — the page moved, mistyped itself, or never existed.</p>
+  <p><span class="ps1">guest@kutsenko.dev:~$</span> cd <a href="/">~</a> &nbsp;<span class="muted"># or</span>&nbsp; cd <a href="/dashboard/">~/dashboard</a></p>
+  <script>
+    var p = location.pathname.replace(/[<>&"]/g, '');
+    document.getElementById('path').textContent = p;
+    document.getElementById('path2').textContent = p;
+  </script>
+</body>
+</html>

@@ -110,6 +110,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('lang', lang);
+    document.documentElement.lang = lang;
   }, [lang]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -137,8 +138,9 @@ function App() {
           <span className="text-[9px] text-fg-dark-muted opacity-50 hidden md:block font-mono">
             Press <kbd className="px-1 py-0.5 bg-black/20 rounded text-accent">`</kbd> for terminal
           </span>
-          <button 
+          <button
             onClick={toggleLang}
+            aria-label="Toggle language"
             className="text-[10px] font-bold hover:text-accent-light dark:hover:text-accent transition-colors uppercase"
           >
             [{lang}]

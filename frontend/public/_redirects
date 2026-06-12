@@ -1,0 +1,14 @@
+# SPA fallback for the dashboard (react-router)
+/dashboard/* /dashboard/index.html 200
+
+# Old SPA routes that used to live at the root
+/github      /dashboard/github     301
+/llm         /dashboard/llm        301
+/lesswrong   /dashboard/lesswrong  301
+/arena       /dashboard/arena      301
+/papers      /dashboard/papers     301
+/tool        /dashboard/tool       301
+/prices      /dashboard/prices     301
+/bookmarks   /dashboard/bookmarks  301
+/about       /                     301
+/about.html  /                     301
